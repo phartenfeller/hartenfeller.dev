@@ -1,42 +1,41 @@
-import { Link } from 'gatsby';
-import PropTypes from 'prop-types';
 import React from 'react';
+import svg from '../images/topography.svg';
 
-const Header = ({ siteTitle }) => (
+const Hero = () => (
   <header
     style={{
-      background: `rebeccapurple`,
+      background: `#F25D48`,
+      backgroundImage: `url(${svg})`,
       marginBottom: `1.45rem`
     }}
   >
     <div
       style={{
-        margin: `0 auto`,
-        maxWidth: 960,
-        padding: `1.45rem 1.0875rem`
+        paddingTop: '128px',
+        paddingBottom: '128px'
       }}
     >
-      <h1 style={{ margin: 0 }}>
-        <Link
-          to="/"
+      <div
+        style={{
+          background: 'rgba(255, 255, 255, 0.18)',
+          backdropFilter: 'blur(1.5px)',
+          width: 'fit-content',
+          margin: 'auto',
+          padding: '16px 32px'
+        }}
+      >
+        <h1
           style={{
-            color: `white`,
-            textDecoration: `none`
+            fontFamily: `'Merriweather', serif`,
+            margin: 0,
+            color: '#3e2121'
           }}
         >
-          {siteTitle}
-        </Link>
-      </h1>
+          Philipp Hartenfeller
+        </h1>
+      </div>
     </div>
   </header>
 );
 
-Header.propTypes = {
-  siteTitle: PropTypes.string
-};
-
-Header.defaultProps = {
-  siteTitle: ``
-};
-
-export default Header;
+export default Hero;
