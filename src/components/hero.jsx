@@ -9,25 +9,19 @@ const Hero = () => (
       marginBottom: `1.45rem`
     }}
   >
-    <div
-      style={{
-        paddingTop: '128px',
-        paddingBottom: '128px'
-      }}
-    >
+    <div className="pt-16 pb-64">
       <div
+        className="milky-bg"
         style={{
-          background: 'rgba(255, 255, 255, 0.18)',
-          backdropFilter: 'blur(1.5px)',
           width: 'fit-content',
           margin: 'auto',
           padding: '16px 32px'
         }}
       >
         <h1
+          className="text-5xl m-0"
           style={{
             fontFamily: `'Merriweather', serif`,
-            margin: 0,
             color: '#3e2121'
           }}
         >
