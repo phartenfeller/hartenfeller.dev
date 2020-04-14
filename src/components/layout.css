@@ -15,3 +15,29 @@ body {
 .blurry {
   backdrop-filter: blur(10px);
 }
+
+.brown-header-text {
+  font-family: 'Merriweather', serif;
+  color: #3e2121;
+}
+
+.brown-header-text-shadow {
+  text-shadow: 0px 0px 6px rgba(133, 119, 119, 0.33);
+}
+
+.brown-subheader-text {
+  font-family: 'Merriweather', serif;
+  color: #533a3a;
+}
+
+.brown-subheader-text-shadow {
+  text-shadow: 0px 0px 1px rgba(69, 55, 55, 0.42);
+}
+
+/* selection color */
+::selection {
+  background: #69ffd1; /* WebKit/Blink Browsers */
+}
+::-moz-selection {
+  background: #69ffd1; /* Gecko Browsers */
+}

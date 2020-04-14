@@ -18,15 +18,7 @@ const Hero = () => (
           padding: '16px 32px'
         }}
       >
-        <h1
-          className="text-5xl m-0"
-          style={{
-            fontFamily: `'Merriweather', serif`,
-            color: '#3e2121'
-          }}
-        >
-          Philipp Hartenfeller
-        </h1>
+        <h1 className="text-6xl m-0 brown-header-text">Philipp Hartenfeller</h1>
       </div>
     </div>
   </header>
