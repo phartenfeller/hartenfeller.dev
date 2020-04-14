@@ -41,3 +41,26 @@ body {
 ::-moz-selection {
   background: #69ffd1; /* Gecko Browsers */
 }
+
+/* scrollbar */
+body::-webkit-scrollbar {
+  background-color: #fff;
+  width: 16px;
+}
+
+/* background of the scrollbar except button or resizer */
+body::-webkit-scrollbar-track {
+  @apply bg-red-100;
+}
+
+/* scrollbar itself */
+body::-webkit-scrollbar-thumb {
+  border-radius: 16px;
+  border: 4px solid;
+  @apply border-red-100 bg-gray-500;
+}
+
+/* set button(top and bottom of the scrollbar) */
+body::-webkit-scrollbar-button {
+  display: none;
+}

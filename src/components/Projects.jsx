@@ -20,7 +20,7 @@ const Projects = () => {
 
   return (
     <div>
-      <SectionHeader section="Things i've done" />
+      <SectionHeader section="Things I made" />
       <div className="mx-48">
         <h3 className="text-3xl brown-subheader-text brown-subheader-text-shadow font-semibold">
           Minesweeper PWA

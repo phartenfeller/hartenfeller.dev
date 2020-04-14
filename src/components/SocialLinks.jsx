@@ -52,7 +52,7 @@ LinkCard.propTypes = {
 const SocialLinks = () => (
   <div className="-mt-32 px-48 grid gap-10 max-w-lg mx-auto lg:grid-cols-3 lg:max-w-none">
     {links.map(link => (
-      <LinkCard link={link} />
+      <LinkCard link={link} key={link.name} />
     ))}
   </div>
 );
