@@ -10,20 +10,31 @@ const types = {
     textColor: 'text-gray-200',
     iconColor: 'text-gray-500',
     bg: 'bg-gray-900',
-    bgHover: 'hover:bg-gray-800',
-    bgActive: 'active:bg-black',
-    focusBorder: 'focus:border-gray-600'
+    bgHover: 'bg-gray-800',
+    bgActive: 'bg-black',
+    focusBorder: 'border-gray-600'
   },
-  open: {
+  purple: {
     icon: svg.compass,
     text: 'Open',
     ariaLabel: 'Open page',
     textColor: 'text-gray-200',
     iconColor: 'text-purple-400',
     bg: 'bg-purple-700',
-    bgHover: 'hover:bg-purple-600',
-    bgActive: 'active:bg-purple-800',
-    focusBorder: 'focus:border-purple-500'
+    bgHover: 'bg-purple-600',
+    bgActive: 'bg-purple-800',
+    focusBorder: 'border-purple-500'
+  },
+  green: {
+    icon: svg.compass,
+    text: 'Open',
+    ariaLabel: 'Open page',
+    textColor: 'text-white',
+    iconColor: 'text-green-400',
+    bg: 'bg-green-700',
+    bgHover: 'bg-green-600',
+    bgActive: 'bg-green-800',
+    focusBorder: 'border-green-500'
   }
 };
 
@@ -37,7 +48,7 @@ const LinkButton = ({ type, link }) => {
         <button
           type="button"
           aria-label={options.ariaLabel}
-          className={`inline-flex items-center px-4 py-2 border-2 border-transparent text-sm ${options.iconColor} leading-5 font-medium rounded-md ${options.bg} ${options.bgHover} focus:outline-none ${options.focusBorder} ${options.bgActive} transition ease-in-out duration-150`}
+          className={`inline-flex items-center px-4 py-2 border-2 border-transparent text-sm ${options.iconColor} leading-5 font-medium rounded-md ${options.bg} hover:${options.bgHover} focus:outline-none focus:${options.focusBorder} active:${options.bgActive} transform duration-150 ease-in-out hover:scale-105`}
         >
           <svg
             className="-ml-1 md:mr-2 h-5 w-5"

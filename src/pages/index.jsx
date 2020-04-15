@@ -1,5 +1,6 @@
 import { Link } from 'gatsby';
 import React from 'react';
+import Contact from '../components/Contact';
 import Hero from '../components/hero';
 import Layout from '../components/layout';
 import Projects from '../components/Projects';
@@ -13,6 +14,7 @@ const IndexPage = () => (
     <Hero />
     <SocialLinks />
     <Projects />
+    <Contact />
     <Link to="/page-2/">Go to page 2</Link>
   </Layout>
 );
