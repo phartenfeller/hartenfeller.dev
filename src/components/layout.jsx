@@ -14,10 +14,16 @@ const Layout = ({ children }) => {
     <>
       <div>
         <main>{children}</main>
-        <footer>
-          © {new Date().getFullYear()}, Built with
-          {` `}
-          <a href="https://www.gatsbyjs.org">Gatsby</a>
+        <footer
+          className="py-4 px-8 text-orange-200 shadow-lg"
+          style={{ background: '#544242' }}
+        >
+          <div className="md:inline-block">{`© ${new Date().getFullYear()} Philipp Hartenfeller`}</div>
+          <div className="underline md:inline-block md:float-right">
+            <a href="https://github.com/phartenfeller/hartenfeller.dev">
+              Check out the code on GitHub
+            </a>
+          </div>
         </footer>
       </div>
     </>

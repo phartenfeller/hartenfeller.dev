@@ -1,4 +1,3 @@
-import { Link } from 'gatsby';
 import React from 'react';
 import Contact from '../components/Contact';
 import Hero from '../components/hero';
@@ -22,7 +21,6 @@ const IndexPage = () => (
       }}
     />
     <Contact />
-    <Link to="/page-2/">Go to page 2</Link>
   </Layout>
 );
 

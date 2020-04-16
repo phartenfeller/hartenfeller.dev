@@ -35,7 +35,7 @@ const ProjectComponent = ({ project, reversed = false }) => {
         {project.name}
       </h3>
       <div className={`md:flex ${reversed ? 'flex-row-reverse' : null}`}>
-        <div className="md:flex-none w-full md:w-1/2 lg:w-1/3 mt-6">
+        <div className="md:flex-none w-full md:w-1/2 xl:w-1/3 mt-6">
           <a href={project.projectUrl}>
             <ImageGetter
               filename={project.screenshot}
@@ -44,7 +44,7 @@ const ProjectComponent = ({ project, reversed = false }) => {
             />
           </a>
         </div>
-        <div className="md:flex-none md:w-1/2 lg:w-1/3 mt-6 md:px-8 text-md lg:text-xl">
+        <div className="md:flex-none md:w-1/2 xl:w-1/3 mt-6 md:px-8 text-md lg:text-xl">
           <div className={`mb-8 `}>{project.description}</div>
           <div className={reversed ? 'text-right' : null}>
             <LinkButton type="github" link={project.githubUrl} />
