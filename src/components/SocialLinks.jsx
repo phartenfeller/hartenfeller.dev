@@ -26,7 +26,7 @@ const LinkCard = ({ link }) => {
       <a href={link.href}>
         <div className="m-auto">
           <svg
-            className="h-16 w-16 m-auto"
+            className="w-8 h8 md:w-12 md:h-12 lg:h-16 lg:w-16 m-auto"
             style={{ color: '#544242' }}
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -34,7 +34,9 @@ const LinkCard = ({ link }) => {
           >
             <path d={link.path} />
           </svg>
-          <div className="text-center mt-4 text-2xl">{link.name}</div>
+          <div className="text-center mt-4 text-xl md:text-2xl">
+            {link.name}
+          </div>
         </div>
       </a>
     </div>
@@ -50,7 +52,7 @@ LinkCard.propTypes = {
 };
 
 const SocialLinks = () => (
-  <div className="-mt-32 px-48 grid gap-10 max-w-lg mx-auto lg:grid-cols-3 lg:max-w-none">
+  <div className="-mt-64 md:-mt-32 lg:-mt-32 px-8 lg:px-48 grid gap-4 lg:gap-10 mx-auto grid-cols-2 md:grid-cols-3 lg:max-w-none">
     {links.map(link => (
       <LinkCard link={link} key={link.name} />
     ))}
