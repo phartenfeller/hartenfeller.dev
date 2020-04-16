@@ -74,10 +74,12 @@ ProjectComponent.defaultProps = {
 
 const Projects = () => {
   return (
-    <div>
+    <div className="my-32">
       <SectionHeader section="Things I made" />
-      <ProjectComponent project={projects.minesweeper} />
-      <ProjectComponent project={projects.cyf} reversed />
+      <div className="mt-32">
+        <ProjectComponent project={projects.minesweeper} />
+        <ProjectComponent project={projects.cyf} reversed />
+      </div>
     </div>
   );
 };

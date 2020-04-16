@@ -35,6 +35,28 @@ const types = {
     bgHover: 'bg-green-600',
     bgActive: 'bg-green-800',
     focusBorder: 'border-green-500'
+  },
+  twitter: {
+    icon: svg.twitter,
+    text: 'Twitter',
+    ariaLabel: 'My Twitter page',
+    textColor: 'text-white',
+    iconColor: 'text-blue-400',
+    bg: 'bg-blue-700',
+    bgHover: 'bg-blue-600',
+    bgActive: 'bg-blue-800',
+    focusBorder: 'border-blue-500'
+  },
+  email: {
+    icon: svg.mail,
+    text: 'E-Mail',
+    ariaLabel: 'My Twitter page',
+    textColor: 'text-white',
+    iconColor: 'text-indigo-400',
+    bg: 'bg-indigo-700',
+    bgHover: 'bg-indigo-600',
+    bgActive: 'bg-indigo-800',
+    focusBorder: 'border-indigo-500'
   }
 };
 

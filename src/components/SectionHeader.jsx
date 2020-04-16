@@ -3,9 +3,9 @@ import React from 'react';
 
 const SectionHeader = ({ section }) => {
   return (
-    <div className="my-32">
+    <div className="mb-16">
       <h2 className="text-center text-4xl text-gray-800 font-bold font-mono">
-        <span>------ {section} ------</span>
+        <span>{`/* ------ ${section} ------ */`}</span>
       </h2>
     </div>
   );
