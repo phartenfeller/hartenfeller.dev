@@ -15,7 +15,7 @@ const Layout = ({ children }) => {
       <div>
         <main>{children}</main>
         <footer
-          className="py-4 px-8 text-orange-200 shadow-lg"
+          className="py-4 px-8 text-white font-semibold shadow-lg"
           style={{ background: '#544242' }}
         >
           <div className="md:inline-block">{`© ${new Date().getFullYear()} Philipp Hartenfeller`}</div>
