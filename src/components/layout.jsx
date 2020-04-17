@@ -15,11 +15,14 @@ const Layout = ({ children }) => {
       <div>
         <main>{children}</main>
         <footer
-          className="py-4 px-8 text-white font-semibold shadow-lg"
+          className="py-4 px-8 text-white text-sm md:text-md md:font-semibold shadow-lg grid grid-cols-2 md:grid-cols-3"
           style={{ background: '#544242' }}
         >
-          <div className="md:inline-block">{`© ${new Date().getFullYear()} Philipp Hartenfeller`}</div>
-          <div className="underline md:inline-block md:float-right">
+          <div className="">{`© ${new Date().getFullYear()} Philipp Hartenfeller`}</div>
+          <div className="md:text-center">
+            This website does not use cookies
+          </div>
+          <div className="underline md:text-right mt-4 md:mt-0">
             <a href="https://github.com/phartenfeller/hartenfeller.dev">
               Check out the code on GitHub
             </a>
