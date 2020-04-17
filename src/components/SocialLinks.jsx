@@ -22,8 +22,8 @@ const links = [
 
 const LinkCard = ({ link }) => {
   return (
-    <div className="bg-white items-center rounded-md shadow-lg py-10 px-10 transform duration-150 ease-in-out hover:scale-105 hover:opacity-94 blurry">
-      <a href={link.href}>
+    <a href={link.href}>
+      <div className="bg-white items-center rounded-md shadow-lg py-10 px-10 transform duration-150 ease-in-out hover:scale-105 hover:opacity-94 blurry">
         <div className="m-auto">
           <svg
             className="w-8 h8 md:w-12 md:h-12 lg:h-16 lg:w-16 m-auto"
@@ -38,8 +38,8 @@ const LinkCard = ({ link }) => {
             {link.name}
           </div>
         </div>
-      </a>
-    </div>
+      </div>
+    </a>
   );
 };
 
