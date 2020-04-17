@@ -10,7 +10,10 @@ const Contact = () => {
         <div className="border-t border-gray-300 md:border-0 md:border-l">
           <div className="px-4 py-5 sm:p-6 text-center text-xl">
             <div className="mb-6">Reach out to me on Twitter:</div>
-            <LinkButton type="twitter" link="https://" />
+            <LinkButton
+              type="twitter"
+              link="https://twitter.com/phartenfeller"
+            />
           </div>
         </div>
         <div className="border-t border-gray-300 md:border-0 md:border-l">
