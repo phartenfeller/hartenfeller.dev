@@ -1,5 +1,11 @@
 {
-  "extends": ["plugin:react/recommended", "airbnb", "prettier"],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:react-hooks/recommended",
+    "airbnb",
+    "prettier"
+  ],
   "parserOptions": {
     "ecmaVersion": 11,
     "sourceType": "module"
@@ -17,7 +23,7 @@
     "react/jsx-one-expression-per-line": 0,
     "radix": 0
   },
-  "plugins": ["prettier", "react-hooks"],
+  "plugins": ["prettier", "react-hooks", "jsx-a11y"],
   "settings": {
     "react": {
       "pragma": "React",
