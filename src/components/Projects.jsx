@@ -18,7 +18,7 @@ const projects = {
     screenshot: 'cyftime-screenshot.png',
     description:
       'Website for a friend who makes rap music. Check his music and the site out.',
-    github: 'https://github.com/phartenfeller/cyftime_website',
+    githubUrl: 'https://github.com/phartenfeller/cyftime_website',
     projectUrl: 'https://cyftime.de',
     buttonType: 'green'
   }
