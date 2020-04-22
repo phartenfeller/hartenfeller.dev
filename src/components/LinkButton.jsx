@@ -49,8 +49,8 @@ const types = {
   },
   email: {
     icon: svg.mail,
-    text: 'E-Mail',
-    ariaLabel: 'My Twitter page',
+    text: 'contact@hartenfeller.dev',
+    ariaLabel: 'Send me an email',
     textColor: 'text-white',
     iconColor: 'text-indigo-400',
     bg: 'bg-indigo-700',
