@@ -12,8 +12,8 @@ import './layout.css';
 const Layout = ({ children }) => {
   return (
     <>
-      <div>
-        <main>{children}</main>
+      <div className="min-h-screen flex flex-col">
+        <main className="flex-grow">{children}</main>
         <footer
           className="py-4 px-8 text-white text-sm md:text-md md:font-semibold shadow-lg grid grid-cols-2 md:grid-cols-3"
           style={{ background: '#544242' }}
