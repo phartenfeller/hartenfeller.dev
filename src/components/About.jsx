@@ -34,10 +34,10 @@ const About = () => {
           <span className="text-red-700 font-merriweather text-xl tracking-wider mx-1">
             Philipp Hartenfeller
           </span>{' '}
-          and I am a software engineer from germany.
+          and I am a software engineer from Germany.
         </p>
         <p>
-          I am mostly interested in fullstack web dev, databases and especially
+          I am mostly interested in full stack web dev, databases and especially
           JavaScript. My current preferred stack is:
         </p>
         <div className="my-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden shadow sm:grid-cols-2 xl:grid-cols-4 m-auto">
