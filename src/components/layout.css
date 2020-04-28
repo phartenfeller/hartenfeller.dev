@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply antialiased bg-red-100;
+  @apply subpixel-antialiased bg-red-100;
   margin: 0;
 }
 
@@ -16,8 +16,12 @@ body {
   backdrop-filter: blur(10px);
 }
 
-.brown-header-text {
+.font-merriweather {
   font-family: 'Merriweather', serif;
+}
+
+.brown-header-text {
+  @apply font-merriweather;
   color: #3e2121;
 }
 
@@ -26,7 +30,7 @@ body {
 }
 
 .brown-subheader-text {
-  font-family: 'Merriweather', serif;
+  @apply font-merriweather;
   color: #533a3a;
 }
 

@@ -45,7 +45,7 @@ const ProjectComponent = ({ project, reversed = false }) => {
           </a>
         </div>
         <div className="md:flex-none md:w-1/2 xl:w-1/3 mt-6 md:px-8 text-md lg:text-xl">
-          <div className={`mb-8 `}>{project.description}</div>
+          <div className="mb-8 leading-relaxed">{project.description}</div>
           <div className={reversed ? 'text-right' : null}>
             <LinkButton type="github" link={project.githubUrl} />
             <LinkButton type={project.buttonType} link={project.projectUrl} />

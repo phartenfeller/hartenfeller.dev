@@ -1,4 +1,5 @@
 import React from 'react';
+import About from '../components/About';
 import Contact from '../components/Contact';
 import Hero from '../components/hero';
 import Layout from '../components/layout';
@@ -13,6 +14,7 @@ const IndexPage = () => (
     <SEO title="Home" />
     <Hero />
     <SocialLinks />
+    <About />
     <Projects />
     <div
       style={{
