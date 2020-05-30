@@ -1,3 +1,7 @@
+require('dotenv').config({
+  path: `.env`
+});
+
 module.exports = {
   siteMetadata: {
     title: `Philipp Hartenfeller`,
@@ -27,9 +31,19 @@ module.exports = {
         icon: `src/images/gatsby-icon.png` // This path is relative to the root of the site.
       }
     },
-    'gatsby-plugin-postcss'
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.dev/offline
-    // `gatsby-plugin-offline`,
+    'gatsby-plugin-postcss',
+    {
+      resolve: `gatsby-source-strapi`,
+      options: {
+        apiURL: process.env.STRAPI_URL,
+        queryLimit: 1000,
+        contentTypes: [`hartenfeller-dev-blogs`, `hartenfeller-dev-tags`],
+        singleTypes: [],
+        loginData: {
+          identifier: process.env.STRAPI_USER,
+          password: process.env.STRAPI_PASSWORD
+        }
+      }
+    }
   ]
 };
