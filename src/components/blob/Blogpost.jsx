@@ -15,8 +15,8 @@ const Blogpost = ({ post }) => {
             alt={post.PhotoAlt}
           />
         </Link>
-        <div className="flex-1 border-2 border-t-0 rounded-t-none border-dashed border-red-400 p-6 flex flex-col justify-between bg-white">
-          <Link to={post.Slug}>
+        <div className="flex-1 border-2 border-t-0 rounded-t-none border-dashed border-red-400 pt-6 flex flex-col justify-between bg-white">
+          <Link to={post.Slug} className="px-6">
             <div className="flex-1">
               <div className="block">
                 <h3 className="mt-2 text-xl leading-7 font-semibold text-gray-900">
@@ -28,7 +28,7 @@ const Blogpost = ({ post }) => {
               </div>
             </div>
           </Link>
-          <div className="grid sm:grid-cols-2 gap-2 mt-8 text-sm leading-5 font-medium text-gray-700">
+          <div className="grid sm:grid-cols-2 gap-2 mt-8 text-sm leading-5 font-medium text-gray-700 bg-gray-100 px-6 py-3 border-t-2 border-solid border-gray-200">
             <div className="inline-flex ml-1">
               <svg
                 className="-ml-1 mr-2 h-5 w-5 text-gray-500"

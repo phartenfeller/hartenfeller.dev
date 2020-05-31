@@ -42,7 +42,7 @@ const Blog = ({ data }) => {
         <div className="relative max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl sm:leading-10">
-              Blog | Philipp Hartenfeller
+              Philipp Hartenfeller&apos;s Blog
             </h1>
           </div>
           <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8">
