@@ -7,11 +7,14 @@ module.exports = {
       },
       height: {
         '100': '25rem;'
+      },
+      screens: {
+        hd: '1900px'
       }
     }
   },
   variants: {
-    scale: ['group-hover']
+    scale: ['hover', 'group-hover']
   },
   plugins: []
 };
