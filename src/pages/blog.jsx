@@ -1,7 +1,7 @@
 import { graphql } from 'gatsby';
 import PropTypes from 'prop-types';
 import React from 'react';
-import Blogpost, { postType } from '../components/blob/Blogpost';
+import Blogpost, { postType } from '../components/blog/Blogpost';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
