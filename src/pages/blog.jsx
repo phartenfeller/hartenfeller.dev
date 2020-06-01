@@ -1,4 +1,4 @@
-import { graphql } from 'gatsby';
+import { graphql, Link } from 'gatsby';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Blogpost, { postType } from '../components/blog/Blogpost';
@@ -46,10 +46,18 @@ const Blog = ({ data }) => {
             </h1>
           </div>
           <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8">
-            {blogposts.map(post => (
+            {blogposts.map((post) => (
               <Blogpost post={post} key={post.Slug} />
             ))}
           </div>
+        </div>
+        <div className="text-center mt-8 text-xl text">
+          <Link
+            to="/"
+            className="text-purple-600 hover:text-purple-800 hover:underline"
+          >
+            Homepage
+          </Link>
         </div>
       </div>
     </Layout>
@@ -59,9 +67,9 @@ const Blog = ({ data }) => {
 Blog.propTypes = {
   data: PropTypes.shape({
     posts: PropTypes.shape({
-      nodes: PropTypes.arrayOf(postType.post)
-    }).isRequired
-  }).isRequired
+      nodes: PropTypes.arrayOf(postType.post),
+    }).isRequired,
+  }).isRequired,
 };
 
 export default Blog;

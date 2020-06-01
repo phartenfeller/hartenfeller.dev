@@ -5,16 +5,19 @@ import TagsDisplay from './TagsDisplay';
 
 const PostPreviewHome = ({ post }) => {
   return (
-    <div className="py-8 px-4 bg-white shadow rounded-lg">
+    <div className="py-8 px-4 bg-white shadow rounded-lg my-4">
       <div className="h-full flex items-start">
-        <div className="w-12 flex-shrink-0 flex flex-col text-center leading-none">
+        <time
+          className="w-12 flex-shrink-0 flex flex-col text-center leading-none"
+          dateTime={post.PublishDate}
+        >
           <span className="text-gray-700 pb-2 mb-2 border-b-2 border-gray-300">
             {post.PublishDateFormattedMonth}
           </span>
           <span className="font-medium text-xl text-gray-800 title-font">
             {post.PublishDateFormattedDay}
           </span>
-        </div>
+        </time>
         <div className="flex-grow pl-6">
           <TagsDisplay tags={post.tags} />
           <h3 className="title-font text-xl font-medium text-gray-900 mb-3 text-title-brown brown-subheader-text-shadow">
@@ -25,7 +28,7 @@ const PostPreviewHome = ({ post }) => {
           </p>
           <Link
             to={`/blog/${post.Slug}`}
-            className="text-red-700 uppercase hover:text-red-900 hover:underline"
+            className="py-3 pr-3 text-red-700 uppercase hover:text-red-900 hover:underline"
           >
             read post
           </Link>
@@ -37,6 +40,7 @@ const PostPreviewHome = ({ post }) => {
 
 PostPreviewHome.propTypes = {
   post: PropTypes.shape({
+    PublishDate: PropTypes.string.isRequired,
     PublishDateFormattedMonth: PropTypes.string.isRequired,
     PublishDateFormattedDay: PropTypes.string.isRequired,
     Title: PropTypes.string.isRequired,
