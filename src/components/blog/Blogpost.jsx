@@ -19,9 +19,9 @@ const Blogpost = ({ post }) => {
           <Link to={`/blog/${post.Slug}`} className="px-6">
             <div className="flex-1">
               <div className="block">
-                <h3 className="mt-2 text-xl leading-7 font-semibold text-gray-900">
+                <h2 className="mt-2 text-xl leading-7 font-semibold text-gray-900">
                   {post.Title}
-                </h3>
+                </h2>
                 <p className="mt-3 text-base leading-6 text-gray-700">
                   {post.Description}
                 </p>
@@ -52,11 +52,11 @@ export const postType = {
     PhotoAlt: PropTypes.string.isRequired,
     TitleImage: PropTypes.shape({
       sharp: PropTypes.shape({
-        fluid: PropTypes.object.isRequired
-      }).isRequired
+        fluid: PropTypes.object.isRequired,
+      }).isRequired,
     }).isRequired,
-    tags: tagsProps
-  }).isRequired
+    tags: tagsProps,
+  }).isRequired,
 };
 
 Blogpost.propTypes = postType;

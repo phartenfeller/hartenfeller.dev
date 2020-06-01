@@ -32,7 +32,7 @@ const LatestBlogposts = () => {
       <SectionHeader section="My Blog" />
       <div className="mx-8 lg:mx-48 grid grid-cols-3 gap-4">
         {posts.map((post) => (
-          <PostPreviewHome post={post} />
+          <PostPreviewHome post={post} key={post.Slug} />
         ))}
         <div className="flex border-2 border-red-500 border-dashed rounded-lg">
           <Link
