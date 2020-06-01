@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import svg from '../../images/svg';
 
+const getTagUrl = (tag) => `/blog/tags/${tag.toLowerCase().replace(/ /g, '-')}`;
+
 const TagsDisplay = ({ tags }) => {
   if (!tags || tags.length === 0) return null;
   return (
@@ -17,7 +19,7 @@ const TagsDisplay = ({ tags }) => {
       {tags.map(({ Tag }, i) => {
         return (
           <span key={Tag} className="mr-2">
-            <Link className="hover:underline" to={`/blog/tags/${Tag}`}>
+            <Link className="hover:underline" to={getTagUrl(Tag)}>
               {Tag}
             </Link>
             {i < tags.length - 1 ? ',' : null}
@@ -33,11 +35,11 @@ export const tagsProps = PropTypes.arrayOf(
 );
 
 TagsDisplay.propTypes = {
-  tags: tagsProps
+  tags: tagsProps,
 };
 
 TagsDisplay.defaultProps = {
-  tags: null
+  tags: null,
 };
 
 export default TagsDisplay;
