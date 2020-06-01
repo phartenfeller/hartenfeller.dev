@@ -33,9 +33,10 @@ export const query = graphql`
   }
 `;
 
-const BlogTagTemplate = ({ data, pageResources }) => {
+const BlogTagTemplate = ({ data, pageContext }) => {
   const blogposts = data.posts.nodes;
-  const { tag } = pageResources.json.pageContext;
+
+  const { tag } = pageContext;
 
   return (
     <Layout>
@@ -85,12 +86,8 @@ BlogTagTemplate.propTypes = {
       nodes: PropTypes.arrayOf(postType.post),
     }).isRequired,
   }).isRequired,
-  pageResources: PropTypes.shape({
-    json: PropTypes.shape({
-      pageContext: PropTypes.shape({
-        tag: PropTypes.string.isRequired,
-      }).isRequired,
-    }).isRequired,
+  pageContext: PropTypes.shape({
+    tag: PropTypes.string.isRequired,
   }).isRequired,
 };
 
