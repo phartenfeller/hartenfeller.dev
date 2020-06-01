@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400&display=swap');
+
+.font-raleway {
+  font-family: 'Raleway', serif;
+}
+
+.blog-body a {
+  @apply text-red-700 underline;
+}
+
+.blog-body a:hover {
+  @apply text-red-900;
+}
+
+.blog-body p {
+  @apply mb-4;
+}

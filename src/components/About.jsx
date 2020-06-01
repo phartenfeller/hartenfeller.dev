@@ -46,11 +46,12 @@ const About = () => {
           <StackInfo category="APIs" technologies={['GraphQL', 'REST']} />
           <StackInfo
             category="Data"
-            technologies={['Postgres', 'Redis', 'leveldb']}
+            technologies={['Postgres', 'Redis', 'leveldb', 'Oracle']}
           />
         </div>
         <p className="text-lg">
-          This site is built with Gatsby, TailwindCSS, Traefik and goStatic.
+          This site is built with Gatsby, TailwindCSS, Strapi, Traefik and
+          goStatic.
         </p>
       </div>
     </div>

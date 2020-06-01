@@ -2,6 +2,7 @@ import React from 'react';
 import About from '../components/About';
 import Contact from '../components/Contact';
 import Hero from '../components/hero';
+import LatestBlogposts from '../components/LatestBlogposts';
 import Layout from '../components/layout';
 import Projects from '../components/Projects';
 import SEO from '../components/seo';
@@ -15,11 +16,12 @@ const IndexPage = () => (
     <Hero />
     <SocialLinks />
     <About />
+    <LatestBlogposts />
     <Projects />
     <div
       style={{
         backgroundImage: `url(${svg})`,
-        height: '24px'
+        height: '24px',
       }}
     />
     <Contact />
