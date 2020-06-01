@@ -21,8 +21,7 @@ body {
 }
 
 .brown-header-text {
-  @apply font-merriweather;
-  color: #3e2121;
+  @apply font-merriweather text-title-brown;
 }
 
 .brown-header-text-shadow {
@@ -30,8 +29,7 @@ body {
 }
 
 .brown-subheader-text {
-  @apply font-merriweather;
-  color: #533a3a;
+  @apply font-merriweather text-title-brown;
 }
 
 .brown-subheader-text-shadow {

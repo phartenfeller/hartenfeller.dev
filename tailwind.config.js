@@ -3,18 +3,21 @@ module.exports = {
   theme: {
     extend: {
       opacity: {
-        '94': '.94'
+        '94': '.94',
       },
       height: {
-        '100': '25rem;'
+        '100': '25rem;',
       },
       screens: {
-        hd: '1900px'
-      }
-    }
+        hd: '1900px',
+      },
+      colors: {
+        'title-brown': '#3e2121',
+      },
+    },
   },
   variants: {
-    scale: ['hover', 'group-hover']
+    scale: ['hover', 'group-hover'],
   },
-  plugins: []
+  plugins: [],
 };
