@@ -63,8 +63,6 @@ const BlogPageTemplate = ({ data }) => {
     },
   };
 
-  console.log('data', { data });
-
   return (
     <Layout>
       <SEO
