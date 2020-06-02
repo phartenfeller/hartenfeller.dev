@@ -35,6 +35,17 @@ export const query = graphql`
   }
 `;
 
+const getMeta = (imgSrc, imgAlt) => [
+  {
+    name: `twitter:image`,
+    content: `https://hartenfeller.dev${imgSrc}`,
+  },
+  {
+    name: `twitter:image:alt`,
+    content: imgAlt,
+  },
+];
+
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
 
@@ -52,9 +63,15 @@ const BlogPageTemplate = ({ data }) => {
     },
   };
 
+  console.log('data', { data });
+
   return (
     <Layout>
-      <SEO title={post.Title} description={post.Description} />
+      <SEO
+        title={post.Title}
+        description={post.Description}
+        meta={getMeta(post.TitleImage.sharp.fluid.src, post.PhotoAlt)}
+      />
       <div className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
         <Image
           className="h-100 object-cover"
