@@ -1,13 +1,38 @@
+import { graphql, useStaticQuery } from 'gatsby';
+import Img from 'gatsby-image';
 import React from 'react';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
-const NotFoundPage = () => (
-  <Layout>
-    <SEO title="404: Not found" />
-    <h1>NOT FOUND</h1>
-    <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
-  </Layout>
-);
+const NotFoundPage = () => {
+  const data = useStaticQuery(graphql`
+    query {
+      astronautImage: file(relativePath: { eq: "hartenfeller-space-404.jpg" }) {
+        childImageSharp {
+          fluid(quality: 100, maxWidth: 1720) {
+            ...GatsbyImageSharpFluid
+          }
+        }
+      }
+    }
+  `);
+
+  return (
+    <div className="bg-black">
+      <Layout>
+        <SEO title="404: Not found" />
+        <div className="w-full text-center">
+          <h1 className="text-3xl text-gray-200 font-bold">NOT FOUND</h1>
+          <h2 className="text-xl text-gray-300">
+            Lost in Space - You just hit a route that doesn&#39;t exist.
+          </h2>
+          <div className="w-2/3 m-auto">
+            <Img fluid={data.astronautImage.childImageSharp.fluid} />
+          </div>
+        </div>
+      </Layout>
+    </div>
+  );
+};
 
 export default NotFoundPage;
