@@ -6,8 +6,8 @@ import TagsDisplay, { tagsProps } from './TagsDisplay';
 
 const Blogpost = ({ post }) => {
   return (
-    <div className="group mt-12 grid gap-5 max-w-lg mx-auto lg:grid-cols-2 lg:max-w-none">
-      <div className="flex flex-col rounded-lg overflow-hidden">
+    <div className="group mt-12 max-w-lg mx-auto lg:max-w-none">
+      <div className="flex flex-col rounded-lg overflow-hidden h-full">
         <Link to={`/blog/${post.Slug}`} className="flex-shrink-0">
           <Image
             className="transform duration-300 ease-in-out overflow-hidden h-64 w-full object-cover group-hover:scale-110"

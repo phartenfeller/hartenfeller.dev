@@ -54,7 +54,7 @@ const BlogTagTemplate = ({ data, pageContext }) => {
               </span>
             </h1>
           </div>
-          <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8">
+          <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
             {blogposts.map((post) => (
               <Blogpost post={post} key={post.Slug} />
             ))}

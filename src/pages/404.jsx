@@ -44,7 +44,7 @@ const NotFoundPage = () => {
               Blog
             </Link>
           </div>
-          <div className="w-2/3 m-auto">
+          <div className="xl:w-2/3 m-auto">
             <Img fluid={data.astronautImage.childImageSharp.fluid} />
           </div>
         </div>

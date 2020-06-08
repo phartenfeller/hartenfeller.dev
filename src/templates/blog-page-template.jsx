@@ -16,7 +16,7 @@ export const query = graphql`
       Title
       TitleImage {
         sharp: childImageSharp {
-          fluid {
+          fluid(maxWidth: 1400) {
             ...GatsbyImageSharpFluid
           }
         }
@@ -52,14 +52,21 @@ const BlogPageTemplate = ({ data }) => {
   const renderers = {
     // eslint-disable-next-line react/prop-types
     code: ({ language, value }) => {
-      if (language === 'gist') {
-        return (
-          <div className="my-6">
-            <Gist id={value} />
-          </div>
-        );
+      switch (language) {
+        case 'gist':
+          return (
+            <div className="my-6">
+              <Gist id={value} />
+            </div>
+          );
+        case 'html-embed':
+          return (
+            // eslint-disable-next-line react/no-danger
+            <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
+          );
+        default:
+          return <pre>{value}</pre>;
       }
-      return <pre>{value}</pre>;
     },
   };
 
