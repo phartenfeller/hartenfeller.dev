@@ -1,9 +1,11 @@
 import { Link } from 'gatsby';
 import React from 'react';
 import Layout from '../components/layout';
+import SEO from '../components/seo';
 
 const Imprint = () => (
   <Layout>
+    <SEO title="Privacy" meta={[{ name: 'robots', content: 'noindex' }]} />
     <header className="grid grid-cols-3 py-2">
       <div className="flex">
         <Link

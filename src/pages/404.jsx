@@ -20,7 +20,10 @@ const NotFoundPage = () => {
   return (
     <div className="bg-black">
       <Layout>
-        <SEO title="404: Not found" />
+        <SEO
+          title="404: Not found"
+          meta={[{ name: 'robots', content: 'noindex' }]}
+        />
         <div className="w-full text-center">
           <h1 className="text-3xl text-gray-200 font-bold">NOT FOUND</h1>
           <h2 className="text-xl text-gray-300">
