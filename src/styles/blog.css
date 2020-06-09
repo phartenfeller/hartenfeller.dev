@@ -17,5 +17,5 @@
 }
 
 pre {
-  @apply bg-gray-100 rounded p-3 my-3 font-mono shadow-inner;
+  @apply whitespace-normal bg-gray-100 rounded p-3 my-3 font-mono shadow-inner;
 }
