@@ -17,5 +17,10 @@
 }
 
 pre {
-  @apply whitespace-normal bg-gray-100 rounded p-3 my-3 font-mono shadow-inner;
+  @apply whitespace-pre-wrap bg-gray-100 rounded p-3 my-8 font-mono shadow-inner;
+}
+
+h2 {
+  @apply text-title-brown text-2xl mt-8 mb-2;
+  font-family: 'Merriweather', serif;
 }

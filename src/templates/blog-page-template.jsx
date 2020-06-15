@@ -3,6 +3,8 @@ import Image from 'gatsby-image';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { postType } from '../components/blog/Blogpost';
 import Gist from '../components/blog/Gist';
 import TagsDisplay from '../components/blog/TagsDisplay';
@@ -65,7 +67,14 @@ const BlogPageTemplate = ({ data }) => {
             <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
           );
         default:
-          return <pre>{value}</pre>;
+          return (
+            <SyntaxHighlighter language={language} style={coy}>
+              {value}
+            </SyntaxHighlighter>
+            // <code>
+            //   <pre className="text-sm xl:text-lg">{value}</pre>
+            // </code>
+          );
       }
     },
   };
