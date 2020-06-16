@@ -3,7 +3,7 @@ import Img from 'gatsby-image';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const ImageGetter = ({ filename, classes, alt }) => {
+const BlogImageGetter = ({ filename, classes, alt }) => {
   const filterImage = (images) => {
     return images.allImageSharp.edges.find((element) => {
       // Match string after final slash
@@ -18,7 +18,7 @@ const ImageGetter = ({ filename, classes, alt }) => {
           allImageSharp {
             edges {
               node {
-                fluid {
+                fluid(quality: 95, maxWidth: 1200) {
                   ...GatsbyImageSharpFluid
                 }
               }
@@ -39,10 +39,10 @@ const ImageGetter = ({ filename, classes, alt }) => {
   );
 };
 
-ImageGetter.propTypes = {
+BlogImageGetter.propTypes = {
   filename: PropTypes.string.isRequired,
   classes: PropTypes.string.isRequired,
   alt: PropTypes.string.isRequired,
 };
 
-export default ImageGetter;
+export default BlogImageGetter;

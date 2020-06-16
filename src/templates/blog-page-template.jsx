@@ -5,6 +5,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
 import Gist from '../components/blog/Gist';
 import TagsDisplay from '../components/blog/TagsDisplay';
@@ -66,6 +67,16 @@ const BlogPageTemplate = ({ data }) => {
             // eslint-disable-next-line react/no-danger
             <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
           );
+        case 'img-name':
+          // eslint-disable-next-line no-case-declarations
+          const { filename, alt } = JSON.parse(value);
+          return (
+            <BlogImageGetter
+              filename={filename}
+              classes="object-contain my-6"
+              alt={alt}
+            />
+          );
         default:
           return (
             <SyntaxHighlighter language={language} style={coy}>
@@ -86,38 +97,42 @@ const BlogPageTemplate = ({ data }) => {
         description={post.Description}
         meta={getMeta(post.TitleImage.sharp.fluid.src, post.PhotoAlt)}
       />
-      <div className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
+      <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm blogpost">
         <Image
           className="h-100 object-cover"
           fluid={post.TitleImage.sharp.fluid}
           alt={post.PhotoAlt}
         />
         <div className="bg-white px-8 pb-8">
-          <h1 className="text-4xl leading-12 brown-header-text font-extrabold pt-8">
-            {post.Title}
-          </h1>
-          <div className="mt-6 text-sm leading-5 font-medium text-gray-700">
-            <TagsDisplay tags={post.tags} />
-            <time className="float-right" dateTime={post.PublishDate}>
-              {post.PublishDateFormatted}
-            </time>
-          </div>
-          <div className="mt-6 text-lg text-gray-700 font-light leading-8 font-raleway">
-            {post.Description}
-          </div>
-          <ReactMarkdown
-            source={post.Body}
-            escapeHtml={false}
-            renderers={renderers}
-            className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway"
-          />
+          <header>
+            <h1 className="text-4xl leading-12 brown-header-text font-extrabold pt-8">
+              {post.Title}
+            </h1>
+            <div className="mt-6 text-sm leading-5 font-medium text-gray-700">
+              <TagsDisplay tags={post.tags} />
+              <time className="float-right" dateTime={post.PublishDate}>
+                {post.PublishDateFormatted}
+              </time>
+            </div>
+            <div className="mt-6 text-lg text-gray-700 font-light leading-8 font-raleway">
+              {post.Description}
+            </div>
+          </header>
+          <main>
+            <ReactMarkdown
+              source={post.Body}
+              escapeHtml={false}
+              renderers={renderers}
+              className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway"
+            />
+          </main>
           <div>
             <ReactMarkdown
               source={post.PhotoSource}
               className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
             />
           </div>
-          <div className="text-center mt-8 text-xl text">
+          <footer className="text-center mt-8 text-xl text">
             <Link
               to="/"
               className="text-purple-600 hover:text-purple-800 hover:underline"
@@ -131,9 +146,9 @@ const BlogPageTemplate = ({ data }) => {
             >
               Other Blogposts
             </Link>
-          </div>
+          </footer>
         </div>
-      </div>
+      </article>
     </Layout>
   );
 };
