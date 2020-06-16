@@ -97,7 +97,7 @@ const BlogPageTemplate = ({ data }) => {
         description={post.Description}
         meta={getMeta(post.TitleImage.sharp.fluid.src, post.PhotoAlt)}
       />
-      <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm blogpost">
+      <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
         <Image
           className="h-100 object-cover"
           fluid={post.TitleImage.sharp.fluid}
