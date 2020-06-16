@@ -20,7 +20,13 @@ export const query = graphql`
       TitleImage {
         sharp: childImageSharp {
           fluid(maxWidth: 1400) {
-            ...GatsbyImageSharpFluid
+            aspectRatio
+            base64
+            sizes
+            src
+            srcSet
+            presentationWidth
+            presentationHeight
           }
         }
       }
@@ -38,17 +44,51 @@ export const query = graphql`
   }
 `;
 
-const getMeta = (imgSrc, imgAlt) => [
-  {
-    name: `twitter:image`,
-    content: `https://hartenfeller.dev${imgSrc}`,
-  },
-  {
-    name: `twitter:image:alt`,
-    content: imgAlt,
-  },
-];
+const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
+  const meta = [
+    {
+      name: `twitter:image`,
+      content: `https://hartenfeller.dev${imgSrc}`,
+    },
+    {
+      name: `twitter:image:alt`,
+      content: imgAlt,
+    },
+    {
+      name: `og:image`,
+      content: `https://hartenfeller.dev${imgSrc}`,
+    },
+    {
+      name: `og:image:width`,
+      content: imgWidth,
+    },
+    {
+      name: `og:image:height`,
+      content: imgHeight,
+    },
+    {
+      name: `og:image:alt`,
+      content: imgAlt,
+    },
+    {
+      name: `article:published_time`,
+      content: publishISO,
+    },
+    {
+      name: `article:author`,
+      content: 'Philipp Hartenfeller',
+    },
+  ];
 
+  tags.forEach(({ Tag }) => {
+    meta.push({
+      name: `article:tag`,
+      content: Tag,
+    });
+  });
+
+  return meta;
+};
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
 
@@ -90,13 +130,18 @@ const BlogPageTemplate = ({ data }) => {
     },
   };
 
+  const meta = getMeta({
+    imgSrc: post.TitleImage.sharp.fluid.src,
+    imgAlt: post.PhotoAlt,
+    publishISO: post.PublishDate,
+    tags: post.tags,
+    imgWidth: post.TitleImage.sharp.fluid.presentationWidth,
+    imgHeight: post.TitleImage.sharp.fluid.presentationHeight,
+  });
+
   return (
     <Layout>
-      <SEO
-        title={post.Title}
-        description={post.Description}
-        meta={getMeta(post.TitleImage.sharp.fluid.src, post.PhotoAlt)}
-      />
+      <SEO title={post.Title} description={post.Description} meta={meta} />
       <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
         <Image
           className="h-100 object-cover"
