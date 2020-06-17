@@ -78,6 +78,10 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
       name: `article:author`,
       content: 'Philipp Hartenfeller',
     },
+    {
+      name: `monetization`,
+      content: `$ilp.uphold.com/dhUZx4rikrgf`,
+    },
   ];
 
   tags.forEach(({ Tag }) => {
