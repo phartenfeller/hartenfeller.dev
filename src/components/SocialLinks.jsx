@@ -6,18 +6,23 @@ const links = [
   {
     name: 'GitHub',
     href: 'https://github.com/phartenfeller',
-    path: svg.github
+    path: svg.github,
   },
   {
     name: 'Twitter',
     href: 'https://twitter.com/phartenfeller',
-    path: svg.twitter
+    path: svg.twitter,
+  },
+  {
+    name: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/phartenfeller/',
+    path: svg.linkedin,
   },
   {
     name: 'Xing',
     href: 'https://www.xing.com/profile/Philipp_Hartenfeller',
-    path: svg.xing
-  }
+    path: svg.xing,
+  },
 ];
 
 const LinkCard = ({ link }) => {
@@ -47,13 +52,13 @@ LinkCard.propTypes = {
   link: PropTypes.shape({
     href: PropTypes.string.isRequired,
     path: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  }).isRequired
+    name: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 const SocialLinks = () => (
-  <div className="-mt-64 md:-mt-32 lg:-mt-32 px-8 lg:px-48 grid gap-4 lg:gap-10 mx-auto grid-cols-2 md:grid-cols-3 lg:max-w-none">
-    {links.map(link => (
+  <div className="-mt-64 md:-mt-32 lg:-mt-32 px-8 lg:px-48 grid gap-4 lg:gap-10 mx-auto grid-cols-2 xl:grid-cols-4 lg:max-w-none">
+    {links.map((link) => (
       <LinkCard link={link} key={link.name} />
     ))}
   </div>
