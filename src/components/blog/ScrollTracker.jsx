@@ -5,6 +5,12 @@ const height = '5px';
 
 const ScrollTracker = () => {
   const scrollY = useScrollYPosition();
+
+  // during building window and document are undefined
+  if (typeof window === `undefined` || typeof document === `undefined`) {
+    return <div id="scroll-tracker" />;
+  }
+
   return (
     <div
       id="scroll-tracker"
