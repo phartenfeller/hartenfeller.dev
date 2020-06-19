@@ -8,6 +8,7 @@ import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
 import Gist from '../components/blog/Gist';
+import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
@@ -146,6 +147,7 @@ const BlogPageTemplate = ({ data }) => {
   return (
     <Layout>
       <SEO title={post.Title} description={post.Description} meta={meta} />
+      <ScrollTracker />
       <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
         <Image
           className="h-100 object-cover"
