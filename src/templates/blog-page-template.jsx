@@ -11,6 +11,7 @@ import Gist from '../components/blog/Gist';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
 import Layout from '../components/layout';
+import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
 
@@ -184,6 +185,14 @@ const BlogPageTemplate = ({ data }) => {
             />
           </div>
           <footer className="text-center mt-8 text-xl text">
+            <div className="pb-4">
+              <LinkButton
+                type="twitter"
+                link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${post.Slug}`}
+                text="Tweet"
+                newWindow
+              />
+            </div>
             <Link
               to="/"
               className="text-purple-600 hover:text-purple-800 hover:underline"

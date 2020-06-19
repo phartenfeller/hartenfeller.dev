@@ -12,7 +12,7 @@ const types = {
     bg: 'bg-gray-900',
     bgHover: 'bg-gray-800',
     bgActive: 'bg-black',
-    focusBorder: 'border-gray-600'
+    focusBorder: 'border-gray-600',
   },
   purple: {
     icon: svg.compass,
@@ -23,7 +23,7 @@ const types = {
     bg: 'bg-purple-700',
     bgHover: 'bg-purple-600',
     bgActive: 'bg-purple-800',
-    focusBorder: 'border-purple-500'
+    focusBorder: 'border-purple-500',
   },
   green: {
     icon: svg.compass,
@@ -34,7 +34,7 @@ const types = {
     bg: 'bg-green-700',
     bgHover: 'bg-green-600',
     bgActive: 'bg-green-800',
-    focusBorder: 'border-green-500'
+    focusBorder: 'border-green-500',
   },
   twitter: {
     icon: svg.twitter,
@@ -45,7 +45,7 @@ const types = {
     bg: 'bg-blue-700',
     bgHover: 'bg-blue-600',
     bgActive: 'bg-blue-800',
-    focusBorder: 'border-blue-500'
+    focusBorder: 'border-blue-300',
   },
   email: {
     icon: svg.mail,
@@ -56,17 +56,22 @@ const types = {
     bg: 'bg-indigo-700',
     bgHover: 'bg-indigo-600',
     bgActive: 'bg-indigo-800',
-    focusBorder: 'border-indigo-500'
-  }
+    focusBorder: 'border-indigo-500',
+  },
 };
 
-const LinkButton = ({ type, link }) => {
+const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
   const options = types[type];
   if (!options) throw new Error('Type does not exist for component LinkButton');
 
   return (
     <>
-      <a href={link} className="inline-flex rounded-md mr-3">
+      <a
+        href={link}
+        className="inline-flex rounded-md mr-3"
+        target={newWindow ? '_blank' : null}
+        rel={newWindow ? 'noreferrer' : null}
+      >
         <button
           type="button"
           aria-label={options.ariaLabel}
@@ -79,7 +84,7 @@ const LinkButton = ({ type, link }) => {
           >
             <path fillRule="evenodd" d={options.icon} clipRule="evenodd" />
           </svg>
-          <span className={`${options.textColor}`}>{options.text}</span>
+          <span className={`${options.textColor}`}>{text || options.text}</span>
         </button>
       </a>
     </>
@@ -88,7 +93,14 @@ const LinkButton = ({ type, link }) => {
 
 LinkButton.propTypes = {
   type: PropTypes.string.isRequired,
-  link: PropTypes.string.isRequired
+  link: PropTypes.string.isRequired,
+  text: PropTypes.string,
+  newWindow: PropTypes.bool,
+};
+
+LinkButton.defaultProps = {
+  text: undefined,
+  newWindow: false,
 };
 
 export default LinkButton;
