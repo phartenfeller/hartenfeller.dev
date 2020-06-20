@@ -1,25 +1,29 @@
-import React from 'react';
-import { useScrollYPosition } from 'react-use-scroll-position';
+import React, { useEffect, useRef } from 'react';
 
 const height = '5px';
 
 const ScrollTracker = () => {
-  const scrollY = useScrollYPosition();
+  const scrollBarEle = useRef(null);
 
-  // during building window and document are undefined
-  if (typeof window === `undefined` || typeof document === `undefined`) {
-    return <div id="scroll-tracker" />;
-  }
+  const scrollHandler = () => {
+    const scrollY = window.scrollY;
+    const scrollPct = Math.round(
+      (scrollY / (document.body.clientHeight - window.innerHeight)) * 100
+    );
+    scrollBarEle.current.style.width = `${scrollPct}%`;
+  };
+
+  useEffect(() => {
+    document.addEventListener('scroll', scrollHandler, { passive: true });
+  }, []);
 
   return (
     <div
+      ref={scrollBarEle}
       id="scroll-tracker"
       className="sticky top-0 bg-red-500 max-w-full shadow"
       style={{
         height,
-        width: `${
-          (scrollY / (document.body.clientHeight - window.innerHeight)) * 100
-        }%`,
         marginBottom: `-${height}`,
       }}
     />
