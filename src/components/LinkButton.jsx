@@ -6,7 +6,6 @@ const types = {
   github: {
     icon: svg.github,
     text: 'Code',
-    ariaLabel: 'Code on GitHub',
     textColor: 'text-gray-200',
     iconColor: 'text-gray-500',
     bg: 'bg-gray-900',
@@ -17,7 +16,6 @@ const types = {
   purple: {
     icon: svg.compass,
     text: 'Open',
-    ariaLabel: 'Open page',
     textColor: 'text-gray-200',
     iconColor: 'text-purple-400',
     bg: 'bg-purple-700',
@@ -28,7 +26,6 @@ const types = {
   green: {
     icon: svg.compass,
     text: 'Open',
-    ariaLabel: 'Open page',
     textColor: 'text-white',
     iconColor: 'text-green-400',
     bg: 'bg-green-700',
@@ -39,7 +36,6 @@ const types = {
   twitter: {
     icon: svg.twitter,
     text: 'Twitter',
-    ariaLabel: 'My Twitter page',
     textColor: 'text-white',
     iconColor: 'text-blue-400',
     bg: 'bg-blue-700',
@@ -50,7 +46,6 @@ const types = {
   email: {
     icon: svg.mail,
     text: 'contact@hartenfeller.dev',
-    ariaLabel: 'Send me an email',
     textColor: 'text-white',
     iconColor: 'text-indigo-400',
     bg: 'bg-indigo-700',
@@ -65,29 +60,25 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
   if (!options) throw new Error('Type does not exist for component LinkButton');
 
   return (
-    <>
-      <a
-        href={link}
-        className="inline-flex rounded-md mr-3"
-        target={newWindow ? '_blank' : null}
-        rel={newWindow ? 'noreferrer' : null}
+    <a
+      href={link}
+      className="inline-flex rounded-md mr-3"
+      target={newWindow ? '_blank' : null}
+      rel={newWindow ? 'noreferrer' : null}
+    >
+      <div
+        className={`inline-flex items-center px-4 py-2 border-2 border-transparent text-sm ${options.iconColor} leading-5 font-medium rounded-md ${options.bg} hover:${options.bgHover} focus:outline-none focus:${options.focusBorder} active:${options.bgActive} transform duration-150 ease-in-out hover:scale-105`}
       >
-        <button
-          type="button"
-          aria-label={options.ariaLabel}
-          className={`inline-flex items-center px-4 py-2 border-2 border-transparent text-sm ${options.iconColor} leading-5 font-medium rounded-md ${options.bg} hover:${options.bgHover} focus:outline-none focus:${options.focusBorder} active:${options.bgActive} transform duration-150 ease-in-out hover:scale-105`}
+        <svg
+          className="-ml-1 mr-2 h-5 w-5"
+          fill="currentColor"
+          viewBox="0 0 24 24"
         >
-          <svg
-            className="-ml-1 mr-2 h-5 w-5"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path fillRule="evenodd" d={options.icon} clipRule="evenodd" />
-          </svg>
-          <span className={`${options.textColor}`}>{text || options.text}</span>
-        </button>
-      </a>
-    </>
+          <path fillRule="evenodd" d={options.icon} clipRule="evenodd" />
+        </svg>
+        <span className={`${options.textColor}`}>{text || options.text}</span>
+      </div>
+    </a>
   );
 };
 
