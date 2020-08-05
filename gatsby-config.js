@@ -49,7 +49,7 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-sitemap',
       options: {
-        exclude: ['/imprint', '/privacy', '/blog/tags/*'],
+        exclude: ['/imprint', '/privacy'],
         query: `
         {
           allSitePage {
