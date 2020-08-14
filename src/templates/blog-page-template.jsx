@@ -17,6 +17,9 @@ import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
 
+const clientID = process.env.GH_CLIENT_ID;
+const clientSecret = process.env.GH_CLIENT_SECRET;
+
 export const query = graphql`
   query($id: String!) {
     post: strapiHartenfellerDevBlogs(id: { eq: $id }) {
@@ -195,8 +198,8 @@ const BlogPageTemplate = ({ data }) => {
               </h3>
               <GitalkComponent
                 options={{
-                  clientID: process.env.GH_CLIENT_ID,
-                  clientSecret: process.env.GH_CLIENT_SECRET,
+                  clientID,
+                  clientSecret,
                   repo: 'hartenfeller.dev-comments',
                   owner: 'phartenfeller',
                   admin: ['phartenfeller'],

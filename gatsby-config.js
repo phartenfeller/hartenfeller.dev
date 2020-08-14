@@ -71,5 +71,11 @@ module.exports = {
           }),
       },
     },
+    {
+      resolve: `gatsby-plugin-env-variables`,
+      options: {
+        allowList: ['GH_CLIENT_ID', 'GH_CLIENT_SECRET'],
+      },
+    },
   ],
 };
