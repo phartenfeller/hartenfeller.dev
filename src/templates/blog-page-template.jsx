@@ -1,5 +1,7 @@
 import { graphql, Link } from 'gatsby';
 import Image from 'gatsby-image';
+import GitalkComponent from 'gitalk/dist/gitalk-component';
+import 'gitalk/dist/gitalk.css';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
@@ -182,6 +184,22 @@ const BlogPageTemplate = ({ data }) => {
             <ReactMarkdown
               source={post.PhotoSource}
               className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
+            />
+          </div>
+          <div className="mt-8">
+            <h3 className="text-xl font-merriweather text-gray-700 mb-2">
+              Comments:
+            </h3>
+            <GitalkComponent
+              options={{
+                clientID: process.env.GH_CLIENT_ID,
+                clientSecret: process.env.GH_CLIENT_SECRET,
+                repo: 'hartenfeller.dev-comments',
+                owner: 'phartenfeller',
+                admin: ['phartenfeller'],
+                id: post.Slug,
+                title: post.Title,
+              }}
             />
           </div>
           <footer className="text-center mt-8 text-xl text">
