@@ -186,22 +186,26 @@ const BlogPageTemplate = ({ data }) => {
               className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
             />
           </div>
-          <div className="mt-8">
-            <h3 className="text-xl font-merriweather text-gray-700 mb-2">
-              Comments:
-            </h3>
-            <GitalkComponent
-              options={{
-                clientID: process.env.GH_CLIENT_ID,
-                clientSecret: process.env.GH_CLIENT_SECRET,
-                repo: 'hartenfeller.dev-comments',
-                owner: 'phartenfeller',
-                admin: ['phartenfeller'],
-                id: post.Slug,
-                title: post.Title,
-              }}
-            />
-          </div>
+          {typeof window === 'undefined' ? (
+            ''
+          ) : (
+            <div className="mt-8">
+              <h3 className="text-xl font-merriweather text-gray-700 mb-2">
+                Comments:
+              </h3>
+              <GitalkComponent
+                options={{
+                  clientID: process.env.GH_CLIENT_ID,
+                  clientSecret: process.env.GH_CLIENT_SECRET,
+                  repo: 'hartenfeller.dev-comments',
+                  owner: 'phartenfeller',
+                  admin: ['phartenfeller'],
+                  id: post.Slug,
+                  title: post.Title,
+                }}
+              />
+            </div>
+          )}
           <footer className="text-center mt-8 text-xl text">
             <div className="pb-4">
               <LinkButton
