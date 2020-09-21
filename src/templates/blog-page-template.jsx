@@ -26,7 +26,7 @@ export const query = graphql`
             base64
             sizes
             src
-            srcSet
+            srcSetWebp
             presentationWidth
             presentationHeight
           }

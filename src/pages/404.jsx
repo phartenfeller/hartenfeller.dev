@@ -10,7 +10,7 @@ const NotFoundPage = () => {
       astronautImage: file(relativePath: { eq: "hartenfeller-space-404.jpg" }) {
         childImageSharp {
           fluid(quality: 100, maxWidth: 1720) {
-            ...GatsbyImageSharpFluid
+            ...GatsbyImageSharpFluid_withWebp
           }
         }
       }
