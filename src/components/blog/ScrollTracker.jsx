@@ -15,6 +15,9 @@ const ScrollTracker = () => {
 
   useEffect(() => {
     document.addEventListener('scroll', scrollHandler, { passive: true });
+    return function cleanup() {
+      document.removeEventListener('scroll', scrollHandler, { passive: true });
+    }
   }, []);
 
   return (
