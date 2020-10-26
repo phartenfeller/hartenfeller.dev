@@ -18,6 +18,13 @@ module.exports = {
         path: `${__dirname}/src/images`,
       },
     },
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        path: `${__dirname}/content/blogposts`,
+        name: `blogposts`,
+      },
+    },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
@@ -33,19 +40,6 @@ module.exports = {
       },
     },
     'gatsby-plugin-postcss',
-    {
-      resolve: `gatsby-source-strapi`,
-      options: {
-        apiURL: process.env.STRAPI_URL,
-        queryLimit: 1000,
-        contentTypes: [`hartenfeller-dev-blogs`, `hartenfeller-dev-tags`],
-        singleTypes: [],
-        loginData: {
-          identifier: process.env.STRAPI_USER,
-          password: process.env.STRAPI_PASSWORD,
-        },
-      },
-    },
     {
       resolve: 'gatsby-plugin-sitemap',
       options: {
@@ -69,6 +63,30 @@ module.exports = {
               priority: node.path !== '/' ? 0.7 : 1,
             };
           }),
+      },
+    },
+    {
+      resolve: `gatsby-transformer-remark`,
+      options: {
+        // CommonMark mode (default: true)
+        commonmark: true,
+        // Footnotes mode (default: true)
+        footnotes: true,
+        // Pedantic mode (default: true)
+        pedantic: true,
+        // GitHub Flavored Markdown mode (default: true)
+        gfm: true,
+        // Plugins configs
+        plugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 630,
+            },
+          },
+          `gatsby-remark-copy-linked-files`,
+          `gatsby-remark-smartypants`,
+        ],
       },
     },
   ],

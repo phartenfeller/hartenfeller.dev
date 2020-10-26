@@ -1,10 +1,15 @@
 exports.createPages = async ({ actions, graphql }) => {
   const recipeData = await graphql(`
     {
-      posts: allStrapiHartenfellerDevBlogs {
+      posts: allMarkdownRemark {
         nodes {
-          id
-          Slug
+          frontmatter {
+            title
+            date
+            description
+            slug
+          }
+          rawMarkdownBody
         }
       }
     }
@@ -14,7 +19,7 @@ exports.createPages = async ({ actions, graphql }) => {
 
   pages.forEach((page) => {
     actions.createPage({
-      path: `/blog/${page.Slug.replace(/ /g, '-')}`,
+      path: `/blog/${page.frontmatter.slug.replace(/ /g, '-')}`,
       component: require.resolve('./src/templates/blog-page-template.jsx'),
       context: {
         id: page.id,
@@ -22,6 +27,7 @@ exports.createPages = async ({ actions, graphql }) => {
     });
   });
 
+  /*
   const tagData = await graphql(`
     {
       tags: allStrapiHartenfellerDevTags {
@@ -43,4 +49,5 @@ exports.createPages = async ({ actions, graphql }) => {
       },
     });
   });
+  */
 };
