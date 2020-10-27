@@ -81,10 +81,10 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
     },
   ];
 
-  tags.forEach(({ Tag }) => {
+  tags.forEach((tag) => {
     meta.push({
       name: `article:tag`,
-      content: Tag,
+      content: tag,
     });
   });
 
@@ -165,10 +165,10 @@ const BlogPageTemplate = ({ data }) => {
         <div className="bg-white px-8 pb-8">
           <header>
             <h1 className="text-4xl leading-12 brown-header-text font-extrabold pt-8">
-              {post.Title}
+              {title}
             </h1>
             <div className="mt-6 text-sm leading-5 font-medium text-gray-700">
-              <TagsDisplay tags={post.tags} />
+              <TagsDisplay tags={tags} />
               <time className="float-right" dateTime={date}>
                 {formattedDate}
               </time>

@@ -16,11 +16,11 @@ const TagsDisplay = ({ tags }) => {
       >
         <path d={svg.tag} />
       </svg>
-      {tags.map(({ Tag }, i) => {
+      {tags.map((tag, i) => {
         return (
-          <span key={Tag} className="mr-2">
-            <Link className="hover:underline" to={getTagUrl(Tag)}>
-              {Tag}
+          <span key={tag} className="mr-2">
+            <Link className="hover:underline" to={getTagUrl(tag)}>
+              {tag}
             </Link>
             {i < tags.length - 1 ? ',' : null}
           </span>

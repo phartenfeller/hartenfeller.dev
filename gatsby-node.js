@@ -1,15 +1,15 @@
 exports.createPages = async ({ actions, graphql }) => {
+  const tagSet = new Set();
+
   const recipeData = await graphql(`
     {
       posts: allMarkdownRemark {
         nodes {
           frontmatter {
-            title
-            date
-            description
             slug
+            tags
           }
-          rawMarkdownBody
+          id
         }
       }
     }
@@ -18,6 +18,8 @@ exports.createPages = async ({ actions, graphql }) => {
   const pages = recipeData.data.posts.nodes;
 
   pages.forEach((page) => {
+    page.frontmatter.tags.forEach((tag) => tagSet.add(tag));
+
     actions.createPage({
       path: `/blog/${page.frontmatter.slug.replace(/ /g, '-')}`,
       component: require.resolve('./src/templates/blog-page-template.jsx'),
@@ -27,27 +29,13 @@ exports.createPages = async ({ actions, graphql }) => {
     });
   });
 
-  /*
-  const tagData = await graphql(`
-    {
-      tags: allStrapiHartenfellerDevTags {
-        nodes {
-          Tag
-        }
-      }
-    }
-  `);
-
-  const tags = tagData.data.tags.nodes;
-
-  tags.forEach((page) => {
+  tagSet.forEach((tag) => {
     actions.createPage({
-      path: `/blog/tags/${page.Tag.toLowerCase().replace(/ /g, '-')}`,
+      path: `/blog/tags/${tag.toLowerCase().replace(/ /g, '-')}`,
       component: require.resolve('./src/templates/blog-tag-page-template.jsx'),
       context: {
-        tag: page.Tag,
+        tag,
       },
     });
   });
-  */
 };

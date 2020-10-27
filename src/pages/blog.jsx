@@ -7,25 +7,26 @@ import SEO from '../components/seo';
 
 export const query = graphql`
   {
-    posts: allStrapiHartenfellerDevBlogs(
-      sort: { fields: PublishDate, order: DESC }
+    posts: allMarkdownRemark(
+      sort: { fields: frontmatter___date, order: DESC }
+      limit: 2
     ) {
       nodes {
-        Title
-        TitleImage {
-          sharp: childImageSharp {
-            fluid(maxWidth: 1100) {
-              ...GatsbyImageSharpFluid_withWebp
+        frontmatter {
+          title
+          date
+          formattedDate: date(formatString: "MMMM DD, YYYY")
+          description
+          slug
+          titleImage {
+            sharp: childImageSharp {
+              fluid(maxWidth: 1400) {
+                src
+              }
             }
           }
-        }
-        Slug
-        PublishDateFormatted: PublishDate(formatString: "MMMM DD, YYYY")
-        PublishDate
-        Description
-        PhotoAlt
-        tags {
-          Tag
+          titleImageAlt
+          tags
         }
       }
     }
@@ -46,8 +47,8 @@ const Blog = ({ data }) => {
             </h1>
           </div>
           <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
-            {blogposts.map((post) => (
-              <Blogpost post={post} key={post.Slug} />
+            {blogposts.map(({ frontmatter }) => (
+              <Blogpost postData={frontmatter} key={frontmatter.slug} />
             ))}
           </div>
         </div>
