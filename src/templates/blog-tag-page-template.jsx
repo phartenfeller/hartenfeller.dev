@@ -7,26 +7,30 @@ import SEO from '../components/seo';
 
 export const query = graphql`
   query($tag: String!) {
-    posts: allStrapiHartenfellerDevBlogs(
-      sort: { fields: PublishDate, order: DESC }
-      filter: { tags: { elemMatch: { Tag: { eq: $tag } } } }
+    posts: allMarkdownRemark(
+      sort: { fields: frontmatter___date, order: DESC }
+      filter: { frontmatter: { tags: { eq: $tag } } }
     ) {
       nodes {
-        Title
-        TitleImage {
-          sharp: childImageSharp {
-            fluid(maxWidth: 1100) {
-              ...GatsbyImageSharpFluid_withWebp
+        frontmatter {
+          title
+          date
+          formattedDate: date(formatString: "MMMM DD, YYYY")
+          description
+          slug
+          titleImage {
+            sharp: childImageSharp {
+              fluid(maxWidth: 1400) {
+                ...GatsbyImageSharpFluid_withWebp
+              }
             }
           }
-        }
-        Slug
-        PublishDateFormatted: PublishDate(formatString: "MMMM DD, YYYY")
-        PublishDate
-        Description
-        PhotoAlt
-        tags {
-          Tag
+          titleImageAlt
+          titleImageSource {
+            text
+            href
+          }
+          tags
         }
       }
     }
@@ -55,8 +59,8 @@ const BlogTagTemplate = ({ data, pageContext }) => {
             </h1>
           </div>
           <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
-            {blogposts.map((post) => (
-              <Blogpost post={post} key={post.Slug} />
+            {blogposts.map(({ frontmatter }) => (
+              <Blogpost postData={frontmatter} key={frontmatter.slug} />
             ))}
           </div>
           <div className="text-center mt-8 text-xl text">

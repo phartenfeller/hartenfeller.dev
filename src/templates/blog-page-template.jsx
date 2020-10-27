@@ -17,31 +17,29 @@ import '../styles/blog.css';
 
 export const query = graphql`
   query($id: String!) {
-    post: strapiHartenfellerDevBlogs(id: { eq: $id }) {
-      Title
-      TitleImage {
-        sharp: childImageSharp {
-          fluid(maxWidth: 1400) {
-            aspectRatio
-            base64
-            sizes
-            src
-            srcSetWebp
-            presentationWidth
-            presentationHeight
+    post: markdownRemark(id: { eq: $id }) {
+      frontmatter {
+        title
+        date
+        formattedDate: date(formatString: "MMMM DD, YYYY")
+        description
+        slug
+        titleImage {
+          sharp: childImageSharp {
+            fluid(maxWidth: 1400) {
+              ...GatsbyImageSharpFluid_withWebp
+            }
           }
         }
+        titleImageAlt
+        titleImageSource {
+          text
+          href
+        }
+        tags
       }
-      Slug
-      PublishDateFormatted: PublishDate(formatString: "MMMM DD, YYYY")
-      PublishDate
-      Description
-      PhotoAlt
-      PhotoSource
-      tags {
-        Tag
-      }
-      Body
+      rawMarkdownBody
+      id
     }
   }
 `;
@@ -86,10 +84,10 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
     },
   ];
 
-  tags.forEach(({ Tag }) => {
+  tags.forEach((tag) => {
     meta.push({
       name: `article:tag`,
-      content: Tag,
+      content: tag,
     });
   });
 
@@ -97,6 +95,18 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 };
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
+  const { frontmatter, rawMarkdownBody } = post;
+  const {
+    title,
+    date,
+    formattedDate,
+    description,
+    slug,
+    titleImage,
+    titleImageAlt,
+    titleImageSource,
+    tags,
+  } = frontmatter;
 
   const renderers = {
     // eslint-disable-next-line react/prop-types
@@ -137,58 +147,62 @@ const BlogPageTemplate = ({ data }) => {
   };
 
   const meta = getMeta({
-    imgSrc: post.TitleImage.sharp.fluid.src,
-    imgAlt: post.PhotoAlt,
+    imgSrc: titleImage.sharp.fluid.src,
+    imgAlt: titleImageAlt,
     publishISO: post.PublishDate,
-    tags: post.tags,
-    imgWidth: post.TitleImage.sharp.fluid.presentationWidth,
-    imgHeight: post.TitleImage.sharp.fluid.presentationHeight,
+    tags,
+    imgWidth: titleImage.sharp.fluid.presentationWidth,
+    imgHeight: titleImage.sharp.fluid.presentationHeight,
   });
 
   return (
     <Layout>
-      <SEO title={post.Title} description={post.Description} meta={meta} />
+      <SEO title={title} description={description} meta={meta} />
       <ScrollTracker />
       <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
         <Image
           className="h-100 object-cover"
-          fluid={post.TitleImage.sharp.fluid}
-          alt={post.PhotoAlt}
+          fluid={titleImage.sharp.fluid}
+          alt={titleImageAlt}
         />
         <div className="bg-white px-8 pb-8">
           <header>
             <h1 className="text-4xl leading-12 brown-header-text font-extrabold pt-8">
-              {post.Title}
+              {title}
             </h1>
             <div className="mt-6 text-sm leading-5 font-medium text-gray-700">
-              <TagsDisplay tags={post.tags} />
-              <time className="float-right" dateTime={post.PublishDate}>
-                {post.PublishDateFormatted}
+              <TagsDisplay tags={tags} />
+              <time className="float-right" dateTime={date}>
+                {formattedDate}
               </time>
             </div>
             <div className="mt-6 text-lg text-gray-700 font-light leading-8 font-raleway">
-              {post.Description}
+              {description}
             </div>
           </header>
           <main>
             <ReactMarkdown
-              source={post.Body}
+              source={rawMarkdownBody}
               escapeHtml={false}
               renderers={renderers}
               className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway"
             />
           </main>
-          <div>
-            <ReactMarkdown
-              source={post.PhotoSource}
-              className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
-            />
-          </div>
+          {titleImageSource.text && titleImageSource.href ? (
+            <div>
+              <a
+                href={titleImageSource.href}
+                className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
+              >
+                {titleImageSource.text}
+              </a>
+            </div>
+          ) : null}
           <footer className="text-center mt-8 text-xl text">
             <div className="pb-4">
               <LinkButton
                 type="twitter"
-                link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${post.Slug}`}
+                link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${slug}`}
                 text="Tweet"
                 newWindow
               />

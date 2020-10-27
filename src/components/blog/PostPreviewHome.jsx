@@ -3,31 +3,39 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import TagsDisplay from './TagsDisplay';
 
-const PostPreviewHome = ({ post }) => {
+const PostPreviewHome = ({ postData }) => {
+  const {
+    title,
+    date,
+    dateFormattedMonth,
+    dateFormattedDay,
+    description,
+    slug,
+    tags,
+  } = postData;
+
   return (
     <div className="py-8 px-4 bg-white shadow rounded-lg my-4">
       <div className="h-full flex items-start">
         <time
           className="w-12 flex-shrink-0 flex flex-col text-center leading-none"
-          dateTime={post.PublishDate}
+          dateTime={date}
         >
           <span className="text-gray-700 pb-2 mb-2 border-b-2 border-gray-300">
-            {post.PublishDateFormattedMonth}
+            {dateFormattedMonth}
           </span>
           <span className="font-medium text-xl text-gray-800 title-font">
-            {post.PublishDateFormattedDay}
+            {dateFormattedDay}
           </span>
         </time>
         <div className="flex-grow pl-6">
-          <TagsDisplay tags={post.tags} />
-          <h3 className="title-font text-xl font-medium text-gray-900 mb-3 text-title-brown brown-subheader-text-shadow">
-            {post.Title}
+          <TagsDisplay tags={tags} />
+          <h3 className="title-font text-xl font-medium mb-3 text-title-brown brown-subheader-text-shadow">
+            {title}
           </h3>
-          <p className="leading-relaxed mb-5 text-gray-700">
-            {post.Description}
-          </p>
+          <p className="leading-relaxed mb-5 text-gray-700">{description}</p>
           <Link
-            to={`/blog/${post.Slug}`}
+            to={`/blog/${slug}`}
             className="py-3 pr-3 text-red-700 uppercase hover:text-red-900 hover:underline"
           >
             read post
@@ -39,14 +47,14 @@ const PostPreviewHome = ({ post }) => {
 };
 
 PostPreviewHome.propTypes = {
-  post: PropTypes.shape({
-    PublishDate: PropTypes.string.isRequired,
-    PublishDateFormattedMonth: PropTypes.string.isRequired,
-    PublishDateFormattedDay: PropTypes.string.isRequired,
-    Title: PropTypes.string.isRequired,
-    Description: PropTypes.string.isRequired,
-    Slug: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
+  postData: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    dateFormattedMonth: PropTypes.string.isRequired,
+    dateFormattedDay: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
 };
 
