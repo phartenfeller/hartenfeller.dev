@@ -20,7 +20,7 @@ export const query = graphql`
           titleImage {
             sharp: childImageSharp {
               fluid(maxWidth: 1400) {
-                src
+                ...GatsbyImageSharpFluid_withWebp
               }
             }
           }
@@ -67,7 +67,11 @@ const Blog = ({ data }) => {
 Blog.propTypes = {
   data: PropTypes.shape({
     posts: PropTypes.shape({
-      nodes: PropTypes.arrayOf(postType.post),
+      nodes: PropTypes.arrayOf(
+        PropTypes.shape({
+          frontmatter: postType.postData,
+        }).isRequired
+      ),
     }).isRequired,
   }).isRequired,
 };

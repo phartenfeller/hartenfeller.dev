@@ -2,7 +2,7 @@ import { Link } from 'gatsby';
 import Image from 'gatsby-image';
 import PropTypes from 'prop-types';
 import React from 'react';
-import TagsDisplay, { tagsProps } from './TagsDisplay';
+import TagsDisplay from './TagsDisplay';
 
 const Blogpost = ({ postData }) => {
   const {
@@ -60,14 +60,10 @@ export const postType = {
     description: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
     formattedDate: PropTypes.string.isRequired,
-    titleImage: PropTypes.shape({
-      sharp: PropTypes.shape({
-        // eslint-disable-next-line react/forbid-prop-types
-        fluid: PropTypes.object.isRequired,
-      }).isRequired,
-    }).isRequired,
+    // eslint-disable-next-line react/forbid-prop-types
+    titleImage: PropTypes.object.isRequired,
     titleImageAlt: PropTypes.string.isRequired,
-    tags: tagsProps,
+    tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
 };
 

@@ -30,12 +30,8 @@ const TagsDisplay = ({ tags }) => {
   );
 };
 
-export const tagsProps = PropTypes.arrayOf(
-  PropTypes.shape({ Tag: PropTypes.string })
-);
-
 TagsDisplay.propTypes = {
-  tags: tagsProps,
+  tags: PropTypes.arrayOf(PropTypes.string),
 };
 
 TagsDisplay.defaultProps = {
