@@ -30,7 +30,7 @@ const PostPreviewHome = ({ postData }) => {
         </time>
         <div className="flex-grow pl-6">
           <TagsDisplay tags={tags} />
-          <h3 className="title-font text-xl font-medium text-gray-900 mb-3 text-title-brown brown-subheader-text-shadow">
+          <h3 className="title-font text-xl font-medium mb-3 text-title-brown brown-subheader-text-shadow">
             {title}
           </h3>
           <p className="leading-relaxed mb-5 text-gray-700">{description}</p>

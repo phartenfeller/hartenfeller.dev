@@ -1,0 +1,66 @@
+---
+title: 'APEX Security: Why Sequential Primary Keys Can Be A Risk'
+date: '2020-07-30'
+description: 'If you use sequences to generate primary key values make sure you use the checksum feature of APEX. Otherwise, users can easily discover data they should not be able to see by raising or lowering the numeric ID in the URL.'
+slug: 'apex-security-sequences-risk'
+titleImage: './jon-moore-bBavss4ZQcA-unsplash.jpeg'
+titleImageAlt: 'multiple locks chained to a fence'
+titleImageSource: '[Photo by Jon Moore on Unsplash] (https://unsplash.com/s/photos/security?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText)'
+tags: ['APEX', 'Security']
+---
+
+## Tracing contacts in restaurants
+
+If you go to a restaurant in Germany or Switzerland, you have to fill out a sheet of paper with personal and contact information because of the COVID-19 pandemic. If another guest gets tested positively after his restaurant visit, he can contact the restaurant, which then can notify and warn all guests that were there at the same time.
+
+The swiss restaurant booking system _forAtable_ thought this can be easier and better with an IT solution. They developed a web app where you can enter your contact information without having to use paper. You have to decide for yourself if this solution seems better, but in terms of data privacy, it is probably worse to have all data on a central server. And after IT-Security specialists Sven Faßbender, Joël Gunzenreiner, Thorsten Schröder from the company modzero took a closer look into this app, it became apparent.
+
+## Vulnerability at forAtable
+
+In a blog post, they stated how they found a big security vulnerability that allows them to see the entered data from foreign people. This is a huge flaw because someone with bad intentions could have written a simple script that collects this data and sell that private data for profit. The vulnerability itself is pretty simple. The weakness is the numeric ID in the URL. This ID is generated sequentially and the result of this is that you can just decrease the number from your entry to see entries from persons that used this service before you. You can read more about this case in [their blog post](https://www.modzero.com/modlog/archives/2020/07/06/mit_webapps_gegen_covid-19/index.html).
+
+So the problem is that they used a sequence to populate their primary key and used it as the identifier in their public web application. This story got me thinking if this problem is transferable to APEX and should sequences generally be avoided?
+
+## Do we have this problem in APEX?
+
+The short answer: yes you can have the same problem in your APEX app. But of course, the APEX Devs thought of this so there is an easy way to avoid this issue. So sequences aren't generally bad to use or even a vulnerability.
+
+Often you create a report with a link column. The link passes the primary key to another page that loads additional information with the passed key. The generated link looks something like this (new 20.1 URL syntax):
+
+```xml
+https://apex.oracle.com/pls/apex/ws/r/app/page?p32_empno=7839&session=...
+```
+
+If you have Session State Protection enabled in the shared components under security and on the target page or item, your generated link will also include a checksum. Checksums are a long string of random characters that represents a hash of the passed values. This hash is completely different for a changed value and gets checked by the database. So if you try to change the passed value in the URL and keep the old checksum the database will check the values against the generated hash and if it won't match it will now you have tampered the URL and throw an error. There is no way for you to calculate the checksum yourself because the needed secret key is sitting in the database and to guess the checksum is also almost impossible.
+
+Session State Protection setting in the shared components under security:
+
+```img-name
+{"filename": "apex-session-state-protection-settings.png", "alt":  "Screenshot of Session State Protection settings the shared components"}
+```
+
+Page level setting: Arguments Must Have Checksum:
+
+```img-name
+{"filename": "apex-arguments-must-have-checksum.png", "alt":  "Screenshot of page level setting: Arguments Must Have Checksum"}
+```
+
+Checksum settings can also be controled on specific items with additional settings:
+
+```img-name
+{"filename": "apex-item-level-checksum-settings.png", "alt":  "Screenshot of itemlevel setting:  Session State Protection"}
+```
+
+If your page needs to be public and easily linkable without a big checksum or your data needs to be accessible over an API without authorization features, you should not use sequentially generated values as IDs. Oracle provides the sys_guid function which generates **g**lobal **u**nique **id**entifiers. Another option would be to use the dbms_crypto.randombytes method. This will make it extremely hard to guess an ID. Rate limiting the API would be an effective measurement to prevent brute force attacks.
+
+## Zoom and short numeric keys
+
+Important is that the generated key should be long enough and contain a variety of different characters (just like passwords). At the beginning of this year, people noticed more and more foreigners joining Zoom meetings they were not invited in. The background of this is that Zoom meeting IDs consist of only 9-11 digits and by default, did not require a password to join (this may have changed by now).
+
+Alexander Chailytko wrote a script that would brute force random combinations of possible meeting IDs and could quickly find active meetings you could just joint without an invitation. He published his findings in a [blog post](https://research.checkpoint.com/2020/zoom-zoom-we-are-watching-you/) resulting in many people playing "Zoom roulette" where they would join random meetings with his script.
+
+This scenario is easily avoidable by using a variety of characters instead of numbers and longer IDs and rate limiting your API.
+
+## Conclusion
+
+In most cases, sequences are totally fine to use for primary key values. All you need to do is to enable the checksum feature of APEX and the users won't be able to see data they are not supposed to see. If you deal with a public application or API without authorization features, you should consider using a random key for data access.

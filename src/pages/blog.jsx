@@ -9,7 +9,6 @@ export const query = graphql`
   {
     posts: allMarkdownRemark(
       sort: { fields: frontmatter___date, order: DESC }
-      limit: 2
     ) {
       nodes {
         frontmatter {
