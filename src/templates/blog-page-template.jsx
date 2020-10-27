@@ -32,7 +32,10 @@ export const query = graphql`
           }
         }
         titleImageAlt
-        titleImageSource
+        titleImageSource {
+          text
+          href
+        }
         tags
       }
       rawMarkdownBody
@@ -185,12 +188,14 @@ const BlogPageTemplate = ({ data }) => {
               className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway"
             />
           </main>
-          {titleImageSource ? (
+          {titleImageSource.text && titleImageSource.href ? (
             <div>
-              <ReactMarkdown
-                source={titleImageSource}
+              <a
+                href={titleImageSource.href}
                 className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
-              />
+              >
+                {titleImageSource.text}
+              </a>
             </div>
           ) : null}
           <footer className="text-center mt-8 text-xl text">

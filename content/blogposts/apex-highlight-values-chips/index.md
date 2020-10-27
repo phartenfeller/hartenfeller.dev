@@ -5,7 +5,7 @@ description: 'Tables make it hard to give hierarchy to data. To underline the im
 slug: 'apex-highlight-values-chips'
 titleImage: './apex-status-chip-hero-hartenfeller.png'
 titleImageAlt: 'Display of status chips'
-titleImageSource: ''
+titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
 ---
 

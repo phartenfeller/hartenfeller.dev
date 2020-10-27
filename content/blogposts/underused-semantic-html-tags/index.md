@@ -5,7 +5,7 @@ description: 'HTML 5 added a set of new HTML tags known as "semantic" tags to be
 slug: 'underused-semantic-html-tags'
 titleImage: './semantic-html-hartenfeller.jpeg'
 titleImageAlt: 'semantic html'
-titleImageSource: ''
+titleImageSource: { text: null, href: null }
 tags: ['HTML', 'Web-Development']
 ---
 

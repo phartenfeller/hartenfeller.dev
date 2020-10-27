@@ -26,7 +26,10 @@ export const query = graphql`
             }
           }
           titleImageAlt
-          titleImageSource
+          titleImageSource {
+            text
+            href
+          }
           tags
         }
       }

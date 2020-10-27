@@ -5,7 +5,11 @@ description: 'If you use sequences to generate primary key values make sure you 
 slug: 'apex-security-sequences-risk'
 titleImage: './jon-moore-bBavss4ZQcA-unsplash.jpeg'
 titleImageAlt: 'multiple locks chained to a fence'
-titleImageSource: '[Photo by Jon Moore on Unsplash] (https://unsplash.com/s/photos/security?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText)'
+titleImageSource:
+  {
+    text: 'Photo by Jon Moore on Unsplash',
+    href: 'https://unsplash.com/s/photos/security?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText',
+  }
 tags: ['APEX', 'Security']
 ---
 

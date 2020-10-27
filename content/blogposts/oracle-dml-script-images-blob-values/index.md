@@ -5,7 +5,11 @@ description: 'I want to share a little script I wrote which generates a DML scri
 slug: 'oracle-dml-script-images-blob-values'
 titleImage: './sarandy-westfall-qqd8APhaOg4-unsplash.jpeg'
 titleImageAlt: 'multiple polaroid photos'
-titleImageSource: '[Photo by sarandy westfall](https://unsplash.com/photos/qqd8APhaOg4)'
+titleImageSource:
+  {
+    text: 'Photo by sarandy westfall',
+    href: 'https://unsplash.com/photos/qqd8APhaOg4',
+  }
 tags: ['Oracle', 'APEX']
 ---
 
