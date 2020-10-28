@@ -112,8 +112,6 @@ const BlogPageTemplate = ({ data }) => {
   const renderers = {
     // eslint-disable-next-line react/prop-types
     code: ({ language, value }) => {
-      const { filename, alt } = JSON.parse(value);
-
       switch (language) {
         case 'gist':
           return (
@@ -126,16 +124,27 @@ const BlogPageTemplate = ({ data }) => {
             // eslint-disable-next-line react/no-danger
             <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
           );
-        case 'img-name':
+        case 'img-name': {
+          const { filename, alt } = JSON.parse(value);
+
           return (
             <BlogImageGetter
               filename={filename}
-              classes="object-contain my-6"
+              classes="object-contain my-6 shadow-md"
               alt={alt}
             />
           );
-        case 'gif-name':
-          return <BlogGifGetter filename={filename} alt={alt} />;
+        }
+        case 'gif-name': {
+          const { filename, alt } = JSON.parse(value);
+          return (
+            <BlogGifGetter
+              filename={filename}
+              alt={alt}
+              classes="object-contain my-6 shadow-md"
+            />
+          );
+        }
         default:
           return (
             <SyntaxHighlighter language={language} style={coy}>
