@@ -11,7 +11,7 @@ const projects = {
     description: `Minesweeper clone writen in vanilla JS. No Framework used! This is implemented as a PWA so you can install this game and play offline.`,
     githubUrl: 'https://github.com/phartenfeller/minesweeper_js',
     projectUrl: 'https://minesweepergame.de',
-    buttonType: 'purple'
+    buttonType: 'purple',
   },
   cyf: {
     name: 'Website for CYF',
@@ -20,8 +20,8 @@ const projects = {
       'Website for a friend who makes rap music. Check his music and the site out.',
     githubUrl: 'https://github.com/phartenfeller/cyftime.de',
     projectUrl: 'https://cyftime.de',
-    buttonType: 'green'
-  }
+    buttonType: 'green',
+  },
 };
 
 const ProjectComponent = ({ project, reversed = false }) => {
@@ -39,7 +39,7 @@ const ProjectComponent = ({ project, reversed = false }) => {
           <a href={project.projectUrl}>
             <ImageGetter
               filename={project.screenshot}
-              classes="rounded-lg object-contain shadow-lg transform duration-150 ease-in-out hover:scale-105"
+              classes="rounded-lg object-contain shadow-lg transform duration-150 ease-in-out hover:scale-105 motion-reduce:translate-z-0"
               alt="screenshot minesweeper webapp"
             />
           </a>
@@ -63,13 +63,13 @@ ProjectComponent.propTypes = {
     screenshot: PropTypes.string.isRequired,
     projectUrl: PropTypes.string.isRequired,
     githubUrl: PropTypes.string,
-    buttonType: PropTypes.string.isRequired
+    buttonType: PropTypes.string.isRequired,
   }).isRequired,
-  reversed: PropTypes.bool
+  reversed: PropTypes.bool,
 };
 
 ProjectComponent.defaultProps = {
-  reversed: false
+  reversed: false,
 };
 
 const Projects = () => {

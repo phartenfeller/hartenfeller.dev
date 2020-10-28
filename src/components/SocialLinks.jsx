@@ -28,7 +28,7 @@ const links = [
 const LinkCard = ({ link }) => {
   return (
     <a href={link.href}>
-      <div className="bg-white items-center rounded-md shadow-lg py-10 px-10 transform duration-150 ease-in-out hover:scale-105 hover:opacity-94 blurry">
+      <div className="bg-white items-center rounded-md shadow-lg py-10 px-10 transform duration-150 ease-in-out hover:scale-105 hover:opacity-94 blurry motion-reduce:translate-z-0">
         <div className="m-auto">
           <svg
             className="w-8 h8 md:w-12 md:h-12 lg:h-16 lg:w-16 m-auto"
