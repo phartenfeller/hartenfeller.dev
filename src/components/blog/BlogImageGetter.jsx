@@ -18,7 +18,7 @@ const BlogImageGetter = ({ filename, classes, alt }) => {
           allImageSharp {
             edges {
               node {
-                fluid(quality: 95, maxWidth: 1200) {
+                fluid(maxWidth: 1200) {
                   ...GatsbyImageSharpFluid_withWebp
                 }
               }
