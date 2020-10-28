@@ -5,6 +5,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
 import Gist from '../components/blog/Gist';
@@ -28,6 +29,8 @@ export const query = graphql`
           sharp: childImageSharp {
             fluid(maxWidth: 1400) {
               ...GatsbyImageSharpFluid_withWebp
+              presentationWidth
+              presentationHeight
             }
           }
         }
@@ -123,16 +126,27 @@ const BlogPageTemplate = ({ data }) => {
             // eslint-disable-next-line react/no-danger
             <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
           );
-        case 'img-name':
-          // eslint-disable-next-line no-case-declarations
+        case 'img-name': {
           const { filename, alt } = JSON.parse(value);
+
           return (
             <BlogImageGetter
               filename={filename}
-              classes="object-contain my-6"
+              classes="object-contain my-6 shadow-md"
               alt={alt}
             />
           );
+        }
+        case 'gif-name': {
+          const { filename, alt } = JSON.parse(value);
+          return (
+            <BlogGifGetter
+              filename={filename}
+              alt={alt}
+              classes="object-contain my-6 shadow-md"
+            />
+          );
+        }
         default:
           return (
             <SyntaxHighlighter language={language} style={coy}>
@@ -149,7 +163,7 @@ const BlogPageTemplate = ({ data }) => {
   const meta = getMeta({
     imgSrc: titleImage.sharp.fluid.src,
     imgAlt: titleImageAlt,
-    publishISO: post.PublishDate,
+    publishISO: date,
     tags,
     imgWidth: titleImage.sharp.fluid.presentationWidth,
     imgHeight: titleImage.sharp.fluid.presentationHeight,
@@ -228,7 +242,7 @@ const BlogPageTemplate = ({ data }) => {
 };
 
 BlogPageTemplate.propTypes = {
-  data: PropTypes.shape(postType).isRequired,
+  data: PropTypes.shape({ post: postType.isRequired }).isRequired,
 };
 
 export default BlogPageTemplate;
