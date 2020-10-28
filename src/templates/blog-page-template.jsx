@@ -29,6 +29,8 @@ export const query = graphql`
           sharp: childImageSharp {
             fluid(maxWidth: 1400) {
               ...GatsbyImageSharpFluid_withWebp
+              presentationWidth
+              presentationHeight
             }
           }
         }
@@ -161,7 +163,7 @@ const BlogPageTemplate = ({ data }) => {
   const meta = getMeta({
     imgSrc: titleImage.sharp.fluid.src,
     imgAlt: titleImageAlt,
-    publishISO: post.PublishDate,
+    publishISO: date,
     tags,
     imgWidth: titleImage.sharp.fluid.presentationWidth,
     imgHeight: titleImage.sharp.fluid.presentationHeight,
