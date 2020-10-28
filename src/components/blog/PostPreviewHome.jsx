@@ -28,12 +28,14 @@ const PostPreviewHome = ({ postData }) => {
             {dateFormattedDay}
           </span>
         </time>
-        <div className="flex-grow pl-6">
-          <TagsDisplay tags={tags} />
-          <h3 className="title-font text-xl font-medium mb-3 text-title-brown brown-subheader-text-shadow">
-            {title}
-          </h3>
-          <p className="leading-relaxed mb-5 text-gray-700">{description}</p>
+        <div className="h-full pl-6 flex flex-col justify-between">
+          <div>
+            <TagsDisplay tags={tags} />
+            <h3 className="title-font text-xl font-medium mb-3 text-title-brown brown-subheader-text-shadow">
+              {title}
+            </h3>
+            <p className="leading-relaxed mb-5 text-gray-700">{description}</p>
+          </div>
           <Link
             to={`/blog/${slug}`}
             className="py-3 pr-3 text-red-700 uppercase hover:text-red-900 hover:underline"
