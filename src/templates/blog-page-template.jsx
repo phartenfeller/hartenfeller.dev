@@ -5,6 +5,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
 import Gist from '../components/blog/Gist';
@@ -111,6 +112,8 @@ const BlogPageTemplate = ({ data }) => {
   const renderers = {
     // eslint-disable-next-line react/prop-types
     code: ({ language, value }) => {
+      const { filename, alt } = JSON.parse(value);
+
       switch (language) {
         case 'gist':
           return (
@@ -124,8 +127,6 @@ const BlogPageTemplate = ({ data }) => {
             <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
           );
         case 'img-name':
-          // eslint-disable-next-line no-case-declarations
-          const { filename, alt } = JSON.parse(value);
           return (
             <BlogImageGetter
               filename={filename}
@@ -133,6 +134,8 @@ const BlogPageTemplate = ({ data }) => {
               alt={alt}
             />
           );
+        case 'gif-name':
+          return <BlogGifGetter filename={filename} alt={alt} />;
         default:
           return (
             <SyntaxHighlighter language={language} style={coy}>
@@ -228,7 +231,7 @@ const BlogPageTemplate = ({ data }) => {
 };
 
 BlogPageTemplate.propTypes = {
-  data: PropTypes.shape(postType).isRequired,
+  data: PropTypes.shape({ post: postType.isRequired }).isRequired,
 };
 
 export default BlogPageTemplate;
