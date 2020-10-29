@@ -1,12 +1,14 @@
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   purge: ['./src/**/*.jsx', './src/**/*.js'],
   theme: {
     extend: {
       opacity: {
-        '94': '.94',
+        94: '.94',
       },
       height: {
-        '100': '25rem;',
+        100: '25rem;',
       },
       screens: {
         hd: '1900px',
@@ -19,5 +21,15 @@ module.exports = {
   variants: {
     scale: ['hover', 'group-hover'],
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addUtilities }) => {
+      const customClasses = {
+        '.translate-z-0': {
+          transform: 'translateZ(0)',
+        },
+      };
+
+      addUtilities(customClasses, ['motion-reduce']);
+    }),
+  ],
 };

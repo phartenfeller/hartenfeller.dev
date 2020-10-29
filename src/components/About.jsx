@@ -10,7 +10,7 @@ const StackInfo = ({ category, technologies }) => {
           {category}
         </div>
         <ul className="list-disc list-inside text-gray-700 text-lg">
-          {technologies.map(tech => {
+          {technologies.map((tech) => {
             return <li key={tech}>{tech}</li>;
           })}
         </ul>
@@ -21,7 +21,7 @@ const StackInfo = ({ category, technologies }) => {
 
 StackInfo.propTypes = {
   category: PropTypes.string.isRequired,
-  technologies: PropTypes.arrayOf(PropTypes.string).isRequired
+  technologies: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 const About = () => {
@@ -50,8 +50,7 @@ const About = () => {
           />
         </div>
         <p className="text-lg">
-          This site is built with Gatsby, TailwindCSS, Strapi, Traefik and
-          goStatic.
+          This site is built with Gatsby, TailwindCSS, Traefik and goStatic.
         </p>
       </div>
     </div>

@@ -6,19 +6,19 @@ import SectionHeader from './SectionHeader';
 const LatestBlogposts = () => {
   const data = useStaticQuery(graphql`
     {
-      posts: allStrapiHartenfellerDevBlogs(
-        sort: { fields: PublishDate, order: DESC }
+      posts: allMarkdownRemark(
+        sort: { fields: frontmatter___date, order: DESC }
         limit: 2
       ) {
         nodes {
-          Title
-          Slug
-          PublishDateFormattedMonth: PublishDate(formatString: "MMM")
-          PublishDateFormattedDay: PublishDate(formatString: "DD")
-          PublishDate
-          Description
-          tags {
-            Tag
+          frontmatter {
+            title
+            date
+            dateFormattedMonth: date(formatString: "MMM")
+            dateFormattedDay: date(formatString: "DD")
+            description
+            slug
+            tags
           }
         }
       }
@@ -31,8 +31,8 @@ const LatestBlogposts = () => {
     <div className="my-12 lg:my-32">
       <SectionHeader section="My Blog" />
       <div className="mx-8 lg:mx-48 lg:grid lg:grid-cols-2 hd:grid-cols-3 gap-4">
-        {posts.map((post) => (
-          <PostPreviewHome post={post} key={post.Slug} />
+        {posts.map(({ frontmatter }) => (
+          <PostPreviewHome postData={frontmatter} key={frontmatter.slug} />
         ))}
         <div className="flex border-2 border-red-500 border-dashed rounded-lg my-4">
           <Link
