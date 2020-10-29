@@ -9,7 +9,7 @@ titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
 ---
 
-As a longtime user of the great [Dropzone Plug-In](https://apex.world/ords/f?p=100:710:30566163864771::::P710_PLG_ID:DE.DANIELH.DROPZONE) by [Daniel Hochleitner](https://twitter.com/Dani3lSun), I am entirely happy that APEX 20.2 brought us an own Dropzone option for the File Browser item and we don't have to rely on a Plug-In any more.
+As a longtime user of the great [Dropzone Plug-In](https://apex.world/ords/f?p=100:710:30566163864771::::P710_PLG_ID:DE.DANIELH.DROPZONE) by [Daniel Hochleitner](https://twitter.com/Dani3lSun), I am entirely happy that APEX 20.2 brought us an own Dropzone option for the File Browser item and we don't have to use a Plug-In any more.
 
 ```img-name
 {"filename": "apex-20-2-dropzone.png", "alt": "Screenshot of the new Dropzone Component"}
@@ -23,7 +23,7 @@ I googled pictures of typical Dropzones and noticed that most ones have a dashed
 {"filename": "dropzone-improved-ux-css.gif", "alt": "Dropzone with CSS and improved UX"}
 ```
 
-I think this improves the UX of the Dropzone the way the Plug-In used to do. Below are the few lines of CSS that you can use and of course tweak the way you like.
+I think this improves the UX of the Dropzone and looks as great as the Plug-In does. Below are the few lines of CSS that you can use and of course tweak the way you like.
 
 ```gist
 9607bfa8d62ce16bafd8ccf9e4abdcc1
