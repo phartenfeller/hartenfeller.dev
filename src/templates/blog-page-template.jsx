@@ -1,7 +1,7 @@
 import { graphql, Link } from 'gatsby';
 import Image from 'gatsby-image';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -15,6 +15,10 @@ import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
+
+const LOADING = 1;
+const ERROR = 2;
+const LOADED = 3;
 
 export const query = graphql`
   query($id: String!) {
@@ -40,6 +44,7 @@ export const query = graphql`
           href
         }
         tags
+        ghCommentsIssueId
       }
       rawMarkdownBody
       id
@@ -96,6 +101,44 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 
   return meta;
 };
+
+const Comments = ({ ghCommentsIssueId }) => {
+  const [commentsLoadingState, setCommentsLoadingState] = useState({
+    state: 1,
+  });
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    if (ghCommentsIssueId) {
+      fetch(
+        `https://api.github.com/repos/phartenfeller/hartenfeller.dev/issues/${ghCommentsIssueId}/comments`
+      )
+        .then((response) => response.json())
+        .then((commentsData) => {
+          setCommentsLoadingState({ state: LOADED });
+          setComments(commentsData);
+        })
+        .catch((error) =>
+          setCommentsLoadingState({ state: ERROR, message: error })
+        );
+    }
+  }, [ghCommentsIssueId]);
+
+  if (commentsLoadingState.state === LOADING) {
+    return <span>loading comments...</span>;
+  }
+
+  if (commentsLoadingState.state === ERROR) {
+    return <span>error loading comments: {commentsLoadingState.message}</span>;
+  }
+
+  return <pre>{JSON.stringify(comments, null, 2)}</pre>;
+};
+
+Comments.propTypes = {
+  ghCommentsIssueId: PropTypes.number.isRequired,
+};
+
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
   const { frontmatter, rawMarkdownBody } = post;
@@ -109,6 +152,7 @@ const BlogPageTemplate = ({ data }) => {
     titleImageAlt,
     titleImageSource,
     tags,
+    ghCommentsIssueId,
   } = frontmatter;
 
   const renderers = {
@@ -212,6 +256,9 @@ const BlogPageTemplate = ({ data }) => {
               </a>
             </div>
           ) : null}
+          <div className="my-8">
+            <Comments ghCommentsIssueId={ghCommentsIssueId} />
+          </div>
           <footer className="text-center mt-8 text-xl text">
             <div className="pb-4">
               <LinkButton
