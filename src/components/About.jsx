@@ -2,6 +2,24 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import SectionHeader from './SectionHeader';
 
+const NewTabLink = ({ text, link }) => {
+  return (
+    <a
+      href={link}
+      className="px-1 underline hover:text-red-600 focus:text-red-800"
+      target="_blank"
+      rel="noreferrer"
+    >
+      {text}
+    </a>
+  );
+};
+
+NewTabLink.propTypes = {
+  text: PropTypes.string.isRequired,
+  link: PropTypes.string.isRequired,
+};
+
 const StackInfo = ({ category, technologies }) => {
   return (
     <div className="border-t border-gray-300 sm:border-l">
@@ -26,7 +44,7 @@ StackInfo.propTypes = {
 
 const About = () => {
   return (
-    <div className="mt-12 mx-8">
+    <div className="mt-24 mx-8">
       <SectionHeader section="About" />
       <div className="md:m-auto lg:w-1/2 text-2xl leading-relaxed">
         <p className="mb-2">
@@ -42,15 +60,25 @@ const About = () => {
         </p>
         <div className="my-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden shadow sm:grid-cols-2 xl:grid-cols-4 m-auto">
           <StackInfo category="Frontend" technologies={['React', 'Gatsby']} />
-          <StackInfo category="Backend" technologies={['Node.js']} />
+          <StackInfo category="Backend" technologies={['Node.js', 'Go']} />
           <StackInfo category="APIs" technologies={['GraphQL', 'REST']} />
           <StackInfo
             category="Data"
-            technologies={['Postgres', 'Redis', 'leveldb', 'Oracle']}
+            technologies={['Postgres', 'Redis', 'Oracle']}
           />
         </div>
         <p className="text-lg">
-          This site is built with Gatsby, TailwindCSS, Traefik and goStatic.
+          <span>This site is built and hosted with</span>
+          <NewTabLink text="Gatsby" link="https://www.gatsbyjs.com/" />
+          <span>,</span>
+          <NewTabLink text="TailwindCSS" link="https://tailwindcss.com/" />
+          <span>,</span>
+          <NewTabLink text="Traefik" link="https://traefik.io/" />
+          <span>and</span>
+          <NewTabLink
+            text="goStatic"
+            link="https://github.com/PierreZ/goStatic"
+          />
         </p>
       </div>
     </div>
