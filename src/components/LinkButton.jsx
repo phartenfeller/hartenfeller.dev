@@ -2,6 +2,36 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import svg from '../images/svg';
 
+const ButtonLink = ({ link, newWindow, children }) => {
+  if (newWindow) {
+    return (
+      <a
+        href={link}
+        className="inline-flex rounded-md mr-3"
+        target="_blank"
+        rel="noreferrer"
+      >
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <a href={link} className="inline-flex rounded-md mr-3">
+      {children}
+    </a>
+  );
+};
+
+ButtonLink.propTypes = {
+  link: PropTypes.string.isRequired,
+  newWindow: PropTypes.bool.isRequired,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
+};
+
 const types = {
   github: {
     icon: svg.github,
@@ -60,12 +90,7 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
   if (!options) throw new Error('Type does not exist for component LinkButton');
 
   return (
-    <a
-      href={link}
-      className="inline-flex rounded-md mr-3"
-      target={newWindow ? '_blank' : null}
-      rel={newWindow ? 'noreferrer' : null}
-    >
+    <ButtonLink link={link} newWindow={newWindow}>
       <div
         className={`inline-flex items-center px-4 py-2 border-2 border-transparent text-sm ${options.iconColor} leading-5 font-medium rounded-md ${options.bg} hover:${options.bgHover} focus:outline-none focus:${options.focusBorder} active:${options.bgActive} transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0`}
       >
@@ -78,7 +103,7 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
         </svg>
         <span className={`${options.textColor}`}>{text || options.text}</span>
       </div>
-    </a>
+    </ButtonLink>
   );
 };
 
