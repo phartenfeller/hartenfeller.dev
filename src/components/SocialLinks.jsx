@@ -6,22 +6,22 @@ const links = [
   {
     name: 'GitHub',
     href: 'https://github.com/phartenfeller',
-    path: svg.github,
+    path: svg.github.path,
   },
   {
     name: 'Twitter',
     href: 'https://twitter.com/phartenfeller',
-    path: svg.twitter,
+    path: svg.twitter.path,
   },
   {
     name: 'LinkedIn',
     href: 'https://www.linkedin.com/in/phartenfeller/',
-    path: svg.linkedin,
+    path: svg.linkedin.path,
   },
   {
     name: 'Xing',
     href: 'https://www.xing.com/profile/Philipp_Hartenfeller',
-    path: svg.xing,
+    path: svg.xing.path,
   },
 ];
 

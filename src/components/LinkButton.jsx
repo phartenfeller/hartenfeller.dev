@@ -85,14 +85,14 @@ const types = {
     additionStyles: null,
   },
   comment: {
-    icon: svg.github,
+    icon: svg.externalLink,
     text: 'Comment on GitHub',
-    textColor: 'text-gray-800',
-    iconColor: 'text-gry-700',
-    bg: 'bg-white',
-    bgHover: 'bg-gray-100',
-    bgActive: 'bg-gray-200',
-    focusRing: 'ring-gray-300',
+    textColor: 'text-gray-600',
+    iconColor: 'text-gray-400',
+    bg: 'bg-blueGray-50',
+    bgHover: 'bg-blueGray-100',
+    bgActive: 'bg-white',
+    focusRing: 'ring-blueGray-200',
     additionStyles: 'shadow',
   },
 };
@@ -112,10 +112,11 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
       >
         <svg
           className="-ml-1 mr-2 h-5 w-5"
-          fill="currentColor"
+          fill={options.icon.fill ? 'currentColor' : 'none'}
+          stroke={options.icon.stroke ? 'currentColor' : null}
           viewBox="0 0 24 24"
         >
-          <path fillRule="evenodd" d={options.icon} clipRule="evenodd" />
+          <path fillRule="evenodd" d={options.icon.path} clipRule="evenodd" />
         </svg>
         <span className={`${options.textColor}`}>{text || options.text}</span>
       </div>

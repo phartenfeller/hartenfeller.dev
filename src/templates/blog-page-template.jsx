@@ -235,11 +235,11 @@ const BlogPageTemplate = ({ data }) => {
             <Comments ghCommentsIssueId={ghCommentsIssueId} />
           </div>
           <footer className="text-center mt-8 text-xl text">
-            <Link to="/" className="text-gray-700 hover:underline">
+            <Link to="/" className="text-blueGray-600 hover:underline">
               Homepage
             </Link>
-            <span className="mx-4 text-gray-900">•</span>
-            <Link to="/blog/" className="text-gray-700 hover:underline">
+            <span className="mx-4 text-blueGray-900">•</span>
+            <Link to="/blog/" className="text-blueGray-600 hover:underline">
               Other Blogposts
             </Link>
           </footer>

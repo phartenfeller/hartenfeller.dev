@@ -7,6 +7,7 @@ titleImage: './semantic-html-hartenfeller.jpeg'
 titleImageAlt: 'semantic html'
 titleImageSource: { text: null, href: null }
 tags: ['HTML', 'Web-Development']
+ghCommentsIssueId: 23
 ---
 
 ## Semantic HTML

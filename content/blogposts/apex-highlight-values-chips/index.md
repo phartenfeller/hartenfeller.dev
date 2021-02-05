@@ -7,6 +7,7 @@ titleImage: './apex-status-chip-hero-hartenfeller.png'
 titleImageAlt: 'Display of status chips'
 titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
+ghCommentsIssueId: 22
 ---
 
 While tables are really good at structuring data, they don't give hierarchy to the information. Some columns are more important than others, so the user should be able to easily scan the data to quickly find needed entities. One way to highlight the values of a column is by using color to underline for example a status of a dataset. How it looks is shown below:
