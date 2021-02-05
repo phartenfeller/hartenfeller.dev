@@ -37,7 +37,8 @@ const types = {
     bg: 'bg-gray-900',
     bgHover: 'bg-gray-800',
     bgActive: 'bg-black',
-    focusRing: 'ring-gray-600',
+    focusRing: 'ring-gray-500',
+    additionStyles: null,
   },
   purple: {
     icon: svg.compass,
@@ -47,27 +48,30 @@ const types = {
     bg: 'bg-purple-700',
     bgHover: 'bg-purple-600',
     bgActive: 'bg-purple-800',
-    focusRing: 'ring-purple-500',
+    focusRing: 'ring-purple-300',
+    additionStyles: null,
   },
   green: {
     icon: svg.compass,
     text: 'Open',
     textColor: 'text-white',
-    iconColor: 'text-green-400',
-    bg: 'bg-green-700',
-    bgHover: 'bg-green-600',
-    bgActive: 'bg-green-800',
-    focusRing: 'ring-green-500',
+    iconColor: 'text-emerald-400',
+    bg: 'bg-emerald-600',
+    bgHover: 'bg-emerald-500',
+    bgActive: 'bg-emerald-700',
+    focusRing: 'ring-emerald-300',
+    additionStyles: null,
   },
   twitter: {
     icon: svg.twitter,
     text: 'Twitter',
     textColor: 'text-white',
-    iconColor: 'text-blue-400',
-    bg: 'bg-blue-700',
-    bgHover: 'bg-blue-600',
-    bgActive: 'bg-blue-800',
-    focusRing: 'ring-blue-300',
+    iconColor: 'text-lightBlue-400',
+    bg: 'bg-lightBlue-600',
+    bgHover: 'bg-lightBlue-500',
+    bgActive: 'bg-lightBlue-700',
+    focusRing: 'ring-lightBlue-300',
+    additionStyles: null,
   },
   email: {
     icon: svg.mail,
@@ -77,7 +81,19 @@ const types = {
     bg: 'bg-indigo-700',
     bgHover: 'bg-indigo-600',
     bgActive: 'bg-indigo-800',
-    focusRing: 'ring-indigo-500',
+    focusRing: 'ring-indigo-300',
+    additionStyles: null,
+  },
+  comment: {
+    icon: svg.github,
+    text: 'Comment on GitHub',
+    textColor: 'text-gray-800',
+    iconColor: 'text-gry-700',
+    bg: 'bg-white',
+    bgHover: 'bg-gray-100',
+    bgActive: 'bg-gray-200',
+    focusRing: 'ring-gray-300',
+    additionStyles: 'shadow',
   },
 };
 
@@ -89,7 +105,7 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
     <ButtonLink
       link={link}
       newWindow={newWindow}
-      styles={`inline-flex mr-3 rounded-md select-none ${options.bg} hover:${options.bgHover} focus:outline-none focus:ring-2 focus:${options.focusRing} focus:${options.bgActive} transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0`}
+      styles={`inline-flex mr-3 rounded-md select-none ${options.bg} hover:${options.bgHover} focus:outline-none focus:ring-2 focus:${options.focusRing} focus:${options.bgActive} transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0 ${options.additionStyles}`}
     >
       <div
         className={`inline-flex items-center px-4 py-2 text-sm ${options.iconColor} leading-5 font-medium`}

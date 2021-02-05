@@ -130,6 +130,7 @@ const BlogPageTemplate = ({ data }) => {
             // eslint-disable-next-line react/no-danger
             <div
               className="my-12"
+              // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{ __html: value }}
             />
           );

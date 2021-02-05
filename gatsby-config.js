@@ -52,17 +52,13 @@ module.exports = {
             }
           }
         }`,
-        resolveSiteUrl: () => {
-          return 'https://hartenfeller.dev';
-        },
+        resolveSiteUrl: () => 'https://hartenfeller.dev',
         serialize: ({ allSitePage }) =>
-          allSitePage.nodes.map((node) => {
-            return {
-              url: `https://hartenfeller.dev${node.path}`,
-              changefreq: `weekly`,
-              priority: node.path !== '/' ? 0.7 : 1,
-            };
-          }),
+          allSitePage.nodes.map((node) => ({
+            url: `https://hartenfeller.dev${node.path}`,
+            changefreq: `weekly`,
+            priority: node.path !== '/' ? 0.7 : 1,
+          })),
       },
     },
     {

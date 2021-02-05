@@ -1,4 +1,5 @@
 const plugin = require('tailwindcss/plugin');
+const colors = require('tailwindcss/colors');
 
 module.exports = {
   purge: ['./src/**/*.jsx', './src/**/*.js'],
@@ -15,6 +16,7 @@ module.exports = {
       },
       colors: {
         'title-brown': '#3e2121',
+        ...colors,
       },
     },
   },
