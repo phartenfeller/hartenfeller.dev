@@ -1,13 +1,14 @@
 import { graphql, Link } from 'gatsby';
 import Image from 'gatsby-image';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
+import Comments from '../components/blog/Comments';
 import Gist from '../components/blog/Gist';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
@@ -15,10 +16,6 @@ import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
-
-const LOADING = 1;
-const ERROR = 2;
-const LOADED = 3;
 
 export const query = graphql`
   query($id: String!) {
@@ -102,43 +99,6 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
   return meta;
 };
 
-const Comments = ({ ghCommentsIssueId }) => {
-  const [commentsLoadingState, setCommentsLoadingState] = useState({
-    state: 1,
-  });
-  const [comments, setComments] = useState([]);
-
-  useEffect(() => {
-    if (ghCommentsIssueId) {
-      fetch(
-        `https://api.github.com/repos/phartenfeller/hartenfeller.dev/issues/${ghCommentsIssueId}/comments`
-      )
-        .then((response) => response.json())
-        .then((commentsData) => {
-          setCommentsLoadingState({ state: LOADED });
-          setComments(commentsData);
-        })
-        .catch((error) =>
-          setCommentsLoadingState({ state: ERROR, message: error })
-        );
-    }
-  }, [ghCommentsIssueId]);
-
-  if (commentsLoadingState.state === LOADING) {
-    return <span>loading comments...</span>;
-  }
-
-  if (commentsLoadingState.state === ERROR) {
-    return <span>error loading comments: {commentsLoadingState.message}</span>;
-  }
-
-  return <pre>{JSON.stringify(comments, null, 2)}</pre>;
-};
-
-Comments.propTypes = {
-  ghCommentsIssueId: PropTypes.number.isRequired,
-};
-
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
   const { frontmatter, rawMarkdownBody } = post;
@@ -161,14 +121,17 @@ const BlogPageTemplate = ({ data }) => {
       switch (language) {
         case 'gist':
           return (
-            <div className="my-6">
+            <div className="my-12">
               <Gist id={value} />
             </div>
           );
         case 'html-embed':
           return (
             // eslint-disable-next-line react/no-danger
-            <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
+            <div
+              className="my-12"
+              dangerouslySetInnerHTML={{ __html: value }}
+            />
           );
         case 'img-name': {
           const { filename, alt } = JSON.parse(value);
@@ -176,7 +139,7 @@ const BlogPageTemplate = ({ data }) => {
           return (
             <BlogImageGetter
               filename={filename}
-              classes="object-contain my-6 shadow-md"
+              classes="object-contain my-12 shadow-md"
               alt={alt}
             />
           );
@@ -187,7 +150,7 @@ const BlogPageTemplate = ({ data }) => {
             <BlogGifGetter
               filename={filename}
               alt={alt}
-              classes="object-contain my-6 shadow-md"
+              classes="object-contain my-12 shadow-md"
             />
           );
         }
@@ -234,7 +197,7 @@ const BlogPageTemplate = ({ data }) => {
                 {formattedDate}
               </time>
             </div>
-            <div className="mt-6 text-lg text-gray-700 font-light leading-8 font-raleway">
+            <div className="mt-6 mb-16 text-lg text-gray-700 font-light leading-8 font-raleway">
               {description}
             </div>
           </header>
@@ -256,29 +219,26 @@ const BlogPageTemplate = ({ data }) => {
               </a>
             </div>
           ) : null}
-          <div className="my-8">
-            <Comments ghCommentsIssueId={ghCommentsIssueId} />
-          </div>
-          <footer className="text-center mt-8 text-xl text">
-            <div className="pb-4">
+          <div className="my-12">
+            <div className="pt-4 pb-16 text-center">
               <LinkButton
                 type="twitter"
                 link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${slug}`}
-                text="Tweet"
+                text="Tweet about this"
                 newWindow
               />
             </div>
-            <Link
-              to="/"
-              className="text-purple-600 hover:text-purple-800 hover:underline"
-            >
+            <h2 className="mb-8 text-2xl brown-header-text font-semibold">
+              Comments
+            </h2>
+            <Comments ghCommentsIssueId={ghCommentsIssueId} />
+          </div>
+          <footer className="text-center mt-8 text-xl text">
+            <Link to="/" className="text-gray-700 hover:underline">
               Homepage
             </Link>
-            <span className="mx-4 text-gray-700">•</span>
-            <Link
-              to="/blog/"
-              className="text-purple-600 hover:text-purple-800 hover:underline"
-            >
+            <span className="mx-4 text-gray-900">•</span>
+            <Link to="/blog/" className="text-gray-700 hover:underline">
               Other Blogposts
             </Link>
           </footer>
