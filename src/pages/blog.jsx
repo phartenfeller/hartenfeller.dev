@@ -38,7 +38,7 @@ const Blog = ({ data }) => {
   return (
     <Layout>
       <SEO title="Blog" description="Blog posts from Philipp Hartenfeller" />
-      <div className="relative bg-gray-50 pt-16 pb-20 px-4 sm:px-6 lg:pb-28 lg:px-8">
+      <div className="relative pt-16 px-4 sm:px-6 lg:px-8">
         <div className="relative max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl sm:leading-10">
@@ -51,11 +51,8 @@ const Blog = ({ data }) => {
             ))}
           </div>
         </div>
-        <div className="text-center mt-8 text-xl text">
-          <Link
-            to="/"
-            className="text-purple-600 hover:text-purple-800 hover:underline"
-          >
+        <div className="text-center my-16 text-xl text">
+          <Link to="/" className="text-gray-600  hover:underline">
             Homepage
           </Link>
         </div>

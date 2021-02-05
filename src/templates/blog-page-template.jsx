@@ -8,6 +8,7 @@ import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
+import Comments from '../components/blog/Comments';
 import Gist from '../components/blog/Gist';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
@@ -40,6 +41,7 @@ export const query = graphql`
           href
         }
         tags
+        ghCommentsIssueId
       }
       rawMarkdownBody
       id
@@ -96,6 +98,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 
   return meta;
 };
+
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
   const { frontmatter, rawMarkdownBody } = post;
@@ -109,6 +112,7 @@ const BlogPageTemplate = ({ data }) => {
     titleImageAlt,
     titleImageSource,
     tags,
+    ghCommentsIssueId,
   } = frontmatter;
 
   const renderers = {
@@ -117,14 +121,18 @@ const BlogPageTemplate = ({ data }) => {
       switch (language) {
         case 'gist':
           return (
-            <div className="my-6">
+            <div className="my-12">
               <Gist id={value} />
             </div>
           );
         case 'html-embed':
           return (
             // eslint-disable-next-line react/no-danger
-            <div className="my-6" dangerouslySetInnerHTML={{ __html: value }} />
+            <div
+              className="my-12"
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{ __html: value }}
+            />
           );
         case 'img-name': {
           const { filename, alt } = JSON.parse(value);
@@ -132,7 +140,7 @@ const BlogPageTemplate = ({ data }) => {
           return (
             <BlogImageGetter
               filename={filename}
-              classes="object-contain my-6 shadow-md"
+              classes="object-contain my-12 shadow-md"
               alt={alt}
             />
           );
@@ -143,7 +151,7 @@ const BlogPageTemplate = ({ data }) => {
             <BlogGifGetter
               filename={filename}
               alt={alt}
-              classes="object-contain my-6 shadow-md"
+              classes="object-contain my-12 shadow-md"
             />
           );
         }
@@ -190,7 +198,7 @@ const BlogPageTemplate = ({ data }) => {
                 {formattedDate}
               </time>
             </div>
-            <div className="mt-6 text-lg text-gray-700 font-light leading-8 font-raleway">
+            <div className="mt-6 mb-16 text-lg text-gray-700 font-light leading-8 font-raleway">
               {description}
             </div>
           </header>
@@ -212,26 +220,26 @@ const BlogPageTemplate = ({ data }) => {
               </a>
             </div>
           ) : null}
-          <footer className="text-center mt-8 text-xl text">
-            <div className="pb-4">
+          <div className="my-12">
+            <div className="pt-4 pb-16 text-center">
               <LinkButton
                 type="twitter"
                 link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${slug}`}
-                text="Tweet"
+                text="Tweet about this"
                 newWindow
               />
             </div>
-            <Link
-              to="/"
-              className="text-purple-600 hover:text-purple-800 hover:underline"
-            >
+            <h2 className="mb-8 text-2xl brown-header-text font-semibold">
+              Comments
+            </h2>
+            <Comments ghCommentsIssueId={ghCommentsIssueId} />
+          </div>
+          <footer className="text-center mt-8 text-xl text">
+            <Link to="/" className="text-blueGray-600 hover:underline">
               Homepage
             </Link>
-            <span className="mx-4 text-gray-700">•</span>
-            <Link
-              to="/blog/"
-              className="text-purple-600 hover:text-purple-800 hover:underline"
-            >
+            <span className="mx-4 text-blueGray-900">•</span>
+            <Link to="/blog/" className="text-blueGray-600 hover:underline">
               Other Blogposts
             </Link>
           </footer>
