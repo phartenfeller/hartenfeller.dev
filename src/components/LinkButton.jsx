@@ -33,67 +33,49 @@ const types = {
     icon: svg.github,
     text: 'Code',
     textColor: 'text-gray-200',
+    classes: 'bg-gray-900 hover:bg-gray-800 focus:bg-black focus:ring-gray-500',
     iconColor: 'text-gray-500',
-    bg: 'bg-gray-900',
-    bgHover: 'bg-gray-800',
-    bgActive: 'bg-black',
-    focusRing: 'ring-gray-500',
-    additionStyles: null,
   },
   purple: {
     icon: svg.compass,
     text: 'Open',
     textColor: 'text-gray-200',
+    classes:
+      'bg-purple-700 hover:bg-purple-600 focus:bg-purple-800 focus:ring-purple-300',
     iconColor: 'text-purple-400',
-    bg: 'bg-purple-700',
-    bgHover: 'bg-purple-600',
-    bgActive: 'bg-purple-800',
-    focusRing: 'ring-purple-300',
-    additionStyles: null,
   },
   green: {
     icon: svg.compass,
     text: 'Open',
     textColor: 'text-white',
+    classes:
+      'bg-emerald-600 hover:bg-emerald-500 focus: bg-emerald-700 focus:ring-emerald-300',
     iconColor: 'text-emerald-400',
-    bg: 'bg-emerald-600',
-    bgHover: 'bg-emerald-500',
-    bgActive: 'bg-emerald-700',
-    focusRing: 'ring-emerald-300',
-    additionStyles: null,
   },
   twitter: {
     icon: svg.twitter,
     text: 'Twitter',
     textColor: 'text-white',
+    classes:
+      'bg-lightBlue-600 hover:bg-lightBlue-500 focus:bg-lightBlue-700 focus:ring-lightBlue-300',
     iconColor: 'text-lightBlue-400',
-    bg: 'bg-lightBlue-600',
-    bgHover: 'bg-lightBlue-500',
-    bgActive: 'bg-lightBlue-700',
-    focusRing: 'ring-lightBlue-300',
-    additionStyles: null,
   },
   email: {
     icon: svg.mail,
     text: 'contact@hartenfeller.dev',
     textColor: 'text-white',
+    classes:
+      'bg-indigo-700 hover:bg-indigo-600 focus:bg-indigo-800 focus:ring-indigo-300',
     iconColor: 'text-indigo-400',
-    bg: 'bg-indigo-700',
-    bgHover: 'bg-indigo-600',
-    bgActive: 'bg-indigo-800',
-    focusRing: 'ring-indigo-300',
     additionStyles: null,
   },
   comment: {
     icon: svg.externalLink,
     text: 'Comment on GitHub',
     textColor: 'text-gray-600',
+    classes:
+      'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
     iconColor: 'text-gray-400',
-    bg: 'bg-blueGray-50',
-    bgHover: 'bg-blueGray-100',
-    bgActive: 'bg-white',
-    focusRing: 'ring-blueGray-200',
-    additionStyles: 'shadow',
   },
 };
 
@@ -105,7 +87,7 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
     <ButtonLink
       link={link}
       newWindow={newWindow}
-      styles={`inline-flex mr-3 rounded-md select-none ${options.bg} hover:${options.bgHover} focus:outline-none focus:ring-2 focus:${options.focusRing} focus:${options.bgActive} transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0 ${options.additionStyles}`}
+      styles={`inline-flex mr-3 rounded-md select-none ${options.classes} focus:outline-none focus:ring-2 transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0`}
     >
       <div
         className={`inline-flex items-center px-4 py-2 text-sm ${options.iconColor} leading-5 font-medium`}
