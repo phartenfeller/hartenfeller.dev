@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply subpixel-antialiased bg-red-100;
+  @apply subpixel-antialiased bg-red-50;
   margin: 0;
 }
 
@@ -52,7 +52,7 @@ body::-webkit-scrollbar {
 
 /* background of the scrollbar except button or resizer */
 body::-webkit-scrollbar-track {
-  @apply bg-red-100;
+  @apply bg-red-50;
 }
 
 /* scrollbar itself */

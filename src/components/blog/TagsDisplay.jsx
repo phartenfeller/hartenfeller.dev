@@ -14,18 +14,16 @@ const TagsDisplay = ({ tags }) => {
         fill="currentColor"
         viewBox="0 0 24 24"
       >
-        <path d={svg.tag} />
+        <path d={svg.tag.path} />
       </svg>
-      {tags.map((tag, i) => {
-        return (
-          <span key={tag} className="mr-2">
-            <Link className="hover:underline" to={getTagUrl(tag)}>
-              {tag}
-            </Link>
-            {i < tags.length - 1 ? ',' : null}
-          </span>
-        );
-      })}
+      {tags.map((tag, i) => (
+        <span key={tag} className="mr-2">
+          <Link className="hover:underline" to={getTagUrl(tag)}>
+            {tag}
+          </Link>
+          {i < tags.length - 1 ? ',' : null}
+        </span>
+      ))}
     </div>
   );
 };

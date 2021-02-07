@@ -2,22 +2,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import svg from '../images/svg';
 
-const ButtonLink = ({ link, newWindow, children }) => {
+const ButtonLink = ({ link, newWindow, styles, children }) => {
   if (newWindow) {
     return (
-      <a
-        href={link}
-        className="inline-flex rounded-md mr-3"
-        target="_blank"
-        rel="noreferrer"
-      >
+      <a href={link} className={styles} target="_blank" rel="noreferrer">
         {children}
       </a>
     );
   }
 
   return (
-    <a href={link} className="inline-flex rounded-md mr-3">
+    <a href={link} className={styles}>
       {children}
     </a>
   );
@@ -26,6 +21,7 @@ const ButtonLink = ({ link, newWindow, children }) => {
 ButtonLink.propTypes = {
   link: PropTypes.string.isRequired,
   newWindow: PropTypes.bool.isRequired,
+  styles: PropTypes.string.isRequired,
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.node),
     PropTypes.node,
@@ -37,51 +33,49 @@ const types = {
     icon: svg.github,
     text: 'Code',
     textColor: 'text-gray-200',
+    classes: 'bg-gray-900 hover:bg-gray-800 focus:bg-black focus:ring-gray-500',
     iconColor: 'text-gray-500',
-    bg: 'bg-gray-900',
-    bgHover: 'bg-gray-800',
-    bgActive: 'bg-black',
-    focusBorder: 'border-gray-600',
   },
   purple: {
     icon: svg.compass,
     text: 'Open',
     textColor: 'text-gray-200',
+    classes:
+      'bg-purple-700 hover:bg-purple-600 focus:bg-purple-800 focus:ring-purple-300',
     iconColor: 'text-purple-400',
-    bg: 'bg-purple-700',
-    bgHover: 'bg-purple-600',
-    bgActive: 'bg-purple-800',
-    focusBorder: 'border-purple-500',
   },
   green: {
     icon: svg.compass,
     text: 'Open',
     textColor: 'text-white',
-    iconColor: 'text-green-400',
-    bg: 'bg-green-700',
-    bgHover: 'bg-green-600',
-    bgActive: 'bg-green-800',
-    focusBorder: 'border-green-500',
+    classes:
+      'bg-emerald-600 hover:bg-emerald-500 focus: bg-emerald-700 focus:ring-emerald-300',
+    iconColor: 'text-emerald-400',
   },
   twitter: {
     icon: svg.twitter,
     text: 'Twitter',
     textColor: 'text-white',
-    iconColor: 'text-blue-400',
-    bg: 'bg-blue-700',
-    bgHover: 'bg-blue-600',
-    bgActive: 'bg-blue-800',
-    focusBorder: 'border-blue-300',
+    classes:
+      'bg-lightBlue-600 hover:bg-lightBlue-500 focus:bg-lightBlue-700 focus:ring-lightBlue-300',
+    iconColor: 'text-lightBlue-400',
   },
   email: {
     icon: svg.mail,
     text: 'contact@hartenfeller.dev',
     textColor: 'text-white',
+    classes:
+      'bg-indigo-700 hover:bg-indigo-600 focus:bg-indigo-800 focus:ring-indigo-300',
     iconColor: 'text-indigo-400',
-    bg: 'bg-indigo-700',
-    bgHover: 'bg-indigo-600',
-    bgActive: 'bg-indigo-800',
-    focusBorder: 'border-indigo-500',
+    additionStyles: null,
+  },
+  comment: {
+    icon: svg.externalLink,
+    text: 'Comment on GitHub',
+    textColor: 'text-gray-600',
+    classes:
+      'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
+    iconColor: 'text-gray-400',
   },
 };
 
@@ -90,16 +84,21 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
   if (!options) throw new Error('Type does not exist for component LinkButton');
 
   return (
-    <ButtonLink link={link} newWindow={newWindow}>
+    <ButtonLink
+      link={link}
+      newWindow={newWindow}
+      styles={`inline-flex mr-3 rounded-md select-none ${options.classes} focus:outline-none focus:ring-2 transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0`}
+    >
       <div
-        className={`inline-flex items-center px-4 py-2 border-2 border-transparent text-sm ${options.iconColor} leading-5 font-medium rounded-md ${options.bg} hover:${options.bgHover} focus:outline-none focus:${options.focusBorder} active:${options.bgActive} transform duration-150 ease-in-out hover:scale-105 motion-reduce:transition-none motion-reduce:transition-none motion-reduce:translate-z-0`}
+        className={`inline-flex items-center px-4 py-2 text-sm ${options.iconColor} leading-5 font-medium`}
       >
         <svg
           className="-ml-1 mr-2 h-5 w-5"
-          fill="currentColor"
+          fill={options.icon.fill ? 'currentColor' : 'none'}
+          stroke={options.icon.stroke ? 'currentColor' : null}
           viewBox="0 0 24 24"
         >
-          <path fillRule="evenodd" d={options.icon} clipRule="evenodd" />
+          <path fillRule="evenodd" d={options.icon.path} clipRule="evenodd" />
         </svg>
         <span className={`${options.textColor}`}>{text || options.text}</span>
       </div>

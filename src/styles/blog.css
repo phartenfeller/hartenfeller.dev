@@ -13,7 +13,7 @@
 }
 
 .blog-body p {
-  @apply mb-4;
+  @apply mb-6;
 }
 
 pre {

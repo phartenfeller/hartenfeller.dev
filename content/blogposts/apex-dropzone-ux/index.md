@@ -7,6 +7,7 @@ titleImage: './apex-20-2-dropzone-improved-css.png'
 titleImageAlt: 'Dropzone with improved UX'
 titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
+ghCommentsIssueId: 20
 ---
 
 As a longtime user of the great [Dropzone Plug-In](https://github.com/Dani3lSun/apex-plugin-dropzone) by [Daniel Hochleitner](https://twitter.com/Dani3lSun), I am entirely happy that APEX 20.2 brought us an own Dropzone option for the File Browser item and we don't have to use a Plug-In any more.
