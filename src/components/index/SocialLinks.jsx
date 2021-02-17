@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import svg from '../images/svg';
+import svg from '../../images/svg';
 
 const links = [
   {
@@ -53,7 +53,7 @@ LinkCard.propTypes = {
 };
 
 const SocialLinks = () => (
-  <div className="-mt-64 md:-mt-32 lg:-mt-32 px-8 lg:px-48 grid gap-4 lg:gap-10 mx-auto grid-cols-2 xl:grid-cols-4 lg:max-w-none">
+  <div className="-mt-64 md:-mt-32 lg:-mt-32 px-8 lg:px-48 grid gap-4 lg:gap-10 mx-auto grid-cols-2 xl:grid-cols-4 lg:max-w-none xxl:w-2/3">
     {links.map((link) => (
       <LinkCard link={link} key={link.name} />
     ))}

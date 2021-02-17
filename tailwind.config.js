@@ -13,6 +13,7 @@ module.exports = {
       },
       screens: {
         hd: '1900px',
+        xxl: '2400px',
       },
       colors: {
         'title-brown': '#3e2121',

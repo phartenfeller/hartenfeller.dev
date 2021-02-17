@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import SectionHeader from './SectionHeader';
+import SectionHeader from '../SectionHeader';
 
 const NewTabLink = ({ text, link }) => (
   <a
@@ -51,7 +51,7 @@ const About = () => (
       </p>
       <p>
         I am mostly interested in full stack web dev, databases and especially
-        JavaScript. My current preferred stack is:
+        JavaScript. I like to work with:
       </p>
       <div className="my-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden shadow sm:grid-cols-2 xl:grid-cols-4 m-auto">
         <StackInfo
