@@ -121,7 +121,7 @@ const BlogPageTemplate = ({ data }) => {
       switch (language) {
         case 'gist':
           return (
-            <div className="my-12">
+            <div className="my-12 mx-auto xxl:w-3/4">
               <Gist id={value} />
             </div>
           );
@@ -140,7 +140,7 @@ const BlogPageTemplate = ({ data }) => {
           return (
             <BlogImageGetter
               filename={filename}
-              classes="object-contain my-12 shadow-md"
+              classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
               alt={alt}
             />
           );
@@ -151,7 +151,7 @@ const BlogPageTemplate = ({ data }) => {
             <BlogGifGetter
               filename={filename}
               alt={alt}
-              classes="object-contain my-12 shadow-md"
+              classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
             />
           );
         }
