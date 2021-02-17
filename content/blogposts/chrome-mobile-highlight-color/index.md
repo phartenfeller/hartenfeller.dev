@@ -1,5 +1,5 @@
 ---
-title: 'How to change default tap highlight for Chrome Mobile'
+title: 'How to change the default tap highlight color for Chrome mobile'
 date: '2021-02-17'
 description: 'Chrome on mobile has a default accessibility feature that automatically shows a blue overlay when a touchscreen user taps on a clickable element. This post shows how to change the color or disable it completely.'
 slug: 'chrome-mobile-highlight-color'
@@ -7,7 +7,7 @@ titleImage: './remove-chrome-mobile-tap-highlight.jpg'
 titleImageAlt: 'title of the blogpost and showcase of the default style'
 titleImageSource: { text: null, href: null }
 tags: ['Web-Development', 'CSS']
-ghCommentsIssueId: 24
+ghCommentsIssueId: 29
 ---
 
 ```gif-name
