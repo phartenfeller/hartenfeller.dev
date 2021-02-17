@@ -29,3 +29,5 @@ html {
   -webkit-tap-highlight-color: rgba(255, 187, 0, 0.5);
 }
 ```
+
+You don't have to use a phone to test the styles. Instead, you can use the Device Toolbar in the dev tool and simulate a phone with touch controls.
