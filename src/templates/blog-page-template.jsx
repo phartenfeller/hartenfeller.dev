@@ -157,12 +157,11 @@ const BlogPageTemplate = ({ data }) => {
         }
         default:
           return (
-            <SyntaxHighlighter language={language} style={coy}>
-              {value}
-            </SyntaxHighlighter>
-            // <code>
-            //   <pre className="text-sm xl:text-lg">{value}</pre>
-            // </code>
+            <div className="mx-auto xxl:w-3/4">
+              <SyntaxHighlighter language={language} style={coy}>
+                {value}
+              </SyntaxHighlighter>
+            </div>
           );
       }
     },
