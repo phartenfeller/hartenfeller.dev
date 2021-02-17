@@ -33,7 +33,7 @@ const types = {
     icon: svg.github,
     text: 'Code',
     textColor: 'text-gray-200',
-    classes: 'bg-gray-900 hover:bg-gray-800 focus:bg-black focus:ring-gray-500',
+    classes: 'bg-gray-900 hover:bg-gray-700 focus:bg-black focus:ring-gray-500',
     iconColor: 'text-gray-500',
   },
   purple: {
@@ -41,7 +41,7 @@ const types = {
     text: 'Open',
     textColor: 'text-gray-200',
     classes:
-      'bg-purple-700 hover:bg-purple-600 focus:bg-purple-800 focus:ring-purple-300',
+      'bg-purple-700 hover:bg-purple-500 focus:bg-purple-800 focus:ring-purple-300',
     iconColor: 'text-purple-400',
   },
   green: {

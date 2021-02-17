@@ -48,7 +48,7 @@ const BlogTagTemplate = ({ data, pageContext }) => {
         title={`Blog | ${tag}`}
         description={`Blogposts tagged with: ${tag}`}
       />
-      <div className="relative bg-gray-50 pt-16 pb-20 px-4 sm:px-6 lg:pb-28 lg:px-8">
+      <div className="relative pt-16 pb-20 px-4 sm:px-6 lg:pb-28 lg:px-8">
         <div className="relative max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl sm:leading-10">
@@ -58,23 +58,17 @@ const BlogTagTemplate = ({ data, pageContext }) => {
               </span>
             </h1>
           </div>
-          <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
+          <div className="mx-6 lg:m-auto lg:w-2/3 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
             {blogposts.map(({ frontmatter }) => (
               <Blogpost postData={frontmatter} key={frontmatter.slug} />
             ))}
           </div>
           <div className="text-center mt-8 text-xl text">
-            <Link
-              to="/"
-              className="text-purple-600 hover:text-purple-800 hover:underline"
-            >
+            <Link to="/" className="text-gray-600 hover:underline">
               Homepage
             </Link>
-            <span className="mx-4 text-gray-700">•</span>
-            <Link
-              to="/blog/"
-              className="text-purple-600 hover:text-purple-800 hover:underline"
-            >
+            <span className="mx-4 text-gray-900">•</span>
+            <Link to="/blog/" className="text-gray-600 hover:underline">
               Other Blogposts
             </Link>
           </div>

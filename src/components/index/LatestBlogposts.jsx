@@ -1,7 +1,7 @@
 import { graphql, Link, useStaticQuery } from 'gatsby';
 import React from 'react';
-import PostPreviewHome from './blog/PostPreviewHome';
-import SectionHeader from './SectionHeader';
+import PostPreviewHome from '../blog/PostPreviewHome';
+import SectionHeader from '../SectionHeader';
 
 const LatestBlogposts = () => {
   const data = useStaticQuery(graphql`
@@ -28,7 +28,7 @@ const LatestBlogposts = () => {
   const posts = data.posts.nodes;
 
   return (
-    <div className="my-12 lg:my-32">
+    <div className="my-12 lg:my-32 mx-auto xxl:w-2/3">
       <SectionHeader section="My Blog" />
       <div className="mx-8 lg:mx-48 lg:grid lg:grid-cols-2 hd:grid-cols-3 gap-4">
         {posts.map(({ frontmatter }) => (

@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import ImageGetter from './ImageGetter';
-import LinkButton from './LinkButton';
-import SectionHeader from './SectionHeader';
+import ImageGetter from '../ImageGetter';
+import LinkButton from '../LinkButton';
+import SectionHeader from '../SectionHeader';
 
 const projects = {
   minesweeper: {
@@ -73,7 +73,7 @@ ProjectComponent.defaultProps = {
 const Projects = () => (
   <div className="my-12 lg:my-32">
     <SectionHeader section="Things I made" />
-    <div className="mt-12 lg:mt-32">
+    <div className="mt-12 lg:mt-32 mx-auto xxl:w-2/3">
       <ProjectComponent project={projects.minesweeper} />
       <ProjectComponent project={projects.cyf} reversed />
     </div>

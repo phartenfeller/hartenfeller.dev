@@ -1,12 +1,12 @@
 import React from 'react';
-import About from '../components/About';
-import Contact from '../components/Contact';
 import Hero from '../components/hero';
-import LatestBlogposts from '../components/LatestBlogposts';
+import About from '../components/index/About';
+import Contact from '../components/index/Contact';
+import LatestBlogposts from '../components/index/LatestBlogposts';
+import Projects from '../components/index/Projects';
+import SocialLinks from '../components/index/SocialLinks';
 import Layout from '../components/layout';
-import Projects from '../components/Projects';
 import SEO from '../components/seo';
-import SocialLinks from '../components/SocialLinks';
 import svg from '../images/transition.svg';
 import '../styles/font.css';
 
