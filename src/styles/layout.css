@@ -63,12 +63,12 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   border-radius: 16px;
   border: 4px solid;
-  @apply border-red-100 bg-gray-500;
+  @apply border-red-50 bg-gray-500;
 }
 
 body::-webkit-scrollbar-thumb:hover {
   border: 2px solid;
-  @apply border-red-100 bg-gray-500;
+  @apply border-red-50 bg-gray-500;
 }
 /* set button(top and bottom of the scrollbar) */
 body::-webkit-scrollbar-button {
