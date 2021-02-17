@@ -15,6 +15,7 @@ export const query = graphql`
           title
           date
           formattedDate: date(formatString: "MMMM DD, YYYY")
+          year: date(formatString: "YYYY")
           description
           slug
           titleImage {
@@ -34,6 +35,14 @@ export const query = graphql`
 
 const Blog = ({ data }) => {
   const blogposts = data.posts.nodes;
+  const groupedByYear = blogposts.reduce((accumulator, currentValue) => {
+    const year = parseInt(currentValue.frontmatter.year, 10);
+    accumulator[year] = accumulator[year] || [];
+    accumulator[year].push(currentValue);
+    return accumulator;
+  }, {});
+
+  const years = Object.keys(groupedByYear).sort((a, b) => b - a);
 
   return (
     <Layout>
@@ -45,11 +54,18 @@ const Blog = ({ data }) => {
               Philipp Hartenfeller&apos;s Blog
             </h1>
           </div>
-          <div className="mx-6 lg:m-auto lg:w-2/3 xl:w-1/2 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
-            {blogposts.map(({ frontmatter }) => (
-              <Blogpost postData={frontmatter} key={frontmatter.slug} />
-            ))}
-          </div>
+          {years.map((year) => (
+            <div key={year}>
+              <h2 className="mb-8 mt-16 text-center text-3xl font-light text-gray-800">
+                {year}
+              </h2>
+              <div className="mx-6 lg:m-auto lg:w-2/3 lg:grid lg:gap-6 lg:grid-cols-2">
+                {groupedByYear[year].map(({ frontmatter }) => (
+                  <Blogpost postData={frontmatter} key={frontmatter.slug} />
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
         <div className="text-center my-16 text-xl text">
           <Link to="/" className="text-gray-600  hover:underline">
