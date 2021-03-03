@@ -62,6 +62,33 @@ module.exports = {
       },
     },
     {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        extensions: [`.md`, `.mdx`],
+        gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 630,
+            },
+          },
+          `gatsby-remark-copy-linked-files`,
+          `gatsby-remark-smartypants`,
+          {
+            resolve: `gatsby-remark-acronyms`,
+            options: {
+              acronyms: {
+                APEX: `Oracle Application Express`,
+                JS: `JavaScript`,
+                CSS: `Cascading Style Sheets`,
+                HTML: `Hypertext Markup Language`,
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
       resolve: `gatsby-transformer-remark`,
       options: {
         // CommonMark mode (default: true)
@@ -82,7 +109,25 @@ module.exports = {
           },
           `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
+          {
+            resolve: `gatsby-remark-acronyms`,
+            options: {
+              acronyms: {
+                APEX: `Application Express`,
+                JS: `JavaScript`,
+                CSS: `Cascading Style Sheets`,
+                HTML: `Hypertext Markup Language`,
+                UX: `User Experience`,
+              },
+            },
+          },
         ],
+      },
+    },
+    {
+      resolve: `gatsby-plugin-canonical-urls`,
+      options: {
+        siteUrl: `https://hartenfeller.dev/`,
       },
     },
   ],

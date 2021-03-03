@@ -7,9 +7,7 @@ import SEO from '../components/seo';
 
 export const query = graphql`
   {
-    posts: allMarkdownRemark(
-      sort: { fields: frontmatter___date, order: DESC }
-    ) {
+    posts: allMdx(sort: { fields: frontmatter___date, order: DESC }) {
       nodes {
         frontmatter {
           title

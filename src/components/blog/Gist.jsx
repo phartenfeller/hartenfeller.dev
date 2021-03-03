@@ -53,6 +53,7 @@ class Gist extends React.PureComponent {
         width="100%"
         frameBorder={0}
         id={ident}
+        className="my-12"
       />
     );
   }

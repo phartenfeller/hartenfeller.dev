@@ -16,9 +16,7 @@ ghCommentsIssueId: 21
 
 Sometimes your master data includes images. One problem with blob data is that you can't easily include them in your install script for a database schema. But in times where DevOps is becoming more important every day (and that is really good), I just want to easily empty a database and install it from scratch without worrying about my blobs. To solve this problem I've written a little script that exports blob values from a table to an insert script with the blobs casted to raw text. APEX also used this technique to install CSS or JavaScript files for Plug-Ins.
 
-```gist
-41f727791dd0926ead0b55568af9fded
-```
+<Gist id="41f727791dd0926ead0b55568af9fded" />
 
 To use this script you have to adjust the values in the cursor definition. The script produces an update statement because I wanted to add the images after I inserted the main data of the table, but you can adjust the script to generate insert value.
 
