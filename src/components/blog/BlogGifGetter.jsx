@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const BlogGifGetter = ({ filename, classes, alt }) => {
-  const filterGif = (gifs) => {
-    return gifs.allFile.edges.find((element) => {
-      return `${element.node.name}.gif` === filename;
-    });
-  };
+  const filterGif = (gifs) =>
+    gifs.allFile.edges.find(
+      (element) => `${element.node.name}.gif` === filename
+    );
 
   return (
     <StaticQuery
@@ -23,15 +22,13 @@ const BlogGifGetter = ({ filename, classes, alt }) => {
           }
         }
       `}
-      render={(data) => {
-        return (
-          <img
-            src={filterGif(data).node.publicURL}
-            alt={alt}
-            className={classes}
-          />
-        );
-      }}
+      render={(data) => (
+        <img
+          src={filterGif(data).node.publicURL}
+          alt={alt}
+          className={classes}
+        />
+      )}
     />
   );
 };
