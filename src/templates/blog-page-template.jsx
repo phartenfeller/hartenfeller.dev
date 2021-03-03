@@ -1,13 +1,13 @@
+import { MDXProvider } from '@mdx-js/react';
 import { graphql, Link } from 'gatsby';
 import Image from 'gatsby-image';
+import { MDXRenderer } from 'gatsby-plugin-mdx';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactMarkdown from 'react-markdown/with-html';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
 import { postType } from '../components/blog/Blogpost';
+import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
 import Gist from '../components/blog/Gist';
 import ScrollTracker from '../components/blog/ScrollTracker';
@@ -19,7 +19,7 @@ import '../styles/blog.css';
 
 export const query = graphql`
   query($id: String!) {
-    post: markdownRemark(id: { eq: $id }) {
+    post: mdx(id: { eq: $id }) {
       frontmatter {
         title
         date
@@ -43,7 +43,7 @@ export const query = graphql`
         tags
         ghCommentsIssueId
       }
-      rawMarkdownBody
+      body
       id
     }
   }
@@ -101,7 +101,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
-  const { frontmatter, rawMarkdownBody } = post;
+  const { frontmatter, body } = post;
   const {
     title,
     date,
@@ -115,56 +115,79 @@ const BlogPageTemplate = ({ data }) => {
     ghCommentsIssueId,
   } = frontmatter;
 
-  const renderers = {
-    // eslint-disable-next-line react/prop-types
-    code: ({ language, value }) => {
-      switch (language) {
-        case 'gist':
-          return (
-            <div className="my-12 mx-auto xxl:w-3/4">
-              <Gist id={value} />
-            </div>
-          );
-        case 'html-embed':
-          return (
-            // eslint-disable-next-line react/no-danger
-            <div
-              className="my-12"
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={{ __html: value }}
-            />
-          );
-        case 'img-name': {
-          const { filename, alt } = JSON.parse(value);
+  // const renderers = {
+  //   // eslint-disable-next-line react/prop-types
+  //   code: ({ language, value }) => {
+  //     switch (language) {
+  //       case 'gist':
+  //         return (
+  //           <div className="my-12 mx-auto xxl:w-3/4">
+  //             <Gist id={value} />
+  //           </div>
+  //         );
+  //       case 'html-embed':
+  //         return (
+  //           // eslint-disable-next-line react/no-danger
+  //           <div
+  //             className="my-12"
+  //             // eslint-disable-next-line react/no-danger
+  //             dangerouslySetInnerHTML={{ __html: value }}
+  //           />
+  //         );
+  //       case 'img-name': {
+  //         const { filename, alt } = JSON.parse(value);
 
-          return (
-            <BlogImageGetter
-              filename={filename}
-              classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
-              alt={alt}
-            />
-          );
-        }
-        case 'gif-name': {
-          const { filename, alt } = JSON.parse(value);
-          return (
-            <BlogGifGetter
-              filename={filename}
-              alt={alt}
-              classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
-            />
-          );
-        }
-        default:
-          return (
-            <div className="mx-auto xxl:w-3/4">
-              <SyntaxHighlighter language={language} style={coy}>
-                {value}
-              </SyntaxHighlighter>
-            </div>
-          );
-      }
-    },
+  //         return (
+  //           <BlogImageGetter
+  //             filename={filename}
+  //             classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
+  //             alt={alt}
+  //           />
+  //         );
+  //       }
+  //       case 'gif-name': {
+  //         const { filename, alt } = JSON.parse(value);
+  //         return (
+  //           <BlogGifGetter
+  //             filename={filename}
+  //             alt={alt}
+  //             classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
+  //           />
+  //         );
+  //       }
+  //       default:
+  //         return (
+  //           <div className="mx-auto xxl:w-3/4">
+  //             <SyntaxHighlighter language={language} style={coy}>
+  //               {value}
+  //             </SyntaxHighlighter>
+  //           </div>
+  //         );
+  //     }
+  //   },
+  // };
+
+  const components = {
+    code: CodeHandler,
+    // eslint-disable-next-line react/prop-types
+    pre: ({ children }) => <>{children}</>, // handled by code
+    Gist,
+    // eslint-disable-next-line react/prop-types
+    BlogImg: ({ filename, alt }) => (
+      <BlogImageGetter
+        filename={filename}
+        classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
+        alt={alt}
+      />
+    ),
+    // eslint-disable-next-line react/prop-types
+    BlogGif: ({ filename, alt }) => (
+      <BlogGifGetter
+        filename={filename}
+        alt={alt}
+        classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
+      />
+    ),
   };
 
   const meta = getMeta({
@@ -201,13 +224,10 @@ const BlogPageTemplate = ({ data }) => {
               {description}
             </div>
           </header>
-          <main>
-            <ReactMarkdown
-              source={rawMarkdownBody}
-              escapeHtml={false}
-              renderers={renderers}
-              className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway"
-            />
+          <main className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway">
+            <MDXProvider components={components}>
+              <MDXRenderer>{body}</MDXRenderer>
+            </MDXProvider>
           </main>
           {titleImageSource.text && titleImageSource.href ? (
             <div>

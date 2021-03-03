@@ -1,9 +1,9 @@
 exports.createPages = async ({ actions, graphql }) => {
   const tagSet = new Set();
 
-  const recipeData = await graphql(`
+  const blogposts = await graphql(`
     {
-      posts: allMarkdownRemark {
+      posts: allMdx {
         nodes {
           frontmatter {
             slug
@@ -15,7 +15,7 @@ exports.createPages = async ({ actions, graphql }) => {
     }
   `);
 
-  const pages = recipeData.data.posts.nodes;
+  const pages = blogposts.data.posts.nodes;
 
   pages.forEach((page) => {
     page.frontmatter.tags.forEach((tag) => tagSet.add(tag));

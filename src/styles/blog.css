@@ -16,6 +16,16 @@
   @apply mb-6;
 }
 
+.blog-body abbr[title] {
+  text-decoration: underline;
+  text-decoration-color: #d1d5db;
+}
+
+.blog-body abbr[title]:hover {
+  text-decoration: underline;
+  text-decoration-color: #6b7280;
+}
+
 pre {
   @apply whitespace-pre-wrap bg-gray-100 rounded p-3 my-8 font-mono shadow-inner;
 }

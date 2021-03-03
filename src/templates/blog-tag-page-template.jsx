@@ -7,7 +7,7 @@ import SEO from '../components/seo';
 
 export const query = graphql`
   query($tag: String!) {
-    posts: allMarkdownRemark(
+    posts: allMdx(
       sort: { fields: frontmatter___date, order: DESC }
       filter: { frontmatter: { tags: { eq: $tag } } }
     ) {
