@@ -57,7 +57,7 @@ const types = {
     text: 'Twitter',
     textColor: 'text-white',
     classes:
-      'bg-lightBlue-600 hover:bg-lightBlue-500 focus:bg-lightBlue-700 focus:ring-lightBlue-300',
+      'bg-lightBlue-700 hover:bg-lightBlue-600 focus:bg-lightBlue-800 focus:ring-lightBlue-300',
     iconColor: 'text-lightBlue-400',
   },
   email: {

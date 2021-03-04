@@ -1,5 +1,5 @@
 import { Link } from 'gatsby';
-import Image from 'gatsby-image';
+import { GatsbyImage } from 'gatsby-plugin-image';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TagsDisplay from './TagsDisplay';
@@ -20,9 +20,9 @@ const Blogpost = ({ postData }) => {
     <div className="group mt-12 max-w-lg mx-auto lg:max-w-none">
       <div className="flex flex-col rounded-lg overflow-hidden h-full">
         <Link to={`/blog/${slug}`} className="flex-shrink-0">
-          <Image
+          <GatsbyImage
+            image={titleImage.sharp.gatsbyImageData}
             className="transform duration-300 ease-in-out overflow-hidden h-64 w-full object-cover group-hover:scale-110"
-            fluid={titleImage.sharp.fluid}
             alt={titleImageAlt}
           />
         </Link>

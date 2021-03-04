@@ -78,10 +78,11 @@ module.exports = {
             resolve: `gatsby-remark-acronyms`,
             options: {
               acronyms: {
-                APEX: `Oracle Application Express`,
+                APEX: `Application Express`,
                 JS: `JavaScript`,
                 CSS: `Cascading Style Sheets`,
                 HTML: `Hypertext Markup Language`,
+                UX: `User Experience`,
               },
             },
           },
@@ -109,18 +110,6 @@ module.exports = {
           },
           `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
-          {
-            resolve: `gatsby-remark-acronyms`,
-            options: {
-              acronyms: {
-                APEX: `Application Express`,
-                JS: `JavaScript`,
-                CSS: `Cascading Style Sheets`,
-                HTML: `Hypertext Markup Language`,
-                UX: `User Experience`,
-              },
-            },
-          },
         ],
       },
     },
@@ -130,5 +119,6 @@ module.exports = {
         siteUrl: `https://hartenfeller.dev/`,
       },
     },
+    `gatsby-plugin-image`,
   ],
 };

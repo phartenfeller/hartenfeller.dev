@@ -75,9 +75,9 @@ const Comments = ({ ghCommentsIssueId }) => {
             </li>
           ))}
         {comments.length === 0 && (
-          <div className="text-center py-3 text-gray-700 font-light text-lg">
+          <li className="text-center py-3 text-gray-700 font-light text-lg">
             No comments yet...
-          </div>
+          </li>
         )}
       </ul>
       <div className="my-6 text-center">
