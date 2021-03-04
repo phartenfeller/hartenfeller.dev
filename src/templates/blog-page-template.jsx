@@ -117,58 +117,6 @@ const BlogPageTemplate = ({ data }) => {
     fixedTitleImage,
   } = frontmatter;
 
-  // const renderers = {
-  //   // eslint-disable-next-line react/prop-types
-  //   code: ({ language, value }) => {
-  //     switch (language) {
-  //       case 'gist':
-  //         return (
-  //           <div className="my-12 mx-auto xxl:w-3/4">
-  //             <Gist id={value} />
-  //           </div>
-  //         );
-  //       case 'html-embed':
-  //         return (
-  //           // eslint-disable-next-line react/no-danger
-  //           <div
-  //             className="my-12"
-  //             // eslint-disable-next-line react/no-danger
-  //             dangerouslySetInnerHTML={{ __html: value }}
-  //           />
-  //         );
-  //       case 'img-name': {
-  //         const { filename, alt } = JSON.parse(value);
-
-  //         return (
-  //           <BlogImageGetter
-  //             filename={filename}
-  //             classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
-  //             alt={alt}
-  //           />
-  //         );
-  //       }
-  //       case 'gif-name': {
-  //         const { filename, alt } = JSON.parse(value);
-  //         return (
-  //           <BlogGifGetter
-  //             filename={filename}
-  //             alt={alt}
-  //             classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
-  //           />
-  //         );
-  //       }
-  //       default:
-  //         return (
-  //           <div className="mx-auto xxl:w-3/4">
-  //             <SyntaxHighlighter language={language} style={coy}>
-  //               {value}
-  //             </SyntaxHighlighter>
-  //           </div>
-  //         );
-  //     }
-  //   },
-  // };
-
   const components = {
     code: CodeHandler,
     // eslint-disable-next-line react/prop-types
