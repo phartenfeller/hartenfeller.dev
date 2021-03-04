@@ -1,21 +1,18 @@
 import { graphql, Link, useStaticQuery } from 'gatsby';
-import Img from 'gatsby-image';
+import { GatsbyImage } from "gatsby-plugin-image";
 import React from 'react';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
 const NotFoundPage = () => {
-  const data = useStaticQuery(graphql`
-    query {
-      astronautImage: file(relativePath: { eq: "hartenfeller-space-404.jpg" }) {
-        childImageSharp {
-          fluid(quality: 100, maxWidth: 1720) {
-            ...GatsbyImageSharpFluid_withWebp
-          }
-        }
-      }
+  const data = useStaticQuery(graphql`{
+  astronautImage: file(relativePath: {eq: "hartenfeller-space-404.jpg"}) {
+    childImageSharp {
+      gatsbyImageData(quality: 100, layout: FULL_WIDTH)
     }
-  `);
+  }
+}
+`);
 
   return (
     <div className="bg-black">
@@ -45,7 +42,7 @@ const NotFoundPage = () => {
             </Link>
           </div>
           <div className="xl:w-2/3 m-auto">
-            <Img fluid={data.astronautImage.childImageSharp.fluid} />
+            <GatsbyImage image={data.astronautImage.childImageSharp.gatsbyImageData} />
           </div>
         </div>
       </Layout>

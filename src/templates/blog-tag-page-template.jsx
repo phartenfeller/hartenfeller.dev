@@ -5,36 +5,33 @@ import Blogpost, { postType } from '../components/blog/Blogpost';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
-export const query = graphql`
-  query($tag: String!) {
-    posts: allMdx(
-      sort: { fields: frontmatter___date, order: DESC }
-      filter: { frontmatter: { tags: { eq: $tag } } }
-    ) {
-      nodes {
-        frontmatter {
-          title
-          date
-          formattedDate: date(formatString: "MMMM DD, YYYY")
-          description
-          slug
-          titleImage {
-            sharp: childImageSharp {
-              fluid(maxWidth: 1400) {
-                ...GatsbyImageSharpFluid_withWebp
-              }
-            }
+export const query = graphql`query ($tag: String!) {
+  posts: allMdx(
+    sort: {fields: frontmatter___date, order: DESC}
+    filter: {frontmatter: {tags: {eq: $tag}}}
+  ) {
+    nodes {
+      frontmatter {
+        title
+        date
+        formattedDate: date(formatString: "MMMM DD, YYYY")
+        description
+        slug
+        titleImage {
+          sharp: childImageSharp {
+            gatsbyImageData(layout: FULL_WIDTH)
           }
-          titleImageAlt
-          titleImageSource {
-            text
-            href
-          }
-          tags
         }
+        titleImageAlt
+        titleImageSource {
+          text
+          href
+        }
+        tags
       }
     }
   }
+}
 `;
 
 const BlogTagTemplate = ({ data, pageContext }) => {
