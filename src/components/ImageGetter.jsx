@@ -1,15 +1,16 @@
 import { graphql, StaticQuery } from 'gatsby';
-import Img from 'gatsby-image';
+import { GatsbyImage } from 'gatsby-plugin-image';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 const ImageGetter = ({ filename, classes, alt }) => {
-  const filterImage = (images) => {
-    return images.allImageSharp.edges.find((element) => {
-      // Match string after final slash
-      return element.node.fluid.src.split('/').pop() === filename;
-    });
-  };
+  const filterImage = (images) =>
+    images.allImageSharp.edges.find(
+      (element) =>
+        // Match string after final slash
+        element.node.gatsbyImageData.images.fallback.src.split('/').pop() ===
+        filename
+    );
 
   return (
     <StaticQuery
@@ -18,23 +19,19 @@ const ImageGetter = ({ filename, classes, alt }) => {
           allImageSharp {
             edges {
               node {
-                fluid {
-                  ...GatsbyImageSharpFluid_withWebp
-                }
+                gatsbyImageData(layout: FULL_WIDTH)
               }
             }
           }
         }
       `}
-      render={(data) => {
-        return (
-          <Img
-            className={classes}
-            fluid={filterImage(data).node.fluid}
-            alt={alt}
-          />
-        );
-      }}
+      render={(data) => (
+        <GatsbyImage
+          image={filterImage(data).node.gatsbyImageData}
+          className={classes}
+          alt={alt}
+        />
+      )}
     />
   );
 };

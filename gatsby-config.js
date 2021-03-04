@@ -130,5 +130,6 @@ module.exports = {
         siteUrl: `https://hartenfeller.dev/`,
       },
     },
+    `gatsby-plugin-image`,
   ],
 };

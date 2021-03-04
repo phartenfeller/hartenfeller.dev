@@ -1,6 +1,6 @@
 import { MDXProvider } from '@mdx-js/react';
 import { graphql, Link } from 'gatsby';
-import Image from 'gatsby-image';
+import { GatsbyImage } from 'gatsby-plugin-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -27,12 +27,13 @@ export const query = graphql`
         description
         slug
         titleImage {
-          sharp: childImageSharp {
-            fluid(maxWidth: 1400) {
-              ...GatsbyImageSharpFluid_withWebp
-              presentationWidth
-              presentationHeight
-            }
+          childImageSharp {
+            gatsbyImageData(layout: FULL_WIDTH)
+          }
+        }
+        fixedTitleImage: titleImage {
+          childImageSharp {
+            gatsbyImageData(layout: FIXED)
           }
         }
         titleImageAlt
@@ -113,6 +114,7 @@ const BlogPageTemplate = ({ data }) => {
     titleImageSource,
     tags,
     ghCommentsIssueId,
+    fixedTitleImage,
   } = frontmatter;
 
   // const renderers = {
@@ -191,12 +193,12 @@ const BlogPageTemplate = ({ data }) => {
   };
 
   const meta = getMeta({
-    imgSrc: titleImage.sharp.fluid.src,
+    imgSrc: fixedTitleImage.childImageSharp.gatsbyImageData.images.fallback.src,
     imgAlt: titleImageAlt,
     publishISO: date,
     tags,
-    imgWidth: titleImage.sharp.fluid.presentationWidth,
-    imgHeight: titleImage.sharp.fluid.presentationHeight,
+    imgWidth: fixedTitleImage.childImageSharp.gatsbyImageData.width,
+    imgHeight: fixedTitleImage.childImageSharp.gatsbyImageData.height,
   });
 
   return (
@@ -204,9 +206,9 @@ const BlogPageTemplate = ({ data }) => {
       <SEO title={title} description={description} meta={meta} />
       <ScrollTracker />
       <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
-        <Image
+        <GatsbyImage
+          image={titleImage.childImageSharp.gatsbyImageData}
           className="h-100 object-cover"
-          fluid={titleImage.sharp.fluid}
           alt={titleImageAlt}
         />
         <div className="bg-white px-8 pb-8">
