@@ -20,17 +20,26 @@ const BlogImageGetter = ({ filename, classes, alt }) => {
             edges {
               node {
                 gatsbyImageData(layout: FULL_WIDTH)
+                original {
+                  height
+                  width
+                }
               }
             }
           }
         }
       `}
       render={(data) => (
-        <GatsbyImage
-          image={filterImage(data).node.gatsbyImageData}
-          className={classes}
-          alt={alt}
-        />
+        <div
+          className="m-auto"
+          style={{ maxWidth: `${filterImage(data).node.original.width}px` }}
+        >
+          <GatsbyImage
+            image={filterImage(data).node.gatsbyImageData}
+            className={classes}
+            alt={alt}
+          />
+        </div>
       )}
     />
   );
