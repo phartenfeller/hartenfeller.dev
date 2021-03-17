@@ -19,10 +19,10 @@ module.exports = {
         'title-brown': '#3e2121',
         ...colors,
       },
+      fontFamily: {
+        merriweather: ['Merriweather', 'serif'],
+      },
     },
-  },
-  variants: {
-    scale: ['hover', 'group-hover'],
   },
   plugins: [
     plugin(({ addUtilities }) => {
