@@ -24,6 +24,10 @@
   @apply lg:decoration-blueGray-600;
 }
 
-pre {
+.blog-body pre {
   @apply whitespace-pre-wrap bg-gray-100 rounded p-3 my-8 font-mono shadow-inner;
+}
+
+.blog-body code {
+  @apply px-2;
 }

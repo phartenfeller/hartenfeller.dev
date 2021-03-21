@@ -1,0 +1,91 @@
+---
+title: >
+  APEX Security: only hiding buttons is not secure
+date: 2021-03-22
+description: Don't just hide Buttons when only some authorized users should be able to execute processes in Oracle APEX. Also use the read only functionality where possible.
+slug: apex-security-hiding-buttons
+titleImage: ./apex-security-hiding-buttons.jpg
+titleImageAlt: Sign on a wall saying "do not enter"
+titleImageSource:
+  {
+    text: 'Photo by Kyle Glenn',
+    href: 'https://unsplash.com/photos/dGk-qYBk4OA',
+  }
+tags: ['APEX', 'Security']
+ghCommentsIssueId: 22
+keywords:
+  - APEX Security
+---
+
+In many applications, there are pages that some privileged users are allowed to edit where others are only allowed to read. It is fairly easy to implement such authorizations in Oracle APEX. We can for example hide elements from some users by setting server-side-conditions or authorization schemes. We can apply that for save or delete buttons so that unprivileged users can't see the buttons and can't trigger the underlying processes. Or can they?
+
+## Buttons just call apex.submit
+
+Buttons only serve a UI purpose to make the user aware he can interact with it. After a click, most buttons execute some JavaScript code. By only hiding buttons only the UI trigger to those JS calls is missing but it is still possible to execute that JS code manually with the browser console.
+
+If you inspect that button in your browser dev tools on the rendered page you can see that call on the `onclick` attribute:
+
+<BlogImg
+  filename="oracle_application_express_button_call.png"
+  alt="button in the dev tools which calls apex.submit"
+></BlogImg>
+
+So everyone can for example put this code in the browser console and mimic a delete button:
+
+```js
+apex.submit({ request: 'DELETE' });
+```
+
+`apex.submit` is an alias for `apex.page.submit`, take a look at the [documentation](https://docs.oracle.com/en/database/oracle/application-express/20.2/aexjs/apex.page.html#.submit) for more information.
+
+Buttons in APEX have a distinct name in the Page Designer which is used as a request parameter when the page is submitted. In the processes tab, we can then define which button triggers the process, meaning which request parameter will trigger it.
+
+<BlogImg
+  filename="apex_process_when_button_pressed.png"
+  alt="server-side-condition when button pressed on apex processes"
+></BlogImg>
+
+While you can't find out the request names of buttons when you don't see them, I guess most developers name them accordingly. Also when we create a page via the APEX Wizard by default the buttons are named `SAVE`, `CREATE` and `DELETE`.
+
+## Use server-side conditions and authorization schemes on APEX processes
+
+As stated above everyone can execute that small snippet by themselves. So **hiding the button is no security measure**. What we can do to only allow privileged users to trigger processes is to put server-side condition or authorization schemes onto them in APEX:
+
+<BlogImg
+  filename="security_measures_on_processes_oracle_apex.png"
+  alt="server-side-condition and authorization schemes on buttons"
+></BlogImg>
+
+## Use read-only on items to prevent session state altering
+
+All APEX items have a read-only setting where we can define a server-side condition. This setting is also available on whole regions and the page. Using this will cause the corresponding items to not be displayed as input fields but as just readable text. This has also the effect that the state of these values is protected and can't be changed by the user.
+
+If we have a form page that does not have a read-only condition and only the save button is hidden, the user can just enter new values and overwrite the database values by the JS call described on top.
+
+When the items are in a read-only state and the user tries to alter them with JS and submits he will get an error claiming that a session state protection was violated. So you're double safe if you secure the processes and use the read-only options.
+
+```js
+$s('P13_SAL', 123);
+apex.submit({ request: 'SAVE' });
+```
+
+<BlogImg
+  filename="apex_session_state_violation.png"
+  alt="session state violation alert"
+></BlogImg>
+
+## Validation option on apex.submit
+
+The function `apex.submit` also has a parameter for validations. I thought that maybe you can use that in an unintended way and skip validations.
+
+```js
+apex.submit({ request: 'SAVE', validate: false });
+```
+
+When creating a validation there is a setting called "always execute" that is **disabled by default**. Its description says: _"Specify whether this validation is always executed. If set to On, this validation is always evaluated, irrespective of the Execute Validations setting defined against the button that submitted the page. If set to Off, this validation is only evaluated if the triggering button has an Execute Validations setting of On."_
+
+Luckily that does not mean the validation parameter to `apex.submit` defines whether the validations are performed. The "execute validations" setting on the button is **enabled by default** and seems to prevent the validation option of the JS call of apex.submit on a server-side level. So by default, the validate option is ignored by the database.
+
+## Conclusion
+
+Always make sure to set Authorization Schemes and Server-Side-Conditions on APEX Processes where needed. Conditional buttons are still useful but only serve the UI. Where possible also use the read-only options, otherwise the item state could be altered.
