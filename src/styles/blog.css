@@ -4,11 +4,11 @@
   font-family: 'Raleway', serif;
 }
 
-.blog-body a {
+.blog-body a:not(.custom-link) {
   @apply text-red-700 underline;
 }
 
-.blog-body a:hover {
+.blog-body a:hover:not(.custom-link) {
   @apply text-red-900;
 }
 
@@ -17,20 +17,13 @@
 }
 
 .blog-body abbr[title] {
-  text-decoration: underline;
-  text-decoration-color: #d1d5db;
+  @apply decoration-transparent lg:decoration-blueGray-300;
 }
 
 .blog-body abbr[title]:hover {
-  text-decoration: underline;
-  text-decoration-color: #6b7280;
+  @apply lg:decoration-blueGray-600;
 }
 
 pre {
   @apply whitespace-pre-wrap bg-gray-100 rounded p-3 my-8 font-mono shadow-inner;
-}
-
-.blog-body h2 {
-  @apply text-title-brown text-2xl mt-8 mb-2;
-  font-family: 'Merriweather', serif;
 }
