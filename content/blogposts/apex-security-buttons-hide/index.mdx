@@ -2,7 +2,7 @@
 title: >
   APEX Security: only hiding buttons is not secure
 date: 2021-03-22
-description: Don't just hide Buttons when only some authorized users should be able to execute processes in Oracle APEX. Also use the read only functionality where possible.
+description: Don't just hide Buttons when only some privileged users should be able to execute processes in Oracle APEX. With some JS you can still trigger them. Additionally use the read-only functionality where possible.
 slug: apex-security-hiding-buttons
 titleImage: ./apex-security-hiding-buttons.jpg
 titleImageAlt: Sign on a wall saying "do not enter"
@@ -12,9 +12,10 @@ titleImageSource:
     href: 'https://unsplash.com/photos/dGk-qYBk4OA',
   }
 tags: ['APEX', 'Security']
-ghCommentsIssueId: 22
+ghCommentsIssueId: 38
 keywords:
-  - APEX Security
+  - APEX
+  - Security
 ---
 
 In many applications, there are pages that some privileged users are allowed to edit where others are only allowed to read. It is fairly easy to implement such authorizations in Oracle APEX. We can for example hide elements from some users by setting server-side-conditions or authorization schemes. We can apply that for save or delete buttons so that unprivileged users can't see the buttons and can't trigger the underlying processes. Or can they?
