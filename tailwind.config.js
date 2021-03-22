@@ -1,5 +1,6 @@
 const plugin = require('tailwindcss/plugin');
 const colors = require('tailwindcss/colors');
+const _ = require('lodash');
 
 module.exports = {
   purge: ['./src/**/*.jsx', './src/**/*.js'],
@@ -19,10 +20,10 @@ module.exports = {
         'title-brown': '#3e2121',
         ...colors,
       },
+      fontFamily: {
+        merriweather: ['Merriweather', 'serif'],
+      },
     },
-  },
-  variants: {
-    scale: ['hover', 'group-hover'],
   },
   plugins: [
     plugin(({ addUtilities }) => {
@@ -34,5 +35,36 @@ module.exports = {
 
       addUtilities(customClasses, ['motion-reduce']);
     }),
+    ({ addUtilities, e, theme }) => {
+      const themeColors = theme('colors');
+
+      const decorationColors = Object.keys(themeColors).reduce((acc, key) => {
+        if (typeof themeColors[key] === 'string') {
+          return {
+            ...acc,
+            [`.decoration-${e(key)}`]: {
+              'text-decoration-color': themeColors[key],
+            },
+          };
+        }
+
+        const variants = Object.keys(themeColors[key]);
+
+        return {
+          ...acc,
+          ...variants.reduce(
+            (a, variant) => ({
+              ...a,
+              [`.decoration-${e(key)}-${variant}`]: {
+                'text-decoration-color': themeColors[key][variant],
+              },
+            }),
+            {}
+          ),
+        };
+      }, {});
+
+      addUtilities(decorationColors, ['group-hover']);
+    },
   ],
 };

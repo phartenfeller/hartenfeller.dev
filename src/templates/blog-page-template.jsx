@@ -10,6 +10,7 @@ import { postType } from '../components/blog/Blogpost';
 import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
 import Gist from '../components/blog/Gist';
+import LinkedH2 from '../components/blog/LinkedH2';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
 import Layout from '../components/layout';
@@ -120,7 +121,8 @@ const BlogPageTemplate = ({ data }) => {
   const components = {
     code: CodeHandler,
     // eslint-disable-next-line react/prop-types
-    pre: ({ children }) => <>{children}</>, // handled by code
+    pre: ({ children }) => <>{children}</>, // handled by codeh
+    h2: LinkedH2,
     Gist,
     // eslint-disable-next-line react/prop-types
     BlogImg: ({ filename, alt }) => (

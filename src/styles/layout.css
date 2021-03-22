@@ -20,10 +20,6 @@ body {
   backdrop-filter: blur(10px);
 }
 
-.font-merriweather {
-  font-family: 'Merriweather', serif;
-}
-
 .brown-header-text {
   @apply font-merriweather text-title-brown;
 }
