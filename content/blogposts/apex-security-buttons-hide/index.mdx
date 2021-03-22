@@ -85,7 +85,7 @@ apex.submit({ request: 'SAVE', validate: false });
 
 When creating a validation there is a setting called `always execute` that is **disabled by default**. Its description says: _"Specify whether this validation is always executed. If set to On, this validation is always evaluated, irrespective of the Execute Validations setting defined against the button that submitted the page. If set to Off, this validation is only evaluated if the triggering button has an Execute Validations setting of On."_
 
-Luckily that does not mean the validation parameter to `apex.submit` defines whether the validations are performed. The `execute validations` setting on the button is **enabled by default** and seems to prevent the validation option of the JS call of apex.submit on a server-side level. So by default, the validate option is ignored by the database.
+Luckily that does not mean the validation parameter to `apex.submit` defines whether the validations are performed. The `execute validations` setting on buttons is **enabled by default** and seems to prevent the validation option of the JS call of apex.submit on a server-side level. Only after disabling it the JS validation setting is used. So by default, the validate option is ignored by the database.
 
 ## Conclusion
 
