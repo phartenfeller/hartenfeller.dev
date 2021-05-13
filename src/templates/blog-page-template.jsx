@@ -13,6 +13,7 @@ import Gist from '../components/blog/Gist';
 import LinkedH2 from '../components/blog/LinkedH2';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
+import YouTubeEmbed from '../components/blog/YouTubeEmbed';
 import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
@@ -140,6 +141,7 @@ const BlogPageTemplate = ({ data }) => {
         classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
       />
     ),
+    YouTubeEmbed,
   };
 
   const meta = getMeta({
