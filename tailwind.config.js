@@ -1,9 +1,9 @@
 const plugin = require('tailwindcss/plugin');
 const colors = require('tailwindcss/colors');
-const _ = require('lodash');
 
 module.exports = {
-  purge: ['./src/**/*.jsx', './src/**/*.js'],
+  mode: 'jit',
+  purge: ['./src/**/*.{jsx,js}'],
   theme: {
     extend: {
       opacity: {
