@@ -20,7 +20,7 @@ import SEO from '../components/seo';
 import '../styles/blog.css';
 
 export const query = graphql`
-  query($id: String!) {
+  query ($id: String!) {
     post: mdx(id: { eq: $id }) {
       frontmatter {
         title
@@ -201,6 +201,7 @@ const BlogPageTemplate = ({ data }) => {
                 text="Tweet about this"
                 newWindow
               />
+              <LinkButton type="rss" link="/rss.xml" newWindow />
             </div>
             <h2 className="mb-8 text-2xl brown-header-text font-semibold">
               Comments
