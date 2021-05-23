@@ -10,9 +10,32 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import '../styles/layout.css';
 
-const Layout = ({ children }) => (
+const Layout = ({ children, header = false }) => (
   <>
     <div className="min-h-screen flex flex-col">
+      {header ? (
+        <header className="bg-red-100 px-4 py-3 flex select-none">
+          <Link
+            tabIndex="-1"
+            to="/"
+            className="text-2xl brown-header-text font-extrabold mr-12 px-2 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
+          >
+            hartenfeller.dev
+          </Link>
+          <Link
+            to="/"
+            className="text-xl hover:bg-red-200 px-2 rounded mr-5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
+          >
+            Home
+          </Link>
+          <Link
+            to="/"
+            className="text-xl hover:bg-red-200 px-2 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
+          >
+            Blog
+          </Link>
+        </header>
+      ) : null}
       <main className="flex-grow">{children}</main>
       <footer
         className="py-4 px-8 text-white text-sm md:text-md md:font-semibold shadow-lg grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
@@ -48,6 +71,11 @@ const Layout = ({ children }) => (
 
 Layout.propTypes = {
   children: PropTypes.node.isRequired,
+  header: PropTypes.bool,
+};
+
+Layout.defaultProps = {
+  header: false,
 };
 
 export default Layout;

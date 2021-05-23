@@ -84,7 +84,22 @@ const types = {
     classes:
       'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
     iconColor: 'text-orange-600',
-    strokeWidth: '2',
+  },
+  slides: {
+    icon: svg.slides,
+    text: 'Slides',
+    textColor: 'text-black',
+    classes:
+      'shadow bg-lightBlue-400 hover:bg-lightBlue-600 focus:ring-lightBlue-500 ring-offset-2',
+    iconColor: 'text-lightBlue-700',
+  },
+  video: {
+    icon: svg.video,
+    text: 'Video',
+    textColor: 'text-black',
+    classes:
+      'shadow bg-emerald-400 hover:bg-emerald-600 focus:ring-emerald-500 ring-offset-2',
+    iconColor: 'text-emerald-700',
   },
 };
 
@@ -110,11 +125,13 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
           <path
             fillRule="evenodd"
             d={options.icon.path}
-            strokeWidth={options.strokeWidth}
+            strokeWidth={options.icon.strokeWidth}
             clipRule="evenodd"
           />
         </svg>
-        <span className={`${options.textColor}`}>{text || options.text}</span>
+        <span className={`${options.textColor}  tracking-wide`}>
+          {text || options.text}
+        </span>
       </div>
     </ButtonLink>
   );
@@ -133,18 +150,3 @@ LinkButton.defaultProps = {
 };
 
 export default LinkButton;
-
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  class="h-6 w-6"
-  fill="none"
-  viewBox="0 0 24 24"
-  stroke="currentColor"
->
-  <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
-    d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"
-  />
-</svg>;
