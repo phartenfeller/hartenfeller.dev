@@ -77,6 +77,9 @@ const Projects = () => (
       <ProjectComponent project={projects.minesweeper} />
       <ProjectComponent project={projects.cyf} reversed />
     </div>
+    <div className="text-center mt-8">
+      <LinkButton type="talks" link="/talks" text="List of my talks" />
+    </div>
   </div>
 );
 

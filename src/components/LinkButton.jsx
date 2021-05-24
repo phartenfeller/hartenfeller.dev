@@ -101,6 +101,13 @@ const types = {
       'shadow bg-emerald-400 hover:bg-emerald-600 focus:ring-emerald-500 ring-offset-2',
     iconColor: 'text-emerald-700',
   },
+  talks: {
+    icon: svg.microphone,
+    text: 'Talks',
+    textColor: 'text-gray-700',
+    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
+    iconColor: 'text-gray-400',
+  },
 };
 
 const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
