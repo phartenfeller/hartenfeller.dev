@@ -214,7 +214,7 @@ const BlogPageTemplate = ({ data }) => {
             </Link>
             <span className="mx-4 text-blueGray-900">•</span>
             <Link to="/blog/" className="text-blueGray-600 hover:underline">
-              Other Blogposts
+              All Blogposts
             </Link>
           </footer>
         </div>
