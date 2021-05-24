@@ -146,8 +146,9 @@ module.exports = {
                 url: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
                 guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
                 enclosure: {
-                  url: edge.node.frontmatter.titleImage.childImageSharp.fixed
-                    .src,
+                  url:
+                    site.siteMetadata.siteUrl +
+                    edge.node.frontmatter.titleImage.childImageSharp.fixed.src,
                   type: 'image/jpeg',
                   length: null,
                 },
