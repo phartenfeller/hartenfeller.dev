@@ -77,6 +77,37 @@ const types = {
       'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
     iconColor: 'text-gray-400',
   },
+  rss: {
+    icon: svg.rss,
+    text: 'RSS',
+    textColor: 'text-gray-700',
+    classes:
+      'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
+    iconColor: 'text-orange-600',
+  },
+  slides: {
+    icon: svg.slides,
+    text: 'Slides',
+    textColor: 'text-black',
+    classes:
+      'shadow bg-lightBlue-400 hover:bg-lightBlue-600 focus:ring-lightBlue-500 ring-offset-2',
+    iconColor: 'text-lightBlue-700',
+  },
+  video: {
+    icon: svg.video,
+    text: 'Video',
+    textColor: 'text-black',
+    classes:
+      'shadow bg-emerald-400 hover:bg-emerald-600 focus:ring-emerald-500 ring-offset-2',
+    iconColor: 'text-emerald-700',
+  },
+  talks: {
+    icon: svg.microphone,
+    text: 'Talks',
+    textColor: 'text-gray-700',
+    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
+    iconColor: 'text-gray-400',
+  },
 };
 
 const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
@@ -98,9 +129,16 @@ const LinkButton = ({ type, link, text = undefined, newWindow = false }) => {
           stroke={options.icon.stroke ? 'currentColor' : null}
           viewBox="0 0 24 24"
         >
-          <path fillRule="evenodd" d={options.icon.path} clipRule="evenodd" />
+          <path
+            fillRule="evenodd"
+            d={options.icon.path}
+            strokeWidth={options.icon.strokeWidth}
+            clipRule="evenodd"
+          />
         </svg>
-        <span className={`${options.textColor}`}>{text || options.text}</span>
+        <span className={`${options.textColor}  tracking-wide`}>
+          {text || options.text}
+        </span>
       </div>
     </ButtonLink>
   );

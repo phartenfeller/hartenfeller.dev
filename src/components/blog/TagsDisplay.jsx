@@ -18,7 +18,10 @@ const TagsDisplay = ({ tags }) => {
       </svg>
       {tags.map((tag, i) => (
         <span key={tag} className="mr-2">
-          <Link className="hover:underline" to={getTagUrl(tag)}>
+          <Link
+            className="rounded hover:decoration-gray-400 hover:underline focus:outline-none focus:ring-2 focus:ring-red-300"
+            to={getTagUrl(tag)}
+          >
             {tag}
           </Link>
           {i < tags.length - 1 ? ',' : null}

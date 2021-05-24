@@ -1,35 +1,11 @@
-import { Link } from 'gatsby';
 import React from 'react';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
 const Imprint = () => (
-  <Layout>
+  <Layout header>
     <SEO title="Imprint" meta={[{ name: 'robots', content: 'noindex' }]} />
-    <header className="grid grid-cols-3 py-2">
-      <div className="flex">
-        <Link
-          className="text-red-800 py-2 px-4 self-center font-semibold tracking-wider"
-          to="/"
-        >
-          <svg
-            className="inline-block h-8 mr-2 text-red-700"
-            width="24"
-            height="24"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M12.7 13.25l-.573.614a.2.2 0 000 .272l5.327 5.707a.2.2 0 00.292 0l1.127-1.206a.2.2 0 000-.273l-3.945-4.228a.2.2 0 010-.272l3.945-4.228a.2.2 0 000-.273l-1.127-1.206a.2.2 0 00-.292 0L12.7 13.25z"
-            />
-          </svg>
-          BACK
-        </Link>
-      </div>
-      <h1 className="text-3xl text-center">Imprint</h1>
-    </header>
+    <h1 className="text-3xl text-center my-6">Imprint</h1>
     <div className="m-auto w-3/4 md:w-1/2 mb-8">
       <h2 className="text-2xl my-4">Angaben gem&auml;&szlig; &sect; 5 TMG</h2>
       <p className="text-gray-800">

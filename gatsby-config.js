@@ -5,7 +5,7 @@ require('dotenv').config({
 module.exports = {
   siteMetadata: {
     title: `Philipp Hartenfeller`,
-    description: `Portfolio of software developer Philipp Hartenfeller`,
+    description: `Blog and Portfolio of software developer Philipp Hartenfeller`,
     author: `Philipp Hartenfeller`,
     siteUrl: `https://hartenfeller.dev`,
   },
@@ -121,5 +121,66 @@ module.exports = {
       },
     },
     `gatsby-plugin-image`,
+    {
+      resolve: `gatsby-plugin-feed`,
+      options: {
+        query: `
+          {
+            site {
+              siteMetadata {
+                title
+                description
+                siteUrl
+                site_url: siteUrl
+              }
+            }
+          }
+        `,
+        feeds: [
+          {
+            serialize: ({ query: { site, allMdx } }) =>
+              allMdx.edges.map((edge) => ({
+                title: edge.node.frontmatter.title,
+                description: edge.node.frontmatter.description,
+                date: edge.node.frontmatter.date,
+                url: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
+                guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
+                enclosure: {
+                  url:
+                    site.siteMetadata.siteUrl +
+                    edge.node.frontmatter.titleImage.childImageSharp.fixed.src,
+                  type: 'image/jpeg',
+                  length: null,
+                },
+              })),
+            query: `
+              {
+                allMdx(sort: {fields: frontmatter___date, order: DESC}) {
+                  edges {
+                    node {
+                      frontmatter {
+                        title
+                        description
+                        date
+                        titleImage {
+                          childImageSharp {
+                            fixed(toFormat: JPG, jpegQuality: 50) {
+                              src
+                            }
+                          }
+                        }
+                      }
+                      slug
+                    }
+                  }
+                }
+              }            
+            `,
+            output: '/rss.xml',
+            title: 'Philipp Hartenfeller Blog RSS Feed',
+          },
+        ],
+      },
+    },
   ],
 };
