@@ -145,7 +145,12 @@ module.exports = {
                 date: edge.node.frontmatter.date,
                 url: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
                 guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
-                // custom_elements: [{ 'content:encoded': edge.node.html }],
+                enclosure: {
+                  url: edge.node.frontmatter.titleImage.childImageSharp.fixed
+                    .src,
+                  type: 'image/jpeg',
+                  length: null,
+                },
               })),
             query: `
               {
@@ -156,9 +161,15 @@ module.exports = {
                         title
                         description
                         date
+                        titleImage {
+                          childImageSharp {
+                            fixed(toFormat: JPG, jpegQuality: 50) {
+                              src
+                            }
+                          }
+                        }
                       }
                       slug
-                      html
                     }
                   }
                 }
