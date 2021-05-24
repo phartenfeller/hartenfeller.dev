@@ -36,12 +36,14 @@ const PostPreviewHome = ({ postData }) => {
             </h3>
             <p className="leading-relaxed mb-5 text-gray-700">{description}</p>
           </div>
-          <Link
-            to={`/blog/${slug}`}
-            className="py-3 pr-3 text-red-700 uppercase hover:text-red-900 hover:underline"
-          >
-            read post
-          </Link>
+          <div className="my-3">
+            <Link
+              to={`/blog/${slug}`}
+              className="rounded -ml-3 p-3 text-red-700 uppercase hover:decoration-red-300 hover:underline focus:outline-none focus:ring-2 focus:ring-red-300"
+            >
+              read post
+            </Link>
+          </div>
         </div>
       </div>
     </div>
