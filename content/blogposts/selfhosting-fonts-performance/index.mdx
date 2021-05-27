@@ -1,17 +1,17 @@
 ---
 title: >
-  Oracle: Generate DML scripts for images / blobs
+  Improve Sitespeed by selfhosting fonts
 date: 2021-05-27
-description: I want to share a little script I wrote which generates a DML scripts for blob values like images. The output script can be used in your schema install script with your other master data.
+description: The loading speed of my site improved dramaticly in unideal conditions by not loading fonts from Google Fonts and selhosting them instead.
 slug: selfhosting-fonts-performance
-titleImage: ./sarandy-westfall-qqd8APhaOg4-unsplash.jpeg
-titleImageAlt: multiple polaroid photos
+titleImage: ./raphael-schaller-GkinCd2enIY-unsplash.jpg
+titleImageAlt: typesetting in wood
 titleImageSource:
   {
-    text: 'Photo by sarandy westfall',
-    href: 'https://unsplash.com/photos/qqd8APhaOg4',
+    text: 'Photo by Raphael Schaller',
+    href: 'https://unsplash.com/photos/GkinCd2enIY',
   }
-tags: ['Oracle', 'APEX']
+tags: ['Web-Development', 'SEO']
 ghCommentsIssueId: 21
 ---
 
@@ -47,10 +47,24 @@ The results are the following:
 
 As you can see these fonts actually cause two connections to different servers. Rows 12, 13 and 18 are the ones caused by the fonts. The interesting part is the on I highlighted in red borders. This is exactly the cost of an additional connection consisting of a DNS lookup, the connection itself and establishing an SSL encrypted connection.
 
-Added together these connection buildups cost around 4 seconds of the total of 10 seconds. This is very much for just some fonts.
+Added together these connection buildups cost around 4 seconds of the total of 8 seconds (the blue bar means "document complete", the content loaded after that is not a problem). This is very much for just two ~20kb fonts. The yellow bar indicates that the document is interactive at almost the 5 second mark.
 
 ## Selhosting the fonts
 
 I quickly found the tool [google-webfonts-helper](https://google-webfonts-helper.herokuapp.com/) that makes it easy to setup selhosting for these fonts.
 
-You can choose your desired font, select the needed styles and it gives you CSS you can put into your page and an download for the actual font files that you need to host.
+You can choose your desired font, select the needed styles and it gives you a CSS Snippet you can include to your page and an download for the actual font files that you need to host.
+
+![](./google-webfonts-helper.png)
+
+## The results
+
+After deploying my updated site I was excited to run the test again and check the impact of that simple change.
+
+![](./selfhosting-fonts-performance-after.png)
+
+The results are phenomenal. By just selhosting the fonts point where the document got interactive was almost halved (~5s to 2.5s). The document complete event was reduced from 8s to 6.5s. The first contentful paint was also reduced from 5s to ~2.2s.
+
+Keep in mind that the improvements are only so big because I tested them in the worst conditions (slow network and low-end device). But these are still huge improvements for such a low effort.
+
+As [Google's Web Vitals](https://web.dev/vitals/) are becoming search engine ranking relevant changes like these can have a huge impact. Also don't forget the users currently in a "Funkloch" that will a have a way better experience :).
