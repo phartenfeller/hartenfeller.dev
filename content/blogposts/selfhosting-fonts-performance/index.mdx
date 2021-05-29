@@ -2,7 +2,7 @@
 title: >
   Improve Sitespeed by selfhosting fonts
 date: 2021-05-27
-description: The loading speed of my site improved dramaticly in unideal conditions by not loading fonts from Google Fonts and selhosting them instead.
+description: The loading speed of my site improved dramaticly in unideal conditions by not loading fonts from Google Fonts but selhosting them instead.
 slug: selfhosting-fonts-performance
 titleImage: ./raphael-schaller-GkinCd2enIY-unsplash.jpg
 titleImageAlt: typesetting in wood
@@ -15,11 +15,11 @@ tags: ['Web-Development', 'SEO']
 ghCommentsIssueId: 21
 ---
 
-Jake Archibald has a [super interesting blog series where he analyzes the performance of webpages of Formula 1 teams](https://jakearchibald.com/2021/f1-perf-part-1/).
+[Jake Archibald](https://twitter.com/jaffathecake) has a [super interesting blog series where he analyzes the performance of webpages of Formula 1 teams](https://jakearchibald.com/2021/f1-perf-part-1/).
 
-One thing that struck me was loading content from a different server than the main server be pretty costly because setting up a new connection with a new server can take some time. Jake Archibald described this in more detail [here](https://jakearchibald.com/2021/f1-perf-part-1/#avoid-blocking-resources-on-other-servers).
+One thing that struck me was that loading content from a different server than the main server is pretty costly because setting up a new secure connection with a new server takes some time. Jake Archibald described this in more detail [here](https://jakearchibald.com/2021/f1-perf-part-1/#avoid-blocking-resources-on-other-servers).
 
-In an ideal scenario where the user device is powerful and has a perfect cable internet connection this is not really a problem. But this is not always the case as lowend phones and bad mobile internet is not uncommon (especially in Germany...).
+In an ideal scenario where the user device is powerful and has a perfect cable internet connection this is not really a problem. But this is not always the case as lowend phones and bad cellular data is not uncommon (especially in Germany...).
 
 ## Loading Fonts from Google
 
@@ -35,17 +35,17 @@ On my website (this one you are currently reading) I used to load custom fonts f
 
 ## The impact
 
-This is super easy to setup but has the downside that this font is loaded from a different source.
+This is super easy to setup but has this downside that the font is loaded from a different source.
 
-To measure the exact impact I used [WebPageTest](https://www.webpagetest.org/) (like Jake Archibald) which gives deep insights on what takes how long to load.
+To measure the exact impact I used [WebPageTest](https://www.webpagetest.org/) (like Jake Archibald used in his tests) which gives deep insights on what takes how long to load.
 
 I used the default device (Motorla G4) and set the network speed to slow 3G to **test the impact in worst conditions**.
 
-The results are the following:
+The results are the following waterfall diagram:
 
-![](./selfhosting-fonts-performance-before.png)
+<BlogImg filename="selfhosting-fonts-performance-before.png" alt="sas" />
 
-As you can see these fonts actually cause two connections to different servers. Rows 12, 13 and 18 are the ones caused by the fonts. The interesting part is the on I highlighted in red borders. This is exactly the cost of an additional connection consisting of a DNS lookup, the connection itself and establishing an SSL encrypted connection.
+As you can see in rows 12, 13 and 18 these fonts actually cause two connections to different servers. The interesting part is the on I highlighted in red borders. This is exactly the cost of an additional connection consisting of a DNS lookup, the connection itself and establishing an SSL encrypted connection.
 
 Added together these connection buildups cost around 4 seconds of the total of 8 seconds (the blue bar means "document complete", the content loaded after that is not a problem). This is very much for just two ~20kb fonts. The yellow bar indicates that the document is interactive at almost the 5 second mark.
 
@@ -55,16 +55,16 @@ I quickly found the tool [google-webfonts-helper](https://google-webfonts-helper
 
 You can choose your desired font, select the needed styles and it gives you a CSS Snippet you can include to your page and an download for the actual font files that you need to host.
 
-![](./google-webfonts-helper.png)
+<BlogImg filename="google-webfonts-helper.png" alt="" />
 
 ## The results
 
 After deploying my updated site I was excited to run the test again and check the impact of that simple change.
 
-![](./selfhosting-fonts-performance-after.png)
+<BlogImg filename="selfhosting-fonts-performance-after.png" alt="assa" />
 
-The results are phenomenal. By just selhosting the fonts point where the document got interactive was almost halved (~5s to 2.5s). The document complete event was reduced from 8s to 6.5s. The first contentful paint was also reduced from 5s to ~2.2s.
+The results are phenomenal. By just selhosting the fonts the point where the document got interactive was almost halved (~5s to 2.5s). The document complete event was reduced from 8s to 6.5s. The first contentful paint was also reduced from 5s to ~2.2s.
 
 Keep in mind that the improvements are only so big because I tested them in the worst conditions (slow network and low-end device). But these are still huge improvements for such a low effort.
 
-As [Google's Web Vitals](https://web.dev/vitals/) are becoming search engine ranking relevant changes like these can have a huge impact. Also don't forget the users currently in a "Funkloch" that will a have a way better experience :).
+As [Google's Web Vitals](https://web.dev/vitals/) are becoming search engine ranking relevant, changes like these can have a huge impact for SEO. Also don't forget the users currently in a "Funkloch" that will a have a way better experience loading the page :).

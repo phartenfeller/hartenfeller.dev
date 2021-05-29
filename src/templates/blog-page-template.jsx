@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
+import BlogImagePopup from '../components/blog/BlogImagePopup';
 import { postType } from '../components/blog/Blogpost';
 import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
@@ -129,7 +130,7 @@ const BlogPageTemplate = ({ data }) => {
     BlogImg: ({ filename, alt }) => (
       <BlogImageGetter
         filename={filename}
-        classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
+        classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4 cursor-zoom-in"
         alt={alt}
       />
     ),
@@ -219,6 +220,7 @@ const BlogPageTemplate = ({ data }) => {
           </footer>
         </div>
       </article>
+      <BlogImagePopup />
     </Layout>
   );
 };
