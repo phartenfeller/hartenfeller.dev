@@ -3,7 +3,6 @@ import { GatsbyImage } from 'gatsby-plugin-image';
 import PropTypes from 'prop-types';
 import React from 'react';
 import useImagePreview from '../../state/useImagePreview';
-import BlogImagePopup from './BlogImagePopup';
 
 const BlogImageGetter = ({ filename, classes, alt }) => {
   const { open } = useImagePreview();

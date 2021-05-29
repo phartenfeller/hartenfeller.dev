@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import useImagePreview from '../../state/useImagePreview';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import useImagePreview from '../../state/useImagePreview';
 
 export default function BlogImagePopup() {
   const { isOpen, close, imgSrc, alt, width, height } = useImagePreview();
@@ -71,7 +71,7 @@ export default function BlogImagePopup() {
                 </button>
               </div>
               <div className="mt-2 cursor-move">
-                <TransformWrapper>
+                <TransformWrapper wheel={{ step: 12 }}>
                   <TransformComponent>
                     <img
                       width={width}
