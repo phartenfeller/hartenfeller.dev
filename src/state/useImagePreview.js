@@ -19,6 +19,10 @@ const useImagePreview = create((set, get) => ({
   close: () => {
     set(() => ({
       isOpen: false,
+    }));
+  },
+  clear: () => {
+    set(() => ({
       imgSrc: null,
       alt: null,
       height: null,
