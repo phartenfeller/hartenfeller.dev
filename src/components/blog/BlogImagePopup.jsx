@@ -28,7 +28,7 @@ export default function BlogImagePopup() {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Dialog.Overlay className="fixed inset-0 backdrop-filter backdrop-blur-lg transition-opacity overflow-hidden" />
+            <Dialog.Overlay className="fixed inset-0 bg-gray-500 bg-opacity-25 backdrop-filter backdrop-blur-lg transition-opacity overflow-hidden" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
@@ -47,7 +47,7 @@ export default function BlogImagePopup() {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="inline-block z-50 overflow-hidden shadow-xl transform transition-all select-none">
+            <div className="inline-block z-50 overflow-hidden transform transition-all select-none">
               <div className="text-right mt-2">
                 <button
                   type="button"
@@ -77,7 +77,7 @@ export default function BlogImagePopup() {
                       width={width}
                       height={height}
                       src={imgSrc}
-                      className=""
+                      className="object-contain"
                       alt={alt}
                       style={{ maxWidth: '90vw', maxHeight: '90vh' }}
                     />
