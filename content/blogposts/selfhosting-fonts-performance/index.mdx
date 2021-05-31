@@ -1,0 +1,79 @@
+---
+title: >
+  The cost of HTTPS connections - improve site speed by self hosting fonts
+date: 2021-05-27
+description: The loading speed of my site improved dramatically in unideal conditions by not loading fonts from Google Fonts but self hosting them instead.
+slug: selfhosting-fonts-performance
+titleImage: ./raphael-schaller-GkinCd2enIY-unsplash.jpg
+titleImageAlt: typesetting in wood
+titleImageSource:
+  {
+    text: 'Photo by Raphael Schaller',
+    href: 'https://unsplash.com/photos/GkinCd2enIY',
+  }
+tags: ['Web-Development', 'SEO']
+ghCommentsIssueId: 21
+---
+
+[Jake Archibald](https://twitter.com/jaffathecake) has a [super interesting blog series where he analyzes the performance of webpages of Formula 1 teams](https://jakearchibald.com/2021/f1-perf-part-1/).
+
+One thing that struck me was that loading content from a different server than the main server is pretty costly because setting up a new secure connection with a new server takes some time. Jake Archibald described this in more detail [here](https://jakearchibald.com/2021/f1-perf-part-1/#avoid-blocking-resources-on-other-servers).
+
+In an ideal scenario where the user device is powerful and has a perfect cable internet connection, this is not a problem. But this is not always the case as low-end phones and bad cellular data are not uncommon (especially in Germany...).
+
+## Loading Fonts from Google
+
+On my website (this one you are currently reading) I used to load custom fonts from [Google Fonts](https://fonts.google.com/). This is super easy to set up you just need to set some CSS:
+
+```css
+@import url('https://fonts.googleapis.com/css?family=Merriweather&display=swap');
+
+.text-merryweather {
+  font-family: 'Merriweather', 'serif';
+}
+```
+
+## The impact
+
+This is super easy to set up but has this downside that the font is loaded from a different source.
+
+To measure the exact impact I used [WebPageTest](https://www.webpagetest.org/) (like Jake Archibald used in his tests) which gives deep insights on what takes how long to load.
+
+I used the default device (Motorola G4) and set the network speed to slow 3G to **test the impact in the worst conditions**.
+
+The results are the following waterfall diagram:
+
+<BlogImg
+  filename="selfhosting-fonts-performance-before.png"
+  alt="waterfall diagram of all http connections with fonts hosted by google"
+/>
+
+As you can see in rows 12, 13, and 18 these fonts cause two connections to different servers. The interesting part is the one I highlighted in red borders. This is exactly the cost of an additional connection consisting of a DNS lookup, the connection itself, and establishing an SSL encrypted connection.
+
+Added together these connection buildups cost around 4 seconds of the total of 8 seconds (the blue bar means "document complete", the content loaded after that is not a problem). This is very much for just two ~20kb fonts. The yellow bar indicates that the document is interactive at almost the 5-second mark.
+
+## Selhosting the fonts
+
+I quickly found the tool [google-webfonts-helper](https://google-webfonts-helper.herokuapp.com/) that makes it easy to set up sell hosting for these fonts.
+
+You can choose your desired font, select the needed styles and it gives you a CSS Snippet you can include on your page and a download for the actual font files that you need to host.
+
+<BlogImg
+  filename="google-webfonts-helper.png"
+  alt="screenshot of the google-webfonts-helper UI"
+/>
+
+## The results
+
+After deploying my updated site I was excited to run the test again and check the impact of that simple change.
+
+<BlogImg
+  filename="selfhosting-fonts-performance-after.png"
+  alt="waterfall diagram of all http connections with fonts self hosted"
+/>
+
+The results are phenomenal. By just self hosting the fonts the point where the document got interactive was almost halved (~5s to 2.5s). The document complete event was reduced from 8s to 6.5s. The first contentful paint was also reduced from 5s to ~2.2s.
+
+Keep in mind that the improvements are only so big because I tested them in the worst conditions (slow network and low-end device). But these are still huge improvements for such a low effort.
+
+As [Google's Web Vitals](https://web.dev/vitals/) are becoming search engine ranking relevant, changes like these can have a huge impact on SEO. Also, don't forget the users currently in a "Funkloch" that will have a better experience loading the page :).
