@@ -6,6 +6,9 @@ module.exports = {
   purge: ['./src/**/*.{jsx,js}'],
   theme: {
     extend: {
+      cursor: {
+        'zoom-in': 'zoom-in',
+      },
       opacity: {
         94: '.94',
       },

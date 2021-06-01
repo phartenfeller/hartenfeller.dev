@@ -69,7 +69,8 @@ module.exports = {
           {
             resolve: `gatsby-remark-images`,
             options: {
-              maxWidth: 630,
+              maxWidth: 800,
+              linkImagesToOriginal: false,
             },
           },
           `gatsby-remark-copy-linked-files`,
@@ -84,6 +85,9 @@ module.exports = {
                 HTML: `Hypertext Markup Language`,
                 UX: `User Experience`,
                 UI: `User Interface`,
+                HTTP: `Hypertext Transfer Protocol`,
+                HTTPS: `Hypertext Transfer Protocol Secure`,
+                SSL: `Secure Sockets Layer`,
               },
             },
           },
