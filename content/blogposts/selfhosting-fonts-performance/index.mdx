@@ -41,14 +41,14 @@ To measure the exact impact I used [WebPageTest](https://www.webpagetest.org/) (
 
 I used the default device (Motorola G4) and set the network speed to slow 3G to **test the impact in the worst conditions**.
 
-The results are the following waterfall diagram:
+You can see the results in the following waterfall diagram:
 
 <BlogImg
   filename="selfhosting-fonts-performance-before.png"
   alt="waterfall diagram of all http connections with fonts hosted by google"
 />
 
-As you can see in rows 12, 13, and 18 these fonts cause two connections to different servers. The interesting part is the one I highlighted in red borders. This is exactly the cost of an additional connection consisting of a DNS lookup, the connection itself, and establishing an SSL encrypted connection.
+In rows 12, 13, and 18 these fonts cause two connections to different servers. The interesting part is the one I highlighted in red borders. This is exactly the cost of an additional HTTPS connection consisting of a DNS lookup, the connection itself, and establishing an SSL encrypted connection.
 
 Added together these connection buildups cost around 4 seconds of the total of 8 seconds (the blue bar means "document complete", the content loaded after that is not a problem). This is very much for just two ~20kb fonts. The yellow bar indicates that the document is interactive at almost the 5-second mark.
 
