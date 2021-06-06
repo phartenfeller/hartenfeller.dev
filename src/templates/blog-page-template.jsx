@@ -192,9 +192,8 @@ const BlogPageTemplate = ({ data }) => {
                   href={gitHubUrl}
                   className="float-right text-sm leading-5 font-medium text-gray-700 underline hover:text-gray-400 focus:outline-none rounded focus:ring focus:ring-red-300"
                 >
-                  <time dateTime={lastUpdate}>
-                    Last updated: {lastUpdateFormatted}
-                  </time>
+                  <span>Last updated: </span>
+                  <time dateTime={lastUpdate}>{lastUpdateFormatted}</time>
                 </a>
               </div>
             ) : null}
