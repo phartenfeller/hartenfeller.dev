@@ -10,6 +10,7 @@ import BlogImagePopup from '../components/blog/BlogImagePopup';
 import { postType } from '../components/blog/Blogpost';
 import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
+import CustomH3 from '../components/blog/CustomH3';
 import Gist from '../components/blog/Gist';
 import LinkedH2 from '../components/blog/LinkedH2';
 import ScrollTracker from '../components/blog/ScrollTracker';
@@ -27,6 +28,8 @@ export const query = graphql`
         title
         date
         formattedDate: date(formatString: "MMMM DD, YYYY")
+        lastUpdate
+        lastUpdateFormatted: lastUpdate(formatString: "MMMM DD, YYYY")
         description
         slug
         titleImage {
@@ -49,6 +52,7 @@ export const query = graphql`
       }
       body
       id
+      fileAbsolutePath
     }
   }
 `;
@@ -105,7 +109,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
-  const { frontmatter, body } = post;
+  const { frontmatter, body, fileAbsolutePath } = post;
   const {
     title,
     date,
@@ -118,6 +122,8 @@ const BlogPageTemplate = ({ data }) => {
     tags,
     ghCommentsIssueId,
     fixedTitleImage,
+    lastUpdate,
+    lastUpdateFormatted,
   } = frontmatter;
 
   const components = {
@@ -125,6 +131,7 @@ const BlogPageTemplate = ({ data }) => {
     // eslint-disable-next-line react/prop-types
     pre: ({ children }) => <>{children}</>, // handled by codeh
     h2: LinkedH2,
+    h3: CustomH3,
     Gist,
     // eslint-disable-next-line react/prop-types
     BlogImg: ({ filename, alt }) => (
@@ -144,6 +151,10 @@ const BlogPageTemplate = ({ data }) => {
     ),
     YouTubeEmbed,
   };
+
+  const gitHubUrl = `https://github.com/phartenfeller/hartenfeller.dev/commits/master${fileAbsolutePath.substr(
+    fileAbsolutePath.indexOf('/content')
+  )}`;
 
   const meta = getMeta({
     imgSrc: fixedTitleImage.childImageSharp.gatsbyImageData.images.fallback.src,
@@ -175,7 +186,19 @@ const BlogPageTemplate = ({ data }) => {
                 {formattedDate}
               </time>
             </div>
-            <div className="mt-6 mb-16 text-lg text-gray-700 font-light leading-8 font-raleway">
+            {lastUpdate ? (
+              <div className="mb-5">
+                <a
+                  href={gitHubUrl}
+                  className="float-right text-sm leading-5 font-medium text-gray-700 underline hover:text-gray-400 focus:outline-none rounded focus:ring focus:ring-red-300"
+                >
+                  <time dateTime={lastUpdate}>
+                    Last updated: {lastUpdateFormatted}
+                  </time>
+                </a>
+              </div>
+            ) : null}
+            <div className="mt-12 mb-16 text-lg text-gray-700 font-light leading-8 font-raleway">
               {description}
             </div>
           </header>
