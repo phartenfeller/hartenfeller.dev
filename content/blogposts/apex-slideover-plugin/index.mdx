@@ -2,6 +2,7 @@
 title: >
   The APEX Slideover Plug-In
 date: 2021-05-13
+lastUpdate: 2021-06-06
 description: I made an Oracle APEX Plug-In that allows creating Slideover regions which slide in content from the side when opened.
 slug: apex-slideover-plugin
 titleImage: ./apex-slideover-plugin-cover.png
@@ -25,11 +26,11 @@ The Slideover Plug-In is a region Plug-In that is by default hidden and slides i
 ## How to use
 
 - Create a region of the type "Slideover [Plug-In]"
-- Change Layout -> Position to "Body1"
+- Change Layout -> Position to **"Inline Dialogs"** [~~Body1~~](#version-1.1)
 - Put your desired child regions into the created Plug-In region
 - Change settings under the region attributes (optional)
 
-To open the region create a Dynamic Action with the "Action Open". Then select the Plug-In region.
+To open the region create a Dynamic Action with the Action **"Open Region"**. Then select the Plug-In region.
 
 Or with JavaScript:
 
@@ -38,4 +39,14 @@ apex.region('regionStaticID').open();
 apex.region('regionStaticID').close();
 ```
 
+## Video Tutorial
+
 <YouTubeEmbed videoID="sU8LlBcXP4I" />
+
+## Updates
+
+### Version 1.1
+
+In version 1.1 it is now possible (and I recommend doing so) to put the Slideover region inside the "Inline Dialogs" section instead of "Body1".
+
+There was an issue with Faceted Search Regions where the Slideover content was visible for a short time on page load. Putting the Slideover into the "Inline Dialogs" section fixes this because the content is hidden by default.
