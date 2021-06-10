@@ -23,7 +23,7 @@ const Layout = ({ children, header = false }) => (
             hartenfeller.dev
           </Link>
           <Link
-            to="/"
+            to="/blog"
             className="text-xl hover:bg-red-200 px-2 rounded mr-5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Home
