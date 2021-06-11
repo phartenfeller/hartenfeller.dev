@@ -2,7 +2,7 @@
 title: >
   The APEX Slideover Plug-In
 date: 2021-05-13
-lastUpdate: 2021-06-06
+lastUpdate: 2021-06-11
 description: I made an Oracle APEX Plug-In that allows creating Slideover regions which slide in content from the side when opened.
 slug: apex-slideover-plugin
 titleImage: ./apex-slideover-plugin-cover.png
@@ -19,7 +19,7 @@ I am proud to share my first public Oracle APEX Plug-In. You can download it on 
   alt="Demo of the slideover in action"
 />
 
-The Demo is avaiable [here](https://apex.oracle.com/pls/apex/hartenfeller_dev/r/slide-over-plugin-demo/slideover-demo).
+The Demo is available [here](https://apex.oracle.com/pls/apex/hartenfeller_dev/r/slide-over-plugin-demo/slideover-demo).
 
 The Slideover Plug-In is a region Plug-In that is by default hidden and slides in from the side when opened. It can slide in from both sides and uses the user-configured Universal Theme styles for APEX Version 21.1. The minimum APEX version to use this Plug-In is 19.2. For more details take a look at the [GitHub Page](https://github.com/phartenfeller/apex-slide-over-plugin).
 
@@ -30,6 +30,8 @@ The Slideover Plug-In is a region Plug-In that is by default hidden and slides i
 - Put your desired child regions into the created Plug-In region
 - Change settings under the region attributes (optional)
 
+### Open a Region
+
 To open the region create a Dynamic Action with the Action **"Open Region"**. Then select the Plug-In region.
 
 Or with JavaScript:
@@ -39,11 +41,72 @@ apex.region('regionStaticID').open();
 apex.region('regionStaticID').close();
 ```
 
+### Configuration
+
+The Plug-In features three attributes that can be configured. You can set a **title**, change the **direction** from which side the Slideover will open, and set a **width** of the Slideover.
+
+<BlogImg
+  filename="apex-slideover-plugin-attributes.png"
+  alt="Screenshot of the attributes window in the APEX Page Designer"
+/>
+
+### Change title
+
+You can use JavaScript to change the title of the Slideover dynamically.
+
+The initial ital title can be set in the APEX Page Designer in the Attributes. If you want to change it afterward you can call `setTitle` on the region:
+
+```js
+apex.region('regionStaticID').setTitle('New Title');
+```
+
+### Change Styles
+
+For APEX 21.1 it uses the CSS variables by universal theme. The slideover will fit nicely into your app.
+
+You can also style the Slideover with custom CSS:
+
+```css
+/* Dark background to draw attention to the slideover */
+slide-over::part(lay-over) {
+  background-color: rgba(90, 41, 41, 0.6);
+}
+
+/* The layover itself */
+slide-over::part(slide-over) {
+  background-color: #ffffd2;
+}
+
+/* Header of the layover */
+slide-over::part(slide-header-text) {
+  font-weight: 300;
+  color: purple;
+}
+
+/* Close button */
+slide-over::part(close-button) {
+  color: purple;
+}
+
+/* Set close button focus outline */
+slide-over::part(close-button):focus {
+  border-color: pink;
+}
+```
+
 ## Video Tutorial
 
 <YouTubeEmbed videoID="sU8LlBcXP4I" />
 
 ## Updates
+
+Download the lastest version [here](https://github.com/phartenfeller/apex-slide-over-plugin/releases).
+
+### Version 1.2
+
+- Bugfix: The Slideover Web Component now gets appended into the form (wwvFlowForm) instead of the body. There was an issue where Date-Pickers in the Slideover caused strange JS issues
+- Slideover Web Components now have a unique ID for better referencing
+- New API to change the Slideover title with JavaScript: `apex.region('staticId').setTitle('New Title');`
 
 ### Version 1.1
 
