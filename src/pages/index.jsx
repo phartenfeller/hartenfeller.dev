@@ -3,7 +3,7 @@ import Hero from '../components/hero';
 import About from '../components/index/About';
 import Contact from '../components/index/Contact';
 import LatestBlogposts from '../components/index/LatestBlogposts';
-import Projects from '../components/index/Projects';
+import ProjectsPreview from '../components/index/ProjectsPreview';
 import SocialLinks from '../components/index/SocialLinks';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
@@ -17,7 +17,7 @@ const IndexPage = () => (
     <SocialLinks />
     <About />
     <LatestBlogposts />
-    <Projects />
+    <ProjectsPreview />
     <div
       style={{
         backgroundImage: `url(${svg})`,
