@@ -14,23 +14,23 @@ const Layout = ({ children, header = false }) => (
   <>
     <div className="min-h-screen flex flex-col">
       {header ? (
-        <header className="bg-red-100 px-4 py-3 flex select-none">
+        <header className="bg-red-100 lg:px-4 py-3 flex select-none">
           <Link
             tabIndex="-1"
             to="/"
-            className="text-2xl brown-header-text font-extrabold mr-12 px-2 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="hidden md:block lg:text-2xl brown-header-text font-extrabold mr-4 lg:mr-12 px-2 rounded focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             hartenfeller.dev
           </Link>
           <Link
             to="/"
-            className="text-xl hover:bg-red-200 px-2 rounded mr-5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="lg:text-xl hover:bg-red-200 px-2 rounded mr-2 lg:mr-5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Home
           </Link>
           <Link
             to="/blog"
-            className="text-xl hover:bg-red-200 px-2 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="lg:text-xl hover:bg-red-200 px-2 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Blog
           </Link>

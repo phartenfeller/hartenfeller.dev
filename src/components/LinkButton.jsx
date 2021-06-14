@@ -52,6 +52,20 @@ const types = {
       'bg-emerald-600 hover:bg-emerald-500 focus: bg-emerald-700 focus:ring-emerald-300',
     iconColor: 'text-emerald-400',
   },
+  red: {
+    icon: svg.compass,
+    text: 'Open',
+    textColor: 'text-white',
+    classes: 'bg-red-500 hover:bg-red-600 focus:ring-red-300',
+    iconColor: 'text-red-300',
+  },
+  cyan: {
+    icon: svg.compass,
+    text: 'Open',
+    textColor: 'text-cyan-900',
+    classes: 'bg-cyan-500 hover:bg-cyan-600 focus:ring-cyan-300',
+    iconColor: 'text-cyan-300',
+  },
   twitter: {
     icon: svg.twitter,
     text: 'Twitter',
@@ -104,6 +118,20 @@ const types = {
   talks: {
     icon: svg.microphone,
     text: 'Talks',
+    textColor: 'text-gray-700',
+    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
+    iconColor: 'text-gray-400',
+  },
+  projects: {
+    icon: svg.pencil,
+    text: 'Projects',
+    textColor: 'text-gray-700',
+    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
+    iconColor: 'text-gray-400',
+  },
+  readBlogpost: {
+    icon: svg.pencil,
+    text: 'Blogpost',
     textColor: 'text-gray-700',
     classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
     iconColor: 'text-gray-400',
