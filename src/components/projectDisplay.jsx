@@ -7,6 +7,7 @@ const ProjectType = PropTypes.shape({
   name: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   screenshot: PropTypes.string.isRequired,
+  screenshotAlt: PropTypes.string.isRequired,
   projectUrl: PropTypes.string.isRequired,
   githubUrl: PropTypes.string,
   buttonType: PropTypes.string.isRequired,
@@ -27,7 +28,7 @@ const ProjectDisplay = ({ project, reversed = false }) => (
           <ImageGetter
             filename={project.screenshot}
             classes="rounded-lg object-contain shadow-lg transform duration-150 ease-in-out hover:scale-105 motion-reduce:translate-z-0"
-            alt="screenshot minesweeper webapp"
+            alt={project.screenshotAlt}
           />
         </a>
       </div>
@@ -54,7 +55,7 @@ ProjectDisplay.defaultProps = {
 const ProjectDisplayList = ({ projects }) => (
   <>
     {projects.map((p, i) => (
-      <ProjectDisplay project={p} reversed={i % 2 === 0} />
+      <ProjectDisplay key={p.name} project={p} reversed={i % 2 === 0} />
     ))}
   </>
 );
