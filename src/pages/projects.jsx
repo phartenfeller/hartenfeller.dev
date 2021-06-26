@@ -10,6 +10,7 @@ const projects = [
   {
     name: 'F1report.xyz',
     screenshot: 'f1-report-positions.png',
+    screenshotAlt: 'screenshot F1report.xyz',
     description: `Data analytics Website with insights about Formula 1 races. Do you want to find out which driver had the best average lap times? Then this is a website for you!`,
     githubUrl: 'https://github.com/phartenfeller/f1-stats-page',
     projectUrl: 'https://f1report.xyz/',
@@ -18,6 +19,7 @@ const projects = [
   {
     name: 'lct.software',
     screenshot: 'lct-software.png',
+    screenshotAlt: 'screenshot lct.software',
     description: `LCT is a testing tool that offers a no code interface for creating tests for Oracle Application Express. I created the Landing page for LCT.`,
     githubUrl: 'https://github.com/mt-ag/LCT-Landingpage',
     projectUrl: 'https://lct.software/',
@@ -26,6 +28,7 @@ const projects = [
   {
     name: 'Minesweeper PWA',
     screenshot: 'minesweeper-screenshot.png',
+    screenshotAlt: 'screenshot minesweepergame.de',
     description: `Minesweeper clone writen in vanilla JS. No Framework used! This is implemented as a PWA so you can install this game and play offline.`,
     githubUrl: 'https://github.com/phartenfeller/minesweeper_js',
     projectUrl: 'https://minesweepergame.de',
@@ -34,6 +37,7 @@ const projects = [
   {
     name: 'Website for CYF',
     screenshot: 'cyftime-screenshot.png',
+    screenshotAlt: 'screenshot cyftime.de',
     description:
       'Website for a friend who makes music. Check his records and the site out.',
     githubUrl: 'https://github.com/phartenfeller/cyftime.de',
@@ -79,6 +83,7 @@ const apexPlugins = [
   {
     name: 'APEX Slideover Plug-In',
     screenshot: 'Slideover-Plugin-Preview.png',
+    screenshotAlt: 'screenshot slideover in use',
     description:
       'A Plug-In for Oracle APEX that adds a Slideover region type. In the Slideover normal regions can be placed which then slide in from the side.',
     githubUrl: 'https://github.com/phartenfeller/apex-slide-over-plugin',

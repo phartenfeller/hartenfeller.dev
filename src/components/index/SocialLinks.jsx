@@ -19,9 +19,9 @@ const links = [
     path: svg.linkedin.path,
   },
   {
-    name: 'Xing',
-    href: 'https://www.xing.com/profile/Philipp_Hartenfeller',
-    path: svg.xing.path,
+    name: 'YouTube',
+    href: 'https://www.youtube.com/channel/UCGVCQ939MmXPjyccfrrA-Yg',
+    path: svg.youtube.path,
   },
 ];
 
