@@ -176,6 +176,16 @@ const BlogPageTemplate = ({ data }) => {
           alt={titleImageAlt}
         />
         <div className="bg-white px-8 pb-8">
+          {titleImageSource.text && titleImageSource.href ? (
+            <div className="pt-3">
+              <a
+                href={titleImageSource.href}
+                className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
+              >
+                {titleImageSource.text}
+              </a>
+            </div>
+          ) : null}
           <header>
             <h1 className="text-4xl leading-12 brown-header-text font-extrabold pt-8">
               {title}
@@ -206,16 +216,7 @@ const BlogPageTemplate = ({ data }) => {
               <MDXRenderer>{body}</MDXRenderer>
             </MDXProvider>
           </main>
-          {titleImageSource.text && titleImageSource.href ? (
-            <div>
-              <a
-                href={titleImageSource.href}
-                className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
-              >
-                {titleImageSource.text}
-              </a>
-            </div>
-          ) : null}
+
           <div className="my-12">
             <div className="pt-4 pb-16 text-center">
               <LinkButton
