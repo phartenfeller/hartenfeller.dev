@@ -1,0 +1,28 @@
+---
+title: >
+  APEX: Optimize your page for big screens
+date: 2020-06-08
+description: Tables make it hard to give hierarchy to data. To underline the importance of certain values in a table you can use chips that highlight the values with colors.
+slug: apex-optimize-big-screens
+titleImage: ./apex-status-chip-hero-hartenfeller.png
+titleImageAlt: Display of status chips
+titleImageSource: { text: null, href: null }
+tags: ['APEX', 'User-Interfaces']
+ghCommentsIssueId: 22
+---
+
+We all now that the Universal theme in Oracle Application Express does a great job to make the pages usable on small screens like smartphones and tablets. But in many cases pages do not scale well on big screens like 4k.
+
+The reason for this is that on big screens everything will be wider. But that is not that great [because reading will become more difficult if the lines are too long](https://baymard.com/blog/line-length-readability).
+
+The simple solution to this is to [contain the content by adding margin on the left and right side](https://css-tricks.com/optimizing-large-scale-displays/#containment). If you are reading this blog on a big screens you can also see that the text does not use the full horizontal width.
+
+## The Quick Fix
+
+In APEX we can achieve the same with a wrapper region and some media query css.
+
+## A scalable solution
+
+This solution is not great if you want to do it at a large scale. Instead we can create a new page template and limit the width in there. Then we can apply that template to all of the pages.
+
+For that we can create a copy of the Standard Templates in Shared Components > Templates
