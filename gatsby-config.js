@@ -181,7 +181,7 @@ module.exports = {
               }            
             `,
             output: '/rss.xml',
-            title: 'Philipp Hartenfeller Blog RSS Feed',
+            title: 'Philipp Hartenfeller`s Blog',
           },
         ],
       },
