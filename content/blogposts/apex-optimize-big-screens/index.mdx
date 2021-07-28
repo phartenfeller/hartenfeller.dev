@@ -1,28 +1,69 @@
 ---
 title: >
-  APEX: Optimize your page for big screens
-date: 2020-06-08
-description: Tables make it hard to give hierarchy to data. To underline the importance of certain values in a table you can use chips that highlight the values with colors.
+  APEX: Reduce the content width of your page for big screens
+date: 2021-07-02
+description: A common best practice to optimize websites for big screens is to limit the content width. We can do this in APEX too with a few lines of CSS.
 slug: apex-optimize-big-screens
-titleImage: ./apex-status-chip-hero-hartenfeller.png
+titleImage: ./alexandru-acea-rmHTCPXUk9g-unsplash-cropped.jpg
 titleImageAlt: Display of status chips
-titleImageSource: { text: null, href: null }
+titleImageSource:
+  {
+    text: 'Photo by Alexandru Acea on Unsplash',
+    href: 'https://unsplash.com/photos/rmHTCPXUk9g',
+  }
 tags: ['APEX', 'User-Interfaces']
 ghCommentsIssueId: 22
 ---
 
 We all now that the Universal theme in Oracle Application Express does a great job to make the pages usable on small screens like smartphones and tablets. But in many cases pages do not scale well on big screens like 4k.
 
-The reason for this is that on big screens everything will be wider. But that is not that great [because reading will become more difficult if the lines are too long](https://baymard.com/blog/line-length-readability).
+The reason for this is that on big screens everything will just use more space. But that is not optimal [because for example reading will become more difficult if the lines are too long](https://baymard.com/blog/line-length-readability).
+
+<BlogImg
+  filename="customer-page-4k.png"
+  alt="Screenshot of a sample customer page with a 4k monitor"
+/>
 
 The simple solution to this is to [contain the content by adding margin on the left and right side](https://css-tricks.com/optimizing-large-scale-displays/#containment). If you are reading this blog on a big screens you can also see that the text does not use the full horizontal width.
 
+We can do the same in APEX by just adding some left and right margin to the content.
+
+<BlogImg
+  filename="customer-page-4k-optimized.png"
+  alt="Screenshot of a sample customer page with a 4k monitor with added margin on the left and right"
+/>
+
 ## The Quick Fix
 
-In APEX we can achieve the same with a wrapper region and some media query css.
+In APEX we can achieve this with a wrapper region and some [CSS media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries).
+
+Just put all the regions you want to have a margin on inside a parent region and set the parent region template to `blank with attributes` so that the region has no styles. Then give a class to the region and add some CSS to the page.
+
+```css
+@media (min-width: 2000px) {
+  .wrapper-region {
+    margin: 0 20%;
+  }
+}
+```
+
+Because we want this to only take effect on big screens use a media query based on the screen size, in the example is set the minimum screen width to `2000px`. Then I added 20% margin to both left and right on the custom class I gave to the parent region.
 
 ## A scalable solution
 
 This solution is not great if you want to do it at a large scale. Instead we can create a new page template and limit the width in there. Then we can apply that template to all of the pages.
 
-For that we can create a copy of the Standard Templates in Shared Components > Templates
+For that we can create a copy of the Standard Templates in Shared Components > Templates. In there we can go to the body section and add a div between the the div with the class `t-Body-contentInner` and the `#BODY#` placeholder. Then we can give a new custom class to that div.
+
+<BlogImg
+  filename="edit-page-template-big-screen-apex.png"
+  alt="Screenshot of the template editor"
+/>
+
+To that class we can apply the same custom css as in the example above. Scrolling down a bit in that Page Template reveals a CSS container were we can put it.
+
+This template can then be applied to all pages we want to use it on. If you use other default templates (like `Right Side Column`) you might want to also create a copy of that template and add the same CSS there.
+
+## Some Pages benefit from larger screens
+
+Do not blindly limit the content width on every page, some content can benefit from wider screens. Tables with many columns and dense dashboards for example make great use of these extra pixels. Test out what works best for your App and also feel free to play around with the breakpoints and margin values.
