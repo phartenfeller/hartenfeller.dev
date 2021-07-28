@@ -68,7 +68,14 @@ function SEO({ description, lang, meta, title }) {
           content: metaDescription,
         },
       ].concat(meta)}
-    />
+    >
+      <script
+        async
+        defer
+        data-domain="hartenfeller.dev"
+        src="https://plausible.hartenfeller.dev/js/plausible.js"
+      />
+    </Helmet>
   );
 }
 
