@@ -1,0 +1,73 @@
+---
+title: >
+  Selfhost Plausible with a preexisting PostgreSQL Database
+date: 2021-07-29
+description: Out of the box self-hosting plausible expects you to create a new separate Postgres database. Here is my journey to make it work with a preexisting one.
+slug: selfhosted-plausible-existing-postgres
+titleImage: ./selfhosted-plausible-existing-postgres.png
+titleImageAlt: Text Selfhosted Plausible preexisting DB
+titleImageSource: { text: null, href: null }
+tags: ['Web-Development', 'Plausible']
+ghCommentsIssueId: 57
+---
+
+[Plausible](https://plausible.io/) is a great analytics platform to get basic information about page visits. The great thing about it is that it is [privacy friendly and GDPR compliant](https://plausible.io/privacy-focused-web-analytics). It does not use any cookies and does not track users.
+
+[Plausible has a self-hosted and cloud option](https://plausible.io/self-hosted-web-analytics). The cloud option does cost money while the self-hosted one is completely free of charge.
+
+They have [documentation on how to set up the self-hosted option](https://plausible.io/docs/self-hosting) with docker-compose. Unfortunately, it expects you to set up a new Postgres DB. There is no documentation on how to use an existing one.
+
+With the help of [this GitHub issue](https://github.com/plausible/analytics/issues/405), I managed to do it. These are the necessary steps:
+
+## Modify Docker-Compose
+
+First you need to change the entry point in the docker-compose file. In the example the the statement is as follows: `command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh db init-admin && /entrypoint.sh run"`. We need to remove the `entrypoint.sh db createdb &&` part.
+
+The entry now should look like this.
+
+```docker-compose
+plausible:
+  image: plausible/analytics:v1.3
+  container_name: plausible
+  command: sh -c "sleep 10 && /entrypoint.sh db migrate && /entrypoint.sh dbinit-admin && /entrypoint.sh run"
+  depends_on:
+  ...
+```
+
+Also don't forget to remove the postgres entry from the example compose files.
+
+## Create DB in Postgres
+
+Then create a new database in your existing Postgres instance. You need to add the DB connection details to the Plausible env file. Unfortunately, I could not get it to work with a separate DB User for that new Database and got an error when Plausible tried to install a Postgres extension. So I used the default Postgres user which is quite suboptimal because it has admin rights. If you know of any solution to this please let me know!
+
+Update the example env file and set the connection details to your new database:
+
+```env
+...
+DATABASE_URL=postgresql://postgres:{password}@{host}:{port}/{new_db_name}
+...
+```
+
+Now you can start the plausible containers with `docker-compose up -d`
+
+## Manually setup clickhouse db
+
+Finally, we need to ssh into the Clickhouse docker container. In there we need to manually create a new database because we removed the part that would have done this from the entry point. Just execute the following command:
+
+```sh
+docker exec -it clickhouse-plausible /bin/bash
+clickhouse-client --query "CREATE DATABASE IF NOT EXISTS plausible_events_db"
+```
+
+Plausible should now start correctly and you can log in with the email and password from the env file.
+
+## Extra: unlock the admin user when no E-Mail server was setup
+
+If you don't want to use an email server with Plausible like me, there is another problem. Plausible wants the admin account activated by email. We can surpass this by manually updating a column in the Postgres database.
+
+```sh
+docker exec -it postgres /bin/bash
+psql -U postgres
+\c {new_db_name}
+update users set email_verified = true where 1 = 1;
+```
