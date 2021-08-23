@@ -22,11 +22,7 @@
 }
 
 .blog-body a:not(.custom-link) {
-  @apply text-red-700 underline;
-}
-
-.blog-body a:hover:not(.custom-link) {
-  @apply text-red-900;
+  @apply text-red-700 underline decoration-red-200 hover:text-red-900 hover:decoration-red-400 focus:decoration-transparent;
 }
 
 .blog-body p {

@@ -12,6 +12,7 @@ import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
 import CustomH3 from '../components/blog/CustomH3';
 import Gist from '../components/blog/Gist';
+import InfoBox from '../components/blog/InfoBox';
 import LinkedH2 from '../components/blog/LinkedH2';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
@@ -150,6 +151,7 @@ const BlogPageTemplate = ({ data }) => {
       />
     ),
     YouTubeEmbed,
+    InfoBox,
   };
 
   const gitHubUrl = `https://github.com/phartenfeller/hartenfeller.dev/commits/master${fileAbsolutePath.substr(

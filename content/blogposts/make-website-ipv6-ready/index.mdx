@@ -1,0 +1,75 @@
+---
+title: >
+  How to make a website reachable over IPv6 on Linux
+date: 2021-08-23
+description: I made made my website IPv6 ready on Linux in a few simple steps.
+slug: make-website-ipv6-ready
+titleImage: ./ipv6-website-title-image.jpg
+titleImageAlt: LAN cables in a network switch
+titleImageSource:
+  {
+    text: 'Title photo by Jordan Harrison on Unsplash',
+    href: 'https://unsplash.com/@jordanharrison?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText',
+  }
+tags: ['Web-Development']
+ghCommentsIssueId: 63
+---
+
+## The problem with IPv4
+
+Currently, the standard internet protocol we use is in the fourth version (IPv4). It works great but has the [limitation of not being able to handle more than 4,294,967,296 (2^32) unique adresses](https://en.wikipedia.org/wiki/IPv4).
+
+As more and more people use the internet and more and more servers are needed, we will come to a point where we can't provide enough unique IPs for everyone.
+
+The effects can be seen now as [hosters like Hetzner start to charge for new IPv4 addresses](https://docs.hetzner.com/general/others/ipv4-pricing/) and [big companies like Amazon pay much money and buy in bulk](https://toonk.io/aws-and-their-billions-in-ipv4-addresses/index.html) because they get rarer.
+
+Luckily there already is an alternative. [IPv6](https://en.wikipedia.org/wiki/IPv6) offers way more addresses than currently needed (approximately 3.4×1038).
+
+<InfoBox source="https://en.wikipedia.org/wiki/Internet_Stream_Protocol">
+  By the way, IPv5 was skipped to prevent confusion. The Internet Stream
+  Protocol already uses the version number 5 in the internet protocol header. So
+  IPv6 is the successor of IPv4.
+</InfoBox>
+
+## Slow IPv6 adoption rate
+
+Unfortunately, the adoption rate of IPv6 is not as good. Google has a [dedicated statistics page for IPv6 adoption](https://www.google.com/intl/en/ipv6/statistics.html#tab=ipv6-adoption) that currently shows only an adoption rate of 37 %.
+
+The protocols are not interoperable so website hosters should make sure that their site works with both IPv4 and IPv6. Doing so is luckily pretty easy. I documented the steps I took in the following paragraphs.
+
+## Find out your server IPv6 address
+
+Your server needs to have an IPv6 address. Most hosters give you at least one per default next to an IPv4 address.
+
+To find out your IP you can just type in the following command on most Linux distros:
+
+```sh
+/sbin/ip -6 addr | grep inet6
+```
+
+Copy the first one which has `scope global` as a description, you can ignore the last part `/64`.
+
+<BlogImg
+  filename="find-out-ipv6-address.png"
+  alt="The command returns a list of ipv6 addresses"
+/>
+
+Alternatively you can also run `curl -s ipv6.icanhazip.com | xargs echo -n` [(source)](https://gist.github.com/yurrriq/7fc7634dd00494072f45).
+
+## Create a new DNS entry
+
+If you have your IPv6 address you can now make a DNS entry for it. Go to your DNS settings and make a new entry with the type `AAAA`. Then enter the IPv6 address in the value fields. Choose the same host as you have configured with your IPv4 entry.
+
+And you are done. As the majority of proxies and web servers know how to handle IPv6 addresses, you don't have to modify something there.
+
+## Check if it works
+
+To test if it works you can run `wget` with the parameter `-6` to force IPv6 for the request:
+
+```sh
+wget -6 -qO- yourdomain.tld
+```
+
+This only works for machines where you have an IPv6 address.
+
+Alternatively, you can check your website with this tool: https://en.internet.nl/ .
