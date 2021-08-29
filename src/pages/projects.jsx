@@ -6,7 +6,7 @@ import SectionHeader from '../components/SectionHeader';
 import SEO from '../components/seo';
 import ProjectDisplayList from '../components/projectDisplay';
 
-const projects = [
+const websites = [
   {
     name: 'F1report.xyz',
     screenshot: 'f1-report-positions.png',
@@ -43,6 +43,26 @@ const projects = [
     githubUrl: 'https://github.com/phartenfeller/cyftime.de',
     projectUrl: 'https://cyftime.de',
     buttonType: 'green',
+  },
+];
+
+const gatsbyPlugins = [
+  {
+    name: 'gatsby-philipps-foam-theme',
+    description: 'Gatsby theme for foam notes',
+    url: 'https://github.com/phartenfeller/gatsby-philipps-foam-theme',
+  },
+  {
+    name: 'gatsby-source-package-licenses',
+    description:
+      'Source plugin to make all used npm package licenses queryable',
+    url: 'https://github.com/phartenfeller/gatsby-source-package-licenses',
+  },
+  {
+    name: 'gatsby-source-sqlite',
+    description:
+      'Source plugin for pulling data into Gatsby from a SQLite database file',
+    url: 'https://github.com/phartenfeller/gatsby-source-sqlite',
   },
 ];
 
@@ -136,7 +156,15 @@ const Projects = () => (
       </div>
       <div className="mb-12">
         <SectionHeader section="Websites" />
-        <ProjectDisplayList projects={projects} />
+        <ProjectDisplayList projects={websites} />
+      </div>
+      <div className="mb-12">
+        <SectionHeader section="Gatsby Plug-Ins" />
+        <div className="flex justify-center">
+          <div className="lg:w-1/2 ">
+            <List array={gatsbyPlugins} />
+          </div>
+        </div>
       </div>
       <div className="mb-12">
         <SectionHeader section="GitHub Templates" />
