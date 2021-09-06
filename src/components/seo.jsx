@@ -73,7 +73,7 @@ function SEO({ description, lang, meta, title }) {
         async
         defer
         data-domain="hartenfeller.dev"
-        src="https://plausible.hartenfeller.dev/js/plausible.js"
+        src="/toolsapi/script.js"
       />
     </Helmet>
   );
