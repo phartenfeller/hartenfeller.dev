@@ -8,12 +8,12 @@ import ProjectDisplayList from '../components/projectDisplay';
 
 const websites = [
   {
-    name: 'F1report.xyz',
+    name: 'F1report.net',
     screenshot: 'f1-report-positions.png',
-    screenshotAlt: 'screenshot F1report.xyz',
+    screenshotAlt: 'screenshot F1report.net',
     description: `Data analytics Website with insights about Formula 1 races. Do you want to find out which driver had the best average lap times? Then this is a website for you!`,
     githubUrl: 'https://github.com/phartenfeller/f1-stats-page',
-    projectUrl: 'https://f1report.xyz/',
+    projectUrl: 'https://f1report.net/',
     buttonType: 'red',
   },
   {
