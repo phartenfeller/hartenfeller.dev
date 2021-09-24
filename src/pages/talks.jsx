@@ -22,6 +22,15 @@ const talks = [
   },
   {
     year: 2020,
+    conference: 'DOAG.tv ',
+    place: 'online',
+    title: 'Datenschnittstellen mit GraphQL',
+    language: '🇩🇪',
+    recording:
+      'https://www.doag.org/de/home/news/aufgezeichnet-datenschnittstellen-mit-graphql/detail/',
+  },
+  {
+    year: 2020,
     conference: 'APEX Connect 2020',
     place: 'online',
     title: 'Advanced AOP Templates',
