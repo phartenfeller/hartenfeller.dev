@@ -21,6 +21,7 @@ import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
+import classNames from '../util/classNames';
 
 export const query = graphql`
   query ($id: String!) {
@@ -135,10 +136,13 @@ const BlogPageTemplate = ({ data }) => {
     h3: CustomH3,
     Gist,
     // eslint-disable-next-line react/prop-types
-    BlogImg: ({ filename, alt }) => (
+    BlogImg: ({ filename, alt, noShadow = false }) => (
       <BlogImageGetter
         filename={filename}
-        classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4 cursor-zoom-in"
+        classes={classNames(
+          'object-contain my-12 mx-auto xxl:w-3/4 cursor-zoom-in',
+          noShadow ? null : 'shadow-md'
+        )}
         alt={alt}
       />
     ),
