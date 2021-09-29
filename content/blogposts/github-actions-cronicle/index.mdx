@@ -1,0 +1,98 @@
+---
+title: >
+  GitHub Actions Plugin for Cronicle
+date: 2021-09-29
+description: I created a GitHub Actions Plugin for calling jobs on your Cronicle server.
+slug: github-actions-cronicle
+titleImage: ./ipv6-website-title-image.jpg
+titleImageAlt: LAN cables in a network switch
+titleImageSource:
+  {
+    text: 'Title photo by Jordan Harrison on Unsplash',
+    href: 'https://unsplash.com/@jordanharrison?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText',
+  }
+tags: ['Server-Admin', 'DevOps']
+ghCommentsIssueId: 63
+---
+
+## Environment specific tasks
+
+For many automation like Unit Tests, you can run your code exclusively in the environment of GitHub with their [actions](https://github.com/features/actions). For things specific to your environment, you might need something to run on your server. For example, if I push to my website's GitHub repo I want to build the website and deploy it as a private preview on my server.
+
+For requirements like this GitHub offers [self-hosted runners](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) but for me, they are too complex to set up, limited to one repository (at least back when I used them), and too much of a black box for my taste.
+
+For automated tasks on my server, I use [Cronicle](https://github.com/jhuckaby/Cronicle) which is a small job server with a small web UI. It's pretty simple to use, just create a Job and add a shell script. Optionally you can set a schedule to run them recurringly. Cronicle is nice and clean and does its job great.
+
+<BlogImg
+  filename="cronicle-ui.png"
+  alt="Screenshot of the Cronicle UI"
+  noShadow
+/>
+
+## Call Cronicle with REST on GitHub
+
+Cronicle also has a REST-API that offers basic tasks like start a job, check if it has finished, and get the log. You can pretty easily start a job from GitHub actions with the following script:
+
+```yml
+name: Update dev environment
+
+on:
+ push:
+ branches: [ development]
+
+jobs:
+ call_api:
+ runs-on: ubuntu-latest
+
+ steps:
+ - name: HTTP Request Action
+ uses: fjogeleit/http-request-action@v1.5.0
+ with:
+ url: ${{ secrets.API_URL }}
+ method: 'POST'
+ data: >-
+ {
+ "id": "${{ secrets.API_ID }}" ,
+ "api_key": "${{ secrets.API_KEY }}"
+ }
+```
+
+Because it just starts the Job we don't get any info on what happens. In the GitHub Actions log you just see wether the API call worked and the same as log. There is no info on what goes on on the server.
+
+This was a problem for another use case. I want to run a database install scripts in a local database when a Pull Request was created at GitHub. Ideally the Pull-Request should then show if this Action-Run was successful or not and you should be able to jump to the log output to find out what is broken within GitHub.
+
+## The Plugin
+
+I came to the conclusion that the easiest solution would be to write a GitHub Actions-Plugin specifically for Cronicle with a simple API. Here is an example:
+
+```yml
+name: run-tests-on-pr
+
+on:
+  pull_request:
+  types: [opened, synchronize, reopened]
+
+jobs:
+  install-db-objects:
+  runs-on: ubuntu-latest
+
+  steps:
+    - uses: phartenfeller/cronicle-job-action@v1.1.0
+  with:
+  cronicle_host: ${{ secrets.CRONICLE_HOST }}
+  event_id: ${{ secrets.CRONICLE_TEST_INSTALL_JOB_ID }}
+  api_key: ${{ secrets.CRONICLE_KEY }}
+  fail_on_regex_match: '[1-9]+ invalid object\(s\) remaining after last recompilation|ORA-[0-9]+|ERROR at line'
+  parameter_object: '{"branch": "${{ github.head_ref }}"}'
+```
+
+You can pass a regex that scans the output log and sets the run as failed for a match. If no regex is passed it just uses the Cronicle job status. You can also pass parameters that are used as env variables in Cronicle. In this case, I pass the branch of the pull request to check this branch out and run the script from there.
+
+The run output gets automatically spooled to the GitHub action run history so you can easily check it there:
+
+<BlogImg
+  filename="github-actions-output.png"
+  alt="Screenshot of GitHub Actions output"
+/>
+
+Feel free to try this plugin out if you need it and create issues in the repo if there are bugs / you miss a feature. You can find the [GitHub repo here](https://github.com/phartenfeller/cronicle-job-action).
