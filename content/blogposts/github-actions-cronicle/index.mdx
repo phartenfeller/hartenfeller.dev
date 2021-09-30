@@ -1,18 +1,18 @@
 ---
 title: >
   GitHub Actions Plugin for Cronicle
-date: 2021-09-29
+date: 2021-09-30
 description: I created a GitHub Actions Plugin for calling jobs on your Cronicle server.
 slug: github-actions-cronicle
-titleImage: ./ipv6-website-title-image.jpg
-titleImageAlt: LAN cables in a network switch
+titleImage: ./github-actions-cronicle-title-image.jpg
+titleImageAlt: Car construction plant with robots
 titleImageSource:
   {
-    text: 'Title photo by Jordan Harrison on Unsplash',
-    href: 'https://unsplash.com/@jordanharrison?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText',
+    text: 'Title photo by Lenny Kuhne on Unsplash',
+    href: 'https://unsplash.com/s/photos/automation?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText',
   }
 tags: ['Server-Admin', 'DevOps']
-ghCommentsIssueId: 63
+ghCommentsIssueId: 66
 ---
 
 ## Environment specific tasks
@@ -31,7 +31,7 @@ For automated tasks on my server, I use [Cronicle](https://github.com/jhuckaby/C
 
 ## Call Cronicle with REST on GitHub
 
-Cronicle also has a REST-API that offers basic tasks like start a job, check if it has finished, and get the log. You can pretty easily start a job from GitHub actions with the following script:
+Cronicle also has a REST-API that offers basic tasks like start a job, check if it has finished, and get the log output. You can simply start a job from GitHub actions with the following script:
 
 ```yml
 name: Update dev environment
@@ -57,13 +57,13 @@ jobs:
  }
 ```
 
-Because it just starts the Job we don't get any info on what happens. In the GitHub Actions log you just see wether the API call worked and the same as log. There is no info on what goes on on the server.
+Because it just starts the Job we don't get any info on what happens. In the GitHub Actions log, you just see whether the API call worked and not the log we get from the task itself. There is no info on what goes on on the server.
 
-This was a problem for another use case. I want to run a database install scripts in a local database when a Pull Request was created at GitHub. Ideally the Pull-Request should then show if this Action-Run was successful or not and you should be able to jump to the log output to find out what is broken within GitHub.
+This was a problem for another use case. I want to run a database install script in a local database when a Pull Request was created at GitHub. Ideally, the Pull-Request should then show if this Action-Run was successful or not and you should be able to jump to the log output to find out what is broken within GitHub.
 
 ## The Plugin
 
-I came to the conclusion that the easiest solution would be to write a GitHub Actions-Plugin specifically for Cronicle with a simple API. Here is an example:
+I concluded that the easiest solution would be to write a GitHub Actions-Plugin specifically for Cronicle with a simple API. Here is an example:
 
 ```yml
 name: run-tests-on-pr
