@@ -14,6 +14,7 @@ import CustomH3 from '../components/blog/CustomH3';
 import Gist from '../components/blog/Gist';
 import InfoBox from '../components/blog/InfoBox';
 import LinkedH2 from '../components/blog/LinkedH2';
+import OtherPosts from '../components/blog/OtherPosts';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
 import YouTubeEmbed from '../components/blog/YouTubeEmbed';
@@ -111,7 +112,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
-  const { frontmatter, body, fileAbsolutePath } = post;
+  const { frontmatter, body, fileAbsolutePath, id } = post;
   const {
     title,
     date,
@@ -222,6 +223,11 @@ const BlogPageTemplate = ({ data }) => {
               </a>
             </div>
           ) : null}
+
+          <div className="my-8">
+            <OtherPosts postId={id} />
+          </div>
+
           <div className="my-12">
             <div className="pt-4 pb-16 text-center">
               <LinkButton
