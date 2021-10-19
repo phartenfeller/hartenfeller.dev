@@ -182,9 +182,9 @@ const BlogPageTemplate = ({ data }) => {
           className="h-100 object-cover"
           alt={titleImageAlt}
         />
-        <div className="bg-white px-8 pb-8">
+        <div className="bg-white px-4 md:px-8 pb-8">
           <header>
-            <h1 className="text-4xl leading-12 brown-header-text font-extrabold pt-8">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
               {title}
             </h1>
             <div className="mt-6 text-sm leading-5 font-medium text-gray-700">
@@ -204,11 +204,11 @@ const BlogPageTemplate = ({ data }) => {
                 </a>
               </div>
             ) : null}
-            <div className="mt-12 mb-16 text-lg text-gray-700 font-light leading-8 font-raleway">
+            <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-warmGray-600 leading-8 font-raleway">
               {description}
             </div>
           </header>
-          <main className="blog-body mt-6 text-lg leading-8 text-gray-900 font-raleway">
+          <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-warmGray-600 text-base md:text-lg lg:text-xl">
             <MDXProvider components={components}>
               <MDXRenderer>{body}</MDXRenderer>
             </MDXProvider>

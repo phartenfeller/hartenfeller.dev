@@ -9,10 +9,10 @@ import classNames from '../../util/classNames';
 
 const postShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
-  slug: PropTypes.string.isRequired,
   frontmatter: PropTypes.shape({
     title: PropTypes.string.isRequired,
     formattedDate: PropTypes.string.isRequired,
+    slug: PropTypes.string.isRequired,
   }).isRequired,
 });
 
@@ -40,19 +40,21 @@ const PostDisplay = ({ last = false, post }) => {
 
   return (
     <a
-      href={`/blog/${post.slug}`}
+      href={`/blog/${post.frontmatter.slug}`}
       className={classNames(
         'p-4 rounded hover:bg-red-50 focus:outline-none focus:ring focus:ring-red-300 flex items-center justify-between select-none'
       )}
     >
-      {last && <ChevronDoubleLeftIcon className="h-6 w-6 text-gray-300 mr-6" />}
-      <div>
+      {last && (
+        <ChevronDoubleLeftIcon className="h-4 w-4 lg:h-6 lg:w-6 text-gray-300 mr-3 lg:mr-6 flex-shrink-0" />
+      )}
+      <div className="flex-grow">
         <div className="font-semibold">{text}</div>
         <div className="text-gray-500">{post.frontmatter.title}</div>
         <div className="text-gray-500">{post.frontmatter.formattedDate}</div>
       </div>
       {!last && (
-        <ChevronDoubleRightIcon className="h-6 w-6 text-gray-300 ml-6" />
+        <ChevronDoubleRightIcon className="h-4 w-4 lg:h-6 lg:w-6 text-gray-300 ml-3 lg:ml-6 flex-shrink-0" />
       )}
     </a>
   );
@@ -69,10 +71,10 @@ const OtherPosts = ({ postId }) => {
       allPosts: allMdx(sort: { fields: frontmatter___date }) {
         nodes {
           id
-          slug
           frontmatter {
             formattedDate: date(formatString: "MMMM DD, YYYY")
             title
+            slug
           }
         }
       }

@@ -24,11 +24,11 @@ const LinkedH2 = ({ children }) => {
   return (
     <a
       href={`#${id}`}
-      className="custom-link flex mt-16 mb-4 text-2xl font-merriweather group"
+      className="custom-link flex mt-16 mb-4 text-xl md:text-2x lg:text-3xl font-semibold font-merriweather group"
     >
       <h2
         id={id}
-        className="text-title-brown group-hover:underline group-hover:decoration-red-300"
+        className="text-title-brown group-hover:underline group-hover:decoration-red-100"
       >
         {titleText}
       </h2>

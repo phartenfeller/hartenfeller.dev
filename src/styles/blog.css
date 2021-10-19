@@ -1,20 +1,20 @@
-/* raleway-300 - latin */
-@font-face {
-  font-family: 'Raleway';
-  font-style: normal;
-  font-weight: 300;
-  src: local(''), url('/fonts/raleway-v19-latin-300.woff2') format('woff2'),
-    /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/raleway-v19-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
-}
 /* raleway-regular - latin */
 @font-face {
   font-family: 'Raleway';
   font-style: normal;
   font-weight: 400;
-  src: local(''), url('/fonts/raleway-v19-latin-regular.woff2') format('woff2'),
+  src: local(''), url('/fonts/raleway-v22-latin-regular.woff2') format('woff2'),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-      url('/fonts/raleway-v19-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url('/fonts/raleway-v22-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+/* raleway-600 - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 600;
+  src: local(''), url('/fonts/raleway-v22-latin-600.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+      url('/fonts/raleway-v22-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
 .font-raleway {
@@ -22,7 +22,7 @@
 }
 
 .blog-body a:not(.custom-link) {
-  @apply text-red-700 underline decoration-red-200 hover:text-red-900 hover:decoration-red-400 focus:decoration-transparent;
+  @apply text-red-600 underline decoration-red-100 hover:decoration-red-300 rounded focus:ring-1 focus:ring-red-600;
 }
 
 .blog-body p {
@@ -30,19 +30,20 @@
 }
 
 .blog-body abbr[title] {
-  @apply decoration-transparent lg:decoration-blueGray-300;
+  @apply decoration-transparent lg:decoration-warmGray-400;
 }
 
 .blog-body abbr[title]:hover {
-  @apply lg:decoration-blueGray-600;
+  @apply lg:decoration-warmGray-600;
 }
 
 .blog-body pre {
-  @apply whitespace-pre-wrap bg-gray-100 rounded p-3 my-8 font-mono shadow-inner;
+  @apply whitespace-pre-wrap bg-gray-50 rounded p-3 my-8 font-mono shadow-inner font-normal;
 }
 
-.blog-body code {
-  @apply px-2;
+.blog-body p > code {
+  line-break: anywhere;
+  @apply mx-1 px-2 py-1 bg-gray-50 rounded shadow-inner text-warmGray-900;
 }
 
 .blog-body ul {
