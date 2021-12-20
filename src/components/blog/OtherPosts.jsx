@@ -23,16 +23,16 @@ const PostDisplay = ({ last = false, post }) => {
     return (
       <div
         className={classNames(
-          'p-4 flex items-center select-none',
+          'p-4 flex items-center select-none cursor-not-allowed',
           !last ? 'justify-end' : null
         )}
       >
         {last && (
-          <ChevronDoubleLeftIcon className="h-6 w-6 text-gray-300 mr-6" />
+          <ChevronDoubleLeftIcon className="h-6 w-6 text-gray-100 mr-6" />
         )}
-        <div className="font-semibold">No {text}</div>
+        <div className="text-gray-400 font-light">No {text}</div>
         {!last && (
-          <ChevronDoubleRightIcon className="h-6 w-6 text-gray-300 ml-6" />
+          <ChevronDoubleRightIcon className="h-6 w-6 text-gray-100 ml-6" />
         )}
       </div>
     );
