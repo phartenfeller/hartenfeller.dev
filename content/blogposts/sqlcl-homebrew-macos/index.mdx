@@ -1,0 +1,40 @@
+---
+title: >
+  Upgrade tolerant way of setting the path to Oracle SQLcl with Homebrew
+date: 2021-12-20
+description: With two lines in your zsh config file, Oracle SQLcl will still work after an upgrade with Homebrew.
+slug: sqlcl-homebrew-macos
+titleImage: ./imattsmart-jaLaLQdkBOE-unsplash.jpg
+titleImageAlt: Photo of a hammer on a wooden background
+titleImageSource: { text: 'Photo by iMattSmart
+      ', href: 'https://unsplash.com/photos/jaLaLQdkBOE' }
+tags: ['Oracle', 'macOS']
+ghCommentsIssueId: 67
+---
+
+[Homebrew](https://formulae.brew.sh/) is one of the first things I install on a new macOS machine. It is a package manager like you know them from Linux distros where can easily install software packages with a simple command. The best thing is you can also update all your packages with a single command.
+
+I use Oracle's [SQLcl](https://www.oracle.com/de/database/technologies/appdev/sqlcl.html) fairly often to quickly connect to a database to execute some queries or run some scripts. It also has super cool DevOps commands that let you for example export APEX Apps. It is so cool I replaced SQL\*plus with SQLcl!
+
+To install SQLcl with Homebrew (thanks Oracle for maintaining it there), you need to execute the following command:
+
+```sh
+brew install --cask sqlcl
+```
+
+But unfortunately typing `sql` in your terminal won't work yet because you have to add the binary to your path. This part is actually a little bit tricky.
+
+The binary is stored in `{your_brew_location}/Caskroom/sqlcl/{version_number}/bin`. If you add the hardcoded path to your `PATH` variable, it will be invalid after you upgrade SQLcl, because the directory name will change to the newer version.
+
+We can easily fix this by dynamically storing the directory name of the folder with the version number in a variable. Just add the following two lines to your zsh config file:
+
+```sh
+SQLCLPATH=$(ls -t $(brew --prefix)/Caskroom/sqlcl | head -1)
+PATH=$(brew --prefix)/Caskroom/sqlcl/$SQLCLPATH/sqlcl/bin:$PATH
+```
+
+(By the way, the zsh config file is stored in `~/.zshrc`, you can edit it with Vim, Nano, VS Code, or any other text editor you prefer.)
+
+The first line will store the name of the newest version of SQLcl in a variable. Even though Homebrew should only manage to have one version installed at a time, the `-t` argument will sort the results by time, and piping it to `head` will cut all results beside the first one. The second line will add the full path including the stored folder name of the newest version of SQLcl to the `PATH` variable.
+
+Now you can use SQLcl by just typing `sql` in your terminal and it will still work after an upgrade.
