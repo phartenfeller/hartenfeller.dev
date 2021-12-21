@@ -5,27 +5,28 @@ import Blogpost, { postType } from '../components/blog/Blogpost';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
-export const query = graphql`{
-  posts: allMdx(sort: {fields: frontmatter___date, order: DESC}) {
-    nodes {
-      frontmatter {
-        title
-        date
-        formattedDate: date(formatString: "MMMM DD, YYYY")
-        year: date(formatString: "YYYY")
-        description
-        slug
-        titleImage {
-          sharp: childImageSharp {
-            gatsbyImageData(layout: FULL_WIDTH)
+export const query = graphql`
+  {
+    posts: allMdx(sort: { fields: frontmatter___date, order: DESC }) {
+      nodes {
+        frontmatter {
+          title
+          date
+          formattedDate: date(formatString: "MMMM DD, YYYY")
+          year: date(formatString: "YYYY")
+          description
+          slug
+          titleImage {
+            sharp: childImageSharp {
+              gatsbyImageData(layout: FULL_WIDTH)
+            }
           }
+          titleImageAlt
+          tags
         }
-        titleImageAlt
-        tags
       }
     }
   }
-}
 `;
 
 const Blog = ({ data }) => {
@@ -51,7 +52,7 @@ const Blog = ({ data }) => {
           </div>
           {years.map((year) => (
             <div key={year}>
-              <h2 className="mb-8 mt-16 text-center text-3xl font-light text-gray-800">
+              <h2 className="mb-8 mt-16 text-center text-3xl font-light text-zinc-800">
                 {year}
               </h2>
               <div className="mx-6 lg:m-auto lg:w-2/3 lg:grid lg:gap-6 lg:grid-cols-2">
@@ -63,7 +64,7 @@ const Blog = ({ data }) => {
           ))}
         </div>
         <div className="text-center my-16 text-xl text">
-          <Link to="/" className="text-gray-600  hover:underline">
+          <Link to="/" className="text-zinc-600  hover:underline">
             Homepage
           </Link>
         </div>

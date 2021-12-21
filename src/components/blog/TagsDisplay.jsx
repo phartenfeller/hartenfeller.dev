@@ -10,7 +10,7 @@ const TagsDisplay = ({ tags }) => {
   return (
     <div className="inline-flex ml-1">
       <svg
-        className="-ml-1 mr-2 h-5 w-5 text-gray-500"
+        className="-ml-1 mr-2 h-5 w-5 text-zinc-500"
         fill="currentColor"
         viewBox="0 0 24 24"
       >
@@ -19,7 +19,7 @@ const TagsDisplay = ({ tags }) => {
       {tags.map((tag, i) => (
         <span key={tag} className="mr-2">
           <Link
-            className="rounded hover:decoration-gray-400 hover:underline focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="rounded hover:decoration-zinc-400 hover:underline focus:outline-none focus:ring-2 focus:ring-red-300"
             to={getTagUrl(tag)}
           >
             {tag}

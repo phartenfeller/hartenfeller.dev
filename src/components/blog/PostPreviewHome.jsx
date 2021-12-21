@@ -21,10 +21,10 @@ const PostPreviewHome = ({ postData }) => {
           className="w-12 flex-shrink-0 flex flex-col text-center leading-none"
           dateTime={date}
         >
-          <span className="text-gray-700 pb-2 mb-2 border-b-2 border-gray-300">
+          <span className="text-zinc-700 pb-2 mb-2 border-b-2 border-zinc-300">
             {dateFormattedMonth}
           </span>
-          <span className="font-medium text-xl text-gray-800 title-font">
+          <span className="font-medium text-xl text-zinc-800 title-font">
             {dateFormattedDay}
           </span>
         </time>
@@ -34,7 +34,7 @@ const PostPreviewHome = ({ postData }) => {
             <h3 className="title-font text-xl font-medium mb-3 text-title-brown brown-subheader-text-shadow">
               {title}
             </h3>
-            <p className="leading-relaxed mb-5 text-gray-700">{description}</p>
+            <p className="leading-relaxed mb-5 text-zinc-700">{description}</p>
           </div>
           <div className="my-3">
             <Link

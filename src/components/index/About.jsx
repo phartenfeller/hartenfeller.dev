@@ -19,12 +19,12 @@ NewTabLink.propTypes = {
 };
 
 const StackInfo = ({ category, technologies }) => (
-  <div className="border-t border-gray-300 sm:border-l">
+  <div className="border-t border-zinc-300 sm:border-l">
     <div className="px-8 sm:px-4 py-2 sm:py-5 sm:p-6 text-xl">
-      <div className="mb-2 sm:mb-6 text-center text-gray-800 font-semibold">
+      <div className="mb-2 sm:mb-6 text-center text-zinc-800 font-semibold">
         {category}
       </div>
-      <ul className="list-disc list-inside text-gray-700 text-lg">
+      <ul className="list-disc list-inside text-zinc-700 text-lg">
         {technologies.map((tech) => (
           <li key={tech}>{tech}</li>
         ))}

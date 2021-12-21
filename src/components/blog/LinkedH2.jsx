@@ -32,7 +32,7 @@ const LinkedH2 = ({ children }) => {
       >
         {titleText}
       </h2>
-      <span className="invisible group-hover:visible ml-2 text-blueGray-400">
+      <span className="invisible group-hover:visible ml-2 text-slate-400">
         #
       </span>
     </a>

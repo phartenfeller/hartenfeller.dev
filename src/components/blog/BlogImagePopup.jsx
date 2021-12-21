@@ -53,7 +53,7 @@ export default function BlogImagePopup() {
               <div className="text-right m-2">
                 <button
                   type="button"
-                  className="p-1 rounded text-gray-500 hover:text-gray-900 focus:outline-none ring-inset focus:ring-2 focus:ring-red-300"
+                  className="p-1 rounded text-zinc-500 hover:text-zinc-900 focus:outline-none ring-inset focus:ring-2 focus:ring-red-300"
                   onClick={close}
                 >
                   <svg
@@ -72,7 +72,7 @@ export default function BlogImagePopup() {
                   </svg>
                 </button>
               </div>
-              <div className="m-2 cursor-move bg-gray-100 shadow-inner">
+              <div className="m-2 cursor-move bg-zinc-100 shadow-inner">
                 <TransformWrapper wheel={{ step: 12 }}>
                   <TransformComponent>
                     <img

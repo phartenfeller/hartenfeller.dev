@@ -113,13 +113,13 @@ const apexPlugins = [
 ];
 
 const List = ({ array }) => (
-  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-    <ul className="min-w-full divide-y divide-gray-200">
+  <div className="shadow overflow-hidden border-b border-zinc-200 sm:rounded-lg">
+    <ul className="min-w-full divide-y divide-zinc-200">
       {array.map((t, i) => (
         <li
           key={t.name}
-          className={`text-gray-500 text-md grid grid-cols-1 md:grid-cols-5 ${
-            i % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+          className={`text-zinc-500 text-md grid grid-cols-1 md:grid-cols-5 ${
+            i % 2 === 0 ? 'bg-white' : 'bg-zinc-50'
           }`}
         >
           <span className="px-6 py-4">{t.name}</span>

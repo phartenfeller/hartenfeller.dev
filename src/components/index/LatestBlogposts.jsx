@@ -36,7 +36,7 @@ const LatestBlogposts = () => {
         ))}
         <Link
           to="/blog"
-          className="w-full inline-flex items-center justify-center border-2 border-red-300 border-dashed rounded-lg my-4 lg:col-span-2 hd:col-span-1 p-6 text-2xl text-gray-900 uppercase hover:border-red-500 focus:outline-none focus:border-solid"
+          className="w-full inline-flex items-center justify-center border-2 border-red-300 border-dashed rounded-lg my-4 lg:col-span-2 hd:col-span-1 p-6 text-2xl text-zinc-900 uppercase hover:border-red-500 focus:outline-none focus:border-solid"
         >
           All posts
         </Link>

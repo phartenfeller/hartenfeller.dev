@@ -68,13 +68,13 @@ const talks = [
 ];
 
 const TalkList = () => (
-  <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-    <ul className="min-w-full divide-y divide-gray-200">
+  <div className="shadow overflow-hidden border-b border-zinc-200 sm:rounded-lg">
+    <ul className="min-w-full divide-y divide-zinc-200">
       {talks.map((talk, i) => (
         <li
           key={`${talk.year}-${talk.title}`}
-          className={`text-gray-500 text-md grid grid-cols-1 md:grid-cols-3 xl:grid-cols-8 ${
-            i % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+          className={`text-zinc-500 text-md grid grid-cols-1 md:grid-cols-3 xl:grid-cols-8 ${
+            i % 2 === 0 ? 'bg-white' : 'bg-zinc-50'
           }`}
         >
           <span className="px-6 py-4 hidden xl:block">{talk.year}</span>
@@ -85,7 +85,7 @@ const TalkList = () => (
           >{`${talk.conference} (${talk.place})`}</span>
 
           <span
-            className="font-medium text-gray-700 px-6 py-4 xl:col-span-3"
+            className="font-medium text-zinc-700 px-6 py-4 xl:col-span-3"
             title="title"
           >
             {`${talk.title} (${talk.language})`}

@@ -24,13 +24,13 @@ const Layout = ({ children, header = false }) => (
           </Link>
           <Link
             to="/"
-            className="lg:text-xl hover:bg-red-200 px-2 rounded mr-2 lg:mr-5 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="lg:text-xl hover:bg-red-200 px-2 rounded mr-2 lg:mr-5 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Home
           </Link>
           <Link
             to="/blog"
-            className="lg:text-xl hover:bg-red-200 px-2 rounded text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-300"
+            className="lg:text-xl hover:bg-red-200 px-2 rounded text-zinc-900 focus:outline-none focus:ring-2 focus:ring-red-300"
           >
             Blog
           </Link>

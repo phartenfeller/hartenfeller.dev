@@ -32,14 +32,14 @@ const types = {
   github: {
     icon: svg.github,
     text: 'Code',
-    textColor: 'text-gray-200',
-    classes: 'bg-gray-900 hover:bg-gray-700 focus:bg-black focus:ring-gray-500',
-    iconColor: 'text-gray-500',
+    textColor: 'text-zinc-200',
+    classes: 'bg-zinc-900 hover:bg-zinc-700 focus:bg-black focus:ring-zinc-500',
+    iconColor: 'text-zinc-500',
   },
   purple: {
     icon: svg.compass,
     text: 'Open',
-    textColor: 'text-gray-200',
+    textColor: 'text-zinc-200',
     classes:
       'bg-purple-700 hover:bg-purple-500 focus:bg-purple-800 focus:ring-purple-300',
     iconColor: 'text-purple-400',
@@ -70,9 +70,8 @@ const types = {
     icon: svg.twitter,
     text: 'Twitter',
     textColor: 'text-white',
-    classes:
-      'bg-lightBlue-700 hover:bg-lightBlue-600 focus:bg-lightBlue-800 focus:ring-lightBlue-300',
-    iconColor: 'text-lightBlue-400',
+    classes: 'bg-sky-700 hover:bg-sky-600 focus:bg-sky-800 focus:ring-sky-300',
+    iconColor: 'text-sky-400',
   },
   email: {
     icon: svg.mail,
@@ -86,17 +85,17 @@ const types = {
   comment: {
     icon: svg.externalLink,
     text: 'Comment on GitHub',
-    textColor: 'text-gray-600',
+    textColor: 'text-zinc-600',
     classes:
-      'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
-    iconColor: 'text-gray-400',
+      'shadow bg-slate-50 hover:bg-slate-100 focus:bg-white focus:ring-slate-200',
+    iconColor: 'text-zinc-400',
   },
   rss: {
     icon: svg.rss,
     text: 'RSS',
-    textColor: 'text-gray-700',
+    textColor: 'text-zinc-700',
     classes:
-      'shadow bg-blueGray-50 hover:bg-blueGray-100 focus:bg-white focus:ring-blueGray-200',
+      'shadow bg-slate-50 hover:bg-slate-100 focus:bg-white focus:ring-slate-200',
     iconColor: 'text-orange-600',
   },
   slides: {
@@ -104,8 +103,8 @@ const types = {
     text: 'Slides',
     textColor: 'text-black',
     classes:
-      'shadow bg-lightBlue-400 hover:bg-lightBlue-600 focus:ring-lightBlue-500 ring-offset-2',
-    iconColor: 'text-lightBlue-700',
+      'shadow bg-sky-400 hover:bg-sky-600 focus:ring-sky-500 ring-offset-2',
+    iconColor: 'text-sky-700',
   },
   video: {
     icon: svg.video,
@@ -118,23 +117,23 @@ const types = {
   talks: {
     icon: svg.microphone,
     text: 'Talks',
-    textColor: 'text-gray-700',
-    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
-    iconColor: 'text-gray-400',
+    textColor: 'text-zinc-700',
+    classes: 'shadow bg-white hover:bg-zinc-100 focus:ring-slate-400',
+    iconColor: 'text-zinc-400',
   },
   projects: {
     icon: svg.pencil,
     text: 'Projects',
-    textColor: 'text-gray-700',
-    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
-    iconColor: 'text-gray-400',
+    textColor: 'text-zinc-700',
+    classes: 'shadow bg-white hover:bg-zinc-100 focus:ring-slate-400',
+    iconColor: 'text-zinc-400',
   },
   readBlogpost: {
     icon: svg.pencil,
     text: 'Blogpost',
-    textColor: 'text-gray-700',
-    classes: 'shadow bg-white hover:bg-gray-100 focus:ring-blueGray-400',
-    iconColor: 'text-gray-400',
+    textColor: 'text-zinc-700',
+    classes: 'shadow bg-white hover:bg-zinc-100 focus:ring-slate-400',
+    iconColor: 'text-zinc-400',
   },
 };
 

@@ -187,7 +187,7 @@ const BlogPageTemplate = ({ data }) => {
             <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
               {title}
             </h1>
-            <div className="mt-6 text-sm leading-5 font-medium text-gray-700">
+            <div className="mt-6 text-sm leading-5 font-medium text-zinc-700">
               <TagsDisplay tags={tags} />
               <time className="float-right" dateTime={date}>
                 {formattedDate}
@@ -197,18 +197,18 @@ const BlogPageTemplate = ({ data }) => {
               <div className="mb-5">
                 <a
                   href={gitHubUrl}
-                  className="float-right text-sm leading-5 font-medium text-gray-700 underline hover:text-gray-400 focus:outline-none rounded focus:ring focus:ring-red-300"
+                  className="float-right text-sm leading-5 font-medium text-zinc-700 underline hover:text-zinc-400 focus:outline-none rounded focus:ring focus:ring-red-300"
                 >
                   <span>Last updated: </span>
                   <time dateTime={lastUpdate}>{lastUpdateFormatted}</time>
                 </a>
               </div>
             ) : null}
-            <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-warmGray-600 leading-8 font-raleway">
+            <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-stone-600 leading-8 font-raleway">
               {description}
             </div>
           </header>
-          <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-warmGray-600 text-base md:text-lg lg:text-xl">
+          <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl">
             <MDXProvider components={components}>
               <MDXRenderer>{body}</MDXRenderer>
             </MDXProvider>
@@ -217,7 +217,7 @@ const BlogPageTemplate = ({ data }) => {
             <div>
               <a
                 href={titleImageSource.href}
-                className="text-gray-700 font-light mt-8 hover:text-gray-800 hover:underline"
+                className="text-zinc-700 font-light mt-8 hover:text-zinc-800 hover:underline"
               >
                 {titleImageSource.text}
               </a>
@@ -244,11 +244,11 @@ const BlogPageTemplate = ({ data }) => {
             <Comments ghCommentsIssueId={ghCommentsIssueId} />
           </div>
           <footer className="text-center mt-8 text-xl text">
-            <Link to="/" className="text-blueGray-600 hover:underline">
+            <Link to="/" className="text-slate-600 hover:underline">
               Homepage
             </Link>
-            <span className="mx-4 text-blueGray-900">•</span>
-            <Link to="/blog/" className="text-blueGray-600 hover:underline">
+            <span className="mx-4 text-slate-900">•</span>
+            <Link to="/blog/" className="text-slate-600 hover:underline">
               All Blogposts
             </Link>
           </footer>

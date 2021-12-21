@@ -28,11 +28,11 @@ const PostDisplay = ({ last = false, post }) => {
         )}
       >
         {last && (
-          <ChevronDoubleLeftIcon className="h-6 w-6 text-gray-100 mr-6" />
+          <ChevronDoubleLeftIcon className="h-6 w-6 text-zinc-100 mr-6" />
         )}
-        <div className="text-gray-400 font-light">No {text}</div>
+        <div className="text-zinc-400 font-light">No {text}</div>
         {!last && (
-          <ChevronDoubleRightIcon className="h-6 w-6 text-gray-100 ml-6" />
+          <ChevronDoubleRightIcon className="h-6 w-6 text-zinc-100 ml-6" />
         )}
       </div>
     );
@@ -46,15 +46,15 @@ const PostDisplay = ({ last = false, post }) => {
       )}
     >
       {last && (
-        <ChevronDoubleLeftIcon className="h-4 w-4 lg:h-6 lg:w-6 text-gray-300 mr-3 lg:mr-6 flex-shrink-0" />
+        <ChevronDoubleLeftIcon className="h-4 w-4 lg:h-6 lg:w-6 text-zinc-300 mr-3 lg:mr-6 flex-shrink-0" />
       )}
       <div className="flex-grow">
         <div className="font-semibold">{text}</div>
-        <div className="text-gray-500">{post.frontmatter.title}</div>
-        <div className="text-gray-500">{post.frontmatter.formattedDate}</div>
+        <div className="text-zinc-500">{post.frontmatter.title}</div>
+        <div className="text-zinc-500">{post.frontmatter.formattedDate}</div>
       </div>
       {!last && (
-        <ChevronDoubleRightIcon className="h-4 w-4 lg:h-6 lg:w-6 text-gray-300 ml-3 lg:ml-6 flex-shrink-0" />
+        <ChevronDoubleRightIcon className="h-4 w-4 lg:h-6 lg:w-6 text-zinc-300 ml-3 lg:ml-6 flex-shrink-0" />
       )}
     </a>
   );
@@ -89,7 +89,7 @@ const OtherPosts = ({ postId }) => {
       : data.allPosts.nodes[currIndex + 1];
 
   return (
-    <div className="grid grid-cols-2 border border-gray-300 rounded">
+    <div className="grid grid-cols-2 border border-zinc-300 rounded">
       <PostDisplay last post={lastPost} />
       <PostDisplay post={nextPost} />
     </div>

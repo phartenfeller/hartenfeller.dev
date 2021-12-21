@@ -30,16 +30,16 @@ const Blogpost = ({ postData }) => {
           <Link to={`/blog/${slug}`} className="px-6">
             <div className="flex-1">
               <div className="block">
-                <h2 className="mt-2 text-xl leading-7 font-semibold text-gray-900">
+                <h2 className="mt-2 text-xl leading-7 font-semibold text-zinc-900">
                   {title}
                 </h2>
-                <p className="mt-3 text-base leading-6 text-gray-700">
+                <p className="mt-3 text-base leading-6 text-zinc-700">
                   {description}
                 </p>
               </div>
             </div>
           </Link>
-          <div className="grid sm:grid-cols-2 gap-2 mt-8 text-sm leading-5 font-medium text-gray-700 bg-gray-100 px-6 py-3 border-t-2 border-solid border-gray-200">
+          <div className="grid sm:grid-cols-2 gap-2 mt-8 text-sm leading-5 font-medium text-zinc-700 bg-zinc-100 px-6 py-3 border-t-2 border-solid border-zinc-200">
             <TagsDisplay tags={tags} />
             <div>
               <time className="float-right" dateTime={date}>

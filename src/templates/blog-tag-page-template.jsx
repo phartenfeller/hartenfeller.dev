@@ -5,33 +5,34 @@ import Blogpost, { postType } from '../components/blog/Blogpost';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
-export const query = graphql`query ($tag: String!) {
-  posts: allMdx(
-    sort: {fields: frontmatter___date, order: DESC}
-    filter: {frontmatter: {tags: {eq: $tag}}}
-  ) {
-    nodes {
-      frontmatter {
-        title
-        date
-        formattedDate: date(formatString: "MMMM DD, YYYY")
-        description
-        slug
-        titleImage {
-          sharp: childImageSharp {
-            gatsbyImageData(layout: FULL_WIDTH)
+export const query = graphql`
+  query ($tag: String!) {
+    posts: allMdx(
+      sort: { fields: frontmatter___date, order: DESC }
+      filter: { frontmatter: { tags: { eq: $tag } } }
+    ) {
+      nodes {
+        frontmatter {
+          title
+          date
+          formattedDate: date(formatString: "MMMM DD, YYYY")
+          description
+          slug
+          titleImage {
+            sharp: childImageSharp {
+              gatsbyImageData(layout: FULL_WIDTH)
+            }
           }
+          titleImageAlt
+          titleImageSource {
+            text
+            href
+          }
+          tags
         }
-        titleImageAlt
-        titleImageSource {
-          text
-          href
-        }
-        tags
       }
     }
   }
-}
 `;
 
 const BlogTagTemplate = ({ data, pageContext }) => {
@@ -61,11 +62,11 @@ const BlogTagTemplate = ({ data, pageContext }) => {
             ))}
           </div>
           <div className="text-center mt-8 text-xl text">
-            <Link to="/" className="text-gray-600 hover:underline">
+            <Link to="/" className="text-zinc-600 hover:underline">
               Homepage
             </Link>
-            <span className="mx-4 text-gray-900">•</span>
-            <Link to="/blog/" className="text-gray-600 hover:underline">
+            <span className="mx-4 text-zinc-900">•</span>
+            <Link to="/blog/" className="text-zinc-600 hover:underline">
               Other Blogposts
             </Link>
           </div>
