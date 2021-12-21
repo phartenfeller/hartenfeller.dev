@@ -13,18 +13,20 @@ import '../styles/font.css';
 const IndexPage = () => (
   <Layout>
     <SEO title="Home" />
-    <Hero />
-    <SocialLinks />
-    <About />
-    <LatestBlogposts />
-    <ProjectsPreview />
-    <div
-      style={{
-        backgroundImage: `url(${svg})`,
-        height: '24px',
-      }}
-    />
-    <Contact />
+    <div className="text-zinc-800">
+      <Hero />
+      <SocialLinks />
+      <About />
+      <LatestBlogposts />
+      <ProjectsPreview />
+      <div
+        style={{
+          backgroundImage: `url(${svg})`,
+          height: '24px',
+        }}
+      />
+      <Contact />
+    </div>
   </Layout>
 );
 

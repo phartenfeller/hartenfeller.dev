@@ -14,7 +14,7 @@ const ProjectType = PropTypes.shape({
 });
 
 const ProjectDisplay = ({ project, reversed = false }) => (
-  <div className="mt-8 lg:mt-0 mx-8 lg:mx-48">
+  <div className="mt-8 lg:mt-24 mx-8 lg:mx-48">
     <h3
       className={`text-xl lg:text-3xl brown-subheader-text brown-subheader-text-shadow font-semibold ${
         reversed ? 'text-right' : null

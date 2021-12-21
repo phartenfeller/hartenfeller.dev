@@ -19,12 +19,10 @@ NewTabLink.propTypes = {
 };
 
 const StackInfo = ({ category, technologies }) => (
-  <div className="border-t border-zinc-300 sm:border-l">
+  <div className="">
     <div className="px-8 sm:px-4 py-2 sm:py-5 sm:p-6 text-xl">
-      <div className="mb-2 sm:mb-6 text-center text-zinc-800 font-semibold">
-        {category}
-      </div>
-      <ul className="list-disc list-inside text-zinc-700 text-lg">
+      <div className="mb-2 sm:mb-6 text-center text-stone-800">{category}</div>
+      <ul className="list-disc list-inside text-stone-500 text-lg">
         {technologies.map((tech) => (
           <li key={tech}>{tech}</li>
         ))}
@@ -53,7 +51,7 @@ const About = () => (
         I am mostly interested in full stack web dev, databases and especially
         JavaScript. I like to work with:
       </p>
-      <div className="my-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden shadow sm:grid-cols-2 xl:grid-cols-4 m-auto">
+      <div className="my-12 grid grid-cols-1 rounded-lg bg-white overflow-hidden divide-x shadow sm:grid-cols-2 xl:grid-cols-4 m-auto">
         <StackInfo
           category="Frontend"
           technologies={['React', 'Gatsby', 'Web Components']}
