@@ -28,12 +28,11 @@ const links = [
 const LinkCard = ({ link }) => (
   <a
     href={link.href}
-    className="bg-white items-center rounded-md shadow-lg py-10 px-10 transform duration-150 ease-in-out hover:scale-105 hover:opacity-94 blurry focus:ring-4 focus:ring-red-200 focus:outline-none motion-reduce:translate-z-0"
+    className="items-center rounded-md shadow-lg shadow-red-200/30 py-10 px-10 bg-white/90 backdrop-blur-sm  transform transition-all duration-150 ease-in-out hover:scale-105 hover:opacity-[.8] hover:backdrop-blur-md focus:ring-4 focus:ring-red-200 focus:outline-none motion-reduce:translate-z-0"
   >
     <div className="m-auto">
       <svg
-        className="w-8 h8 md:w-12 md:h-12 lg:h-16 lg:w-16 m-auto"
-        style={{ color: '#544242' }}
+        className="text-[#544242] w-8 h8 md:w-12 md:h-12 lg:h-16 lg:w-16 m-auto"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
         fill="currentcolor"
