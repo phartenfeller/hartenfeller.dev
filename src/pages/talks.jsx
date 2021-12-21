@@ -6,6 +6,14 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2021,
+    conference: 'DOAG 2021',
+    place: 'online',
+    title: 'Wird JavaScript abgelöst? Einblicke in WebAssembly',
+    language: '🇩🇪',
+    slides: '/slides/DOAG2021-WebAssembly-Hartenfeller.pdf',
+  },
+  {
+    year: 2021,
     conference: 'APEX Connect 2021',
     place: 'online',
     title: 'APEX mit WebComponents erweitern',

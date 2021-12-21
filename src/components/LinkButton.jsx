@@ -101,15 +101,15 @@ const types = {
   slides: {
     icon: svg.slides,
     text: 'Slides',
-    textColor: 'text-black',
+    textColor: 'text-sky-900',
     classes:
-      'shadow bg-sky-400 hover:bg-sky-600 focus:ring-sky-500 ring-offset-2',
-    iconColor: 'text-sky-700',
+      'shadow bg-sky-300 hover:bg-sky-500 focus:ring-sky-400 ring-offset-2',
+    iconColor: 'text-sky-600',
   },
   video: {
     icon: svg.video,
     text: 'Video',
-    textColor: 'text-black',
+    textColor: 'text-emerald-900',
     classes:
       'shadow bg-emerald-400 hover:bg-emerald-600 focus:ring-emerald-500 ring-offset-2',
     iconColor: 'text-emerald-700',
