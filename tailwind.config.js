@@ -2,6 +2,7 @@ const plugin = require('tailwindcss/plugin');
 
 module.exports = {
   content: ['./src/**/*.{jsx,js}'],
+  darkMode: 'class',
   theme: {
     extend: {
       cursor: {
