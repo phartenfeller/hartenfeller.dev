@@ -103,7 +103,7 @@ const types = {
     text: 'Slides',
     textColor: 'text-sky-900',
     classes:
-      'shadow bg-sky-300 hover:bg-sky-500 focus:ring-sky-400 ring-offset-2',
+      'shadow bg-gradient-to-r from-cyan-300 to-sky-400 hover:from-cyan-200 focus:ring-sky-400 ring-offset-2',
     iconColor: 'text-sky-600',
   },
   video: {
@@ -111,7 +111,7 @@ const types = {
     text: 'Video',
     textColor: 'text-emerald-900',
     classes:
-      'shadow bg-emerald-400 hover:bg-emerald-600 focus:ring-emerald-500 ring-offset-2',
+      'shadow bg-gradient-to-r from-emerald-400 to-teal-300 hover:from-emerald-300 focus:ring-emerald-500 ring-offset-2',
     iconColor: 'text-emerald-700',
   },
   talks: {

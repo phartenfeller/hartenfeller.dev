@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
@@ -75,43 +76,78 @@ const talks = [
   },
 ];
 
-const TalkList = () => (
+const publications = [
+  {
+    year: 2020,
+    magazine: 'Red Stack Magazin',
+    pages: '67 - 70',
+    title: 'Schnittstellenbündelung mit GraphQL',
+    language: '🇩🇪',
+    link: 'https://backoffice.doag.org/formes/pubfiles/12309827/docs/Publikationen/DOAGNews/2020/04-2020/04_2020-Red_Stack_Magazin-WEB.pdf',
+  },
+];
+
+const talkData = talks.map((t) => ({
+  year: t.year,
+  medium: `${t.conference} (${t.place})`,
+  title: `${t.title} (${t.language})`,
+  linkComp: (
+    <>
+      {t.slides ? <LinkButton type="slides" link={t.slides} newWindow /> : null}
+      {t.recording ? (
+        <LinkButton
+          type="video"
+          link={t.recording}
+          text="Recording"
+          newWindow
+        />
+      ) : null}
+      {!t.slides && !t.recording ? <span>-</span> : null}
+    </>
+  ),
+}));
+
+const pubData = publications.map((p) => ({
+  year: p.year,
+  medium: `${p.magazine} (pp. ${p.pages})`,
+  title: `${p.title} (${p.language})`,
+  linkComp: (
+    <>
+      <a
+        href={p.link}
+        className="px-2 py-1 rounded text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
+      >
+        Link
+      </a>
+    </>
+  ),
+}));
+
+const PubList = ({ data }) => (
   <div className="shadow overflow-hidden border-b border-zinc-200 sm:rounded-lg">
     <ul className="min-w-full divide-y divide-zinc-200">
-      {talks.map((talk, i) => (
+      {data.map((d, i) => (
         <li
-          key={`${talk.year}-${talk.title}`}
+          key={`${d.year}-${d.title}`}
           className={`text-zinc-500 text-md grid grid-cols-1 md:grid-cols-3 xl:grid-cols-8 ${
             i % 2 === 0 ? 'bg-white' : 'bg-zinc-50'
           }`}
         >
-          <span className="px-6 py-4 hidden xl:block">{talk.year}</span>
+          <span className="px-6 py-4 hidden xl:block">{d.year}</span>
 
-          <span
-            className="px-6 py-4 xl:col-span-2"
-            title="conference"
-          >{`${talk.conference} (${talk.place})`}</span>
+          <span className="px-6 py-4 xl:col-span-2" title="conference">
+            {d.medium}
+          </span>
 
           <span
             className="font-medium text-zinc-700 px-6 py-4 xl:col-span-3"
             title="title"
           >
-            {`${talk.title} (${talk.language})`}
+            {d.title}
           </span>
 
           <div className="px-6 py-4 text-center xl:col-span-2">
-            {talk.slides ? (
-              <LinkButton type="slides" link={talk.slides} newWindow />
-            ) : null}
-            {talk.recording ? (
-              <LinkButton
-                type="video"
-                link={talk.recording}
-                text="Recording"
-                newWindow
-              />
-            ) : null}
-            {!talk.slides && !talk.recording ? <span>-</span> : null}
+            {d.linkComp}
           </div>
         </li>
       ))}
@@ -119,17 +155,42 @@ const TalkList = () => (
   </div>
 );
 
+PubList.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      year: PropTypes.number.isRequired,
+      medium: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      linkComp: PropTypes.node.isRequired,
+    })
+  ).isRequired,
+};
+
 const Talks = () => (
   <Layout header>
-    <SEO title="Talks" description="List of conference talks" />
-    <div className="relative pt-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-red-100 to-red-50">
+    <SEO
+      title="Talks and Publications"
+      description="List of conference talks and publications"
+    />
+    <div className="relative pt-16 px-4 sm:px-6 lg:px-8 bg-white/50">
       <div className="relative max-w-7xl mx-auto">
         <div className="text-center mb-24">
-          <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl sm:leading-10">
-            List of conference talks
+          <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl lg:text-5xl sm:leading-10">
+            List of conference talks and publications
           </h1>
         </div>
-        <TalkList />
+        <div className="mb-24">
+          <h2 className="text-3xl brown-header-text font-extrabold mb-8">
+            Conference Talks
+          </h2>
+          <PubList data={talkData} />
+        </div>
+        <div className="pb-32">
+          <h2 className="text-3xl brown-header-text font-extrabold mb-8">
+            Publications
+          </h2>
+          <PubList data={pubData} />
+        </div>
       </div>
     </div>
   </Layout>
