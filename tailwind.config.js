@@ -20,6 +20,8 @@ module.exports = {
       },
       colors: {
         'title-brown': '#3e2121',
+        'dark-bg': '#292121',
+        'dark-blog-bg': '#171313',
       },
       fontFamily: {
         merriweather: ['Merriweather', 'serif'],

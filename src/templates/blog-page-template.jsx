@@ -23,6 +23,8 @@ import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
 import classNames from '../util/classNames';
+import DarkModeButton from '../components/darkModeButton';
+import TimeToReadDisplay from '../components/blog/TimeToReadDisplay';
 
 export const query = graphql`
   query ($id: String!) {
@@ -56,6 +58,7 @@ export const query = graphql`
       body
       id
       fileAbsolutePath
+      timeToRead
     }
   }
 `;
@@ -112,7 +115,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
-  const { frontmatter, body, fileAbsolutePath, id } = post;
+  const { frontmatter, body, fileAbsolutePath, id, timeToRead } = post;
   const {
     title,
     date,
@@ -182,14 +185,14 @@ const BlogPageTemplate = ({ data }) => {
           className="h-100 object-cover"
           alt={titleImageAlt}
         />
-        <div className="bg-white px-4 md:px-8 pb-8">
+        <div className="bg-white dark:bg-dark-blog-bg px-4 md:px-8 pb-8">
           <header>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
+            <h1 className="font-merriweather text-title-brown dark:text-red-200 text-2xl md:text-3xl lg:text-4xl leading-12 font-extrabold pt-8">
               {title}
             </h1>
-            <div className="mt-6 text-sm leading-5 font-medium text-zinc-700">
+            <div className="mt-6 text-sm leading-5 font-medium text-zinc-700 dark:text-zinc-300 flex justify-between">
               <TagsDisplay tags={tags} />
-              <time className="float-right" dateTime={date}>
+              <time className="" dateTime={date}>
                 {formattedDate}
               </time>
             </div>
@@ -204,11 +207,15 @@ const BlogPageTemplate = ({ data }) => {
                 </a>
               </div>
             ) : null}
-            <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-stone-600 leading-8 font-raleway">
+            <div className="mt-6 text-sm leading-5 font-medium text-zinc-500 dark:text-zinc-400 flex justify-between">
+              <TimeToReadDisplay timeToRead={timeToRead} />
+              <DarkModeButton showText />
+            </div>
+            <div className="my-24 pl-2 text-base md:text-lg lg:text-xl text-stone-600 dark:text-zinc-400 leading-8 font-raleway border-l-4 border-stone-300 dark:border-zinc-700">
               {description}
             </div>
           </header>
-          <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl">
+          <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 dark:text-zinc-400 text-base md:text-lg lg:text-xl">
             <MDXProvider components={components}>
               <MDXRenderer>{body}</MDXRenderer>
             </MDXProvider>

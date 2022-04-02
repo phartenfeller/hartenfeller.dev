@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply subpixel-antialiased bg-red-50;
+  @apply subpixel-antialiased bg-red-50 dark:bg-dark-bg;
   margin: 0;
 }
 
