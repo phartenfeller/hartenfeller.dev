@@ -75,7 +75,7 @@ const types = {
   },
   email: {
     icon: svg.mail,
-    text: 'contact@hartenfeller.dev',
+    text: null,
     textColor: 'text-white',
     classes:
       'bg-indigo-700 hover:bg-indigo-600 focus:bg-indigo-800 focus:ring-indigo-300',
