@@ -29,7 +29,12 @@ const LatestBlogposts = () => {
 
   return (
     <div className="my-12 lg:my-32 mx-auto xxl:w-2/3">
-      <SectionHeader section="My Blog" />
+      <Link
+        to="/blog"
+        className="grid hover:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-400"
+      >
+        <SectionHeader section="My Blog" />
+      </Link>
       <div className="mx-8 lg:mx-48 lg:grid lg:grid-cols-2 hd:grid-cols-3 gap-4">
         {posts.map(({ frontmatter }) => (
           <PostPreviewHome postData={frontmatter} key={frontmatter.slug} />

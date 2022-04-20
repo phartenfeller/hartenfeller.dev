@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'gatsby';
 import LinkButton from '../LinkButton';
 import ProjectDisplayList from '../projectDisplay';
 import SectionHeader from '../SectionHeader';
@@ -36,7 +37,12 @@ const projects = [
 
 const ProjectsPreview = () => (
   <div className="my-12 lg:my-32">
-    <SectionHeader section="Things I made" />
+    <Link
+      to="/projects"
+      className="grid hover:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-400"
+    >
+      <SectionHeader section="Things I made" />
+    </Link>
     <div className="mt-12 lg:mt-32 mx-auto xxl:w-2/3">
       <ProjectDisplayList projects={projects} />
     </div>
