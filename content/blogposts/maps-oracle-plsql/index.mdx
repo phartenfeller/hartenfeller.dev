@@ -1,0 +1,168 @@
+---
+title: >
+  How to use Map in Oracle PL/SQL
+date: 2022-04-25
+description: Maps (not cartography but the data store) are a powerful tool for storing and accessing data in memory. In Oracle PL/SQL they are available too under the name Associative Arrays.
+slug: maps-oracle-plsql
+titleImage: ./nana-smirnova-IEiAmhXehwE-unsplash.jpg
+titleImageAlt: A huge warehouse with a lot of big shelves containing identical looking small boxes
+titleImageSource:
+  {
+    text: 'Title photo by Nana Smirnova on Unsplash',
+    href: 'https://unsplash.com/photos/IEiAmhXehwE',
+  }
+tags: ['Oracle', 'APEX']
+ghCommentsIssueId: 72
+---
+
+## Maps are great
+
+When I program in languages like Go or JavaScript I like to use Maps to store data while processing. It is an easy-to-use in-memory data store where you can store any object and access it with a specific key. In JavaScript we can use them like in this example:
+
+```js
+const driverMap = new Map();
+
+driverMap.set('verstappen', {
+  fullName: 'Max Verstappen',
+  constructor: 'Red Bull',
+  age: 24,
+});
+driverMap.set('sainz', {
+  fullName: 'Carlos Sainz',
+  constructor: 'Ferrari',
+  age: 27,
+});
+
+if (driverMap.has('verstappen')) {
+  const driver = driverMap.get('verstappen');
+  console.log(
+    `${driver.fullName} is ${driver.age} years old and is a ${driver.constructor} driver.`
+  );
+  // Max Verstappen is 24 years old and is a Red Bull driver.
+}
+
+driverMap.delete('sainz');
+console.log(`${driverMap.size} driver(s) left in Map.`);
+// 1 driver(s) left in Map.
+```
+
+I think they are really easy to understand and straightforward. I caught myself wishing Maps existed in Oracle PL/SQL until I remembered that they are. They are just called 'Collections' or more specifically ['Associative Arrays'](https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/plsql-collections-and-records.html#GUID-8060F01F-B53B-48D4-9239-7EA8461C2170).
+
+And to remind me to use them more I decided to write this blogpost. Writing about something is actually the best way to remember something because you try not to solve a problem but to understand something (you should try that too!).
+
+## Maps in Oracle PL/SQL
+
+So here is a PL/SQL snippet on how to achieve the same result in Oracle:
+
+```sql
+declare
+    -- first define the datatype that we want to store in the map
+    type driver_info is record (
+      full_name   varchar2(255 char)
+    , constructor varchar2(255 char)
+    , age         pls_integer
+    );
+
+    -- then create a table array of it -> this is our map definition
+    type driver_tab is a table of driver_info index by varchar2(255);
+    -- you can use other data types like pls_integer as key
+
+    -- create instances of both types
+    l_driver_info driver_info;
+    l_driver_tab driver_tab;
+begin
+    l_driver_info.full_name := 'Max Verstappen';
+    l_driver_info.constructor := 'Red Bull';
+    l_driver_info.age := 24;
+
+    l_driver_tab('verstappen') := l_driver_info;
+
+    l_driver_info.full_name := 'Carlos Sainz';
+    l_driver_info.constructor := 'Ferrari';
+    l_driver_info.age := 27;
+
+    l_driver_tab('sainz') := l_driver_info;
+
+    -- use .exists() to check if an element exists
+    if l_driver_tab.exists('verstappens') is not null then
+        -- access element by key
+        l_driver_info := l_driver_tab('verstappen');
+        dbms_output.put_line(l_driver_info.full_name || ' is '
+          || l_driver_info.age || ' years old and is a '
+          || l_driver_info.constructor || ' driver.');
+        -- Max Verstappen is 24 years old and is a Red Bull driver.
+    end if;
+
+    -- remove element with .delete()
+    l_driver_tab.delete('sainz');
+    dbms_output.put_line( l_driver_tab.count || ' driver(s) left in the Associative Array.');
+    -- 1 driver(s) left in the Associative Array.
+end;
+```
+
+## Shorter syntax to init an entity
+
+The used syntax to declare a new entity is a little bit tedious for entities with many attributes. Luckily we can use some shorthand syntax:
+
+```sql
+-- ...
+-- short syntax - sequence does not matter
+l_driver_info := driver_info(full_name => 'Nico Rosberg', constructor => 'Retired', age => 36);
+l_driver_tab('rosberg') := l_driver_info;
+
+-- even shorter - sequence does matter
+l_driver_info := driver_info('Fernando Alonso', 'Alpine', 40);
+l_driver_tab('alonso') := l_driver_info;
+
+dbms_output.put_line( l_driver_tab.count || ' driver(s) left in the Associative Array.');
+-- 3 driver(s) left in the Associative Array.
+-- ...
+```
+
+## Iterating through all elements
+
+For some 'stupid' functions that have no context of the data and therefore no knowledge of the used keys, it is useful to iterate through all entities.
+
+For example in JavaScript we can write a function that logs every entry of a Map like this:
+
+```js
+function logMap(map) {
+  // driverMap.keys() returns an iterator of all keys
+  const keys = Array.from(driverMap.keys());
+
+  const values = keys.map((k) => {
+    const driver = driverMap.get(k);
+    return {
+      key: k,
+      fullName: driver.fullName,
+      constr: driver.constructor, // naming a property 'constructor' is a terrible idea :)
+      age: driver.age,
+    };
+  });
+  console.table(values);
+}
+```
+
+In PL/SQL we can use the functions `first` and `next` for an Associative Array to loop through all keys:
+
+```sql
+declare
+    -- ...
+    type driver_tab is table of driver_info index by varchar2(255);
+    l_key varchar2(255); -- same datatype as stated in 'indexed by'
+begin
+    -- ...
+    l_key := l_driver_tab.first(); -- returns the first key
+
+    while l_key is not null
+    loop
+        dbms_output.put_line( l_key || ' => ' || l_driver_tab(l_key).full_name );
+        l_key := l_driver_tab.next( l_key ); -- get the next key
+    end loop;
+```
+
+You can find the whole JavaScript code in action [here](https://codesandbox.io/s/zealous-fermat-j5blrn?file=/src/index.js) (make sure to open the console). The complete PL/SQL example is [shared here on LiveSQL](https://livesql.oracle.com/apex/livesql/s/ndu1m7xu9v168vqi3oc0jr2l0).
+
+## When to use Associative Arrays
+
+By the way, Oracle has also [put a guide on when to use Associative Arrays in their docs](https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/plsql-collections-and-records.html#GUID-157A4309-1BAF-419D-8B7F-3CB4AA9921DF). I find myself needing something like this for somewhat complex data transformation scenarios where you process many rows.

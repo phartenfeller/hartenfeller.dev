@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { coy } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import BlogGifGetter from './BlogGifGetter';
 import Gist from './Gist';
+import Codemirror from './Codemirror';
 
 const CodeHandler = ({ className, children }) => {
   const language = className.replace(/language-/, '');
@@ -35,10 +34,8 @@ const CodeHandler = ({ className, children }) => {
     }
     default:
       return (
-        <div className="mx-auto xxl:w-3/4">
-          <SyntaxHighlighter language={language} style={coy}>
-            {children}
-          </SyntaxHighlighter>
+        <div className="mx-auto my-8 font-normal">
+          <Codemirror code={children} lang={language} />
         </div>
       );
   }

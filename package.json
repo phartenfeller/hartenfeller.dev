@@ -33,7 +33,7 @@
     "react-dom": "^17.0.2",
     "react-helmet": "^6.1.0",
     "react-markdown": "^7.1.0",
-    "react-syntax-highlighter": "^15.4.4",
+    "react-readonly-codemirror6": "^1.0.0",
     "react-zoom-pan-pinch": "^1.6.1",
     "tailwindcss": "^3.0.7",
     "zustand": "^3.6.3"

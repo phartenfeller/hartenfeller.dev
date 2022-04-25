@@ -37,15 +37,6 @@
   @apply lg:decoration-stone-600;
 }
 
-.blog-body pre {
-  @apply whitespace-pre-wrap bg-zinc-50 rounded p-3 my-8 font-mono shadow-inner font-normal;
-}
-
-.blog-body p > code {
-  line-break: anywhere;
-  @apply mx-1 px-2 py-1 bg-zinc-50 rounded shadow-inner text-stone-900;
-}
-
 .blog-body ul {
   @apply list-inside list-disc mb-6;
 }
