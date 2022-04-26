@@ -2,6 +2,7 @@
 title: >
   How to use Map in Oracle PL/SQL
 date: 2022-04-25
+lastUpdate: 2022-04-26
 description: Maps (not cartography but the data store) are a powerful tool for storing and accessing data in memory. In Oracle PL/SQL they are available too under the name Associative Arrays.
 slug: maps-oracle-plsql
 titleImage: ./nana-smirnova-IEiAmhXehwE-unsplash.jpg
@@ -64,7 +65,7 @@ declare
     );
 
     -- then create a table array of it -> this is our map definition
-    type driver_tab is a table of driver_info index by varchar2(255);
+    type driver_tab is table of driver_info index by varchar2(255);
     -- you can use other data types like pls_integer as key
 
     -- create instances of both types
@@ -83,8 +84,8 @@ begin
 
     l_driver_tab('sainz') := l_driver_info;
 
-    -- use .exists() to check if an element exists
-    if l_driver_tab.exists('verstappens') is not null then
+    -- use .exists() to check if an element exists (returns boolean)
+    if l_driver_tab.exists('verstappen') then
         -- access element by key
         l_driver_info := l_driver_tab('verstappen');
         dbms_output.put_line(l_driver_info.full_name || ' is '
