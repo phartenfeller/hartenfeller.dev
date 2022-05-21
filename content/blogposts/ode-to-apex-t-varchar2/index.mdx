@@ -1,0 +1,78 @@
+---
+title: >
+  How to use Map in Oracle PL/SQL
+date: 2022-04-25
+lastUpdate: 2022-04-26
+description: Maps (not cartography but the data store) are a powerful tool for storing and accessing data in memory. In Oracle PL/SQL they are available too under the name Associative Arrays.
+slug: maps-oracle-plsql
+titleImage: ./nana-smirnova-IEiAmhXehwE-unsplash.jpg
+titleImageAlt: A huge warehouse with a lot of big shelves containing identical looking small boxes
+titleImageSource:
+  {
+    text: 'Title photo by Nana Smirnova on Unsplash',
+    href: 'https://unsplash.com/photos/IEiAmhXehwE',
+  }
+tags: ['Oracle', 'APEX']
+ghCommentsIssueId: 72
+---
+
+## Whats that?
+
+The type `apex_t_varchar2` itself is not that special. If we open up its declaration we can see that it has a different internal name `wwv_flow_t_varchar2` and is basically just a varchar2 array:
+
+```sql
+create or replace type wwv_flow_t_varchar2 as table of varchar2(32767);
+```
+
+With arrays you can already do cool stuff but `apex_t_varchar2` gets its superpowers because of the `apex_string` package which is a collection of functions to work with them.
+
+# Storing und accessing values
+
+Imagine a complex PL/SQL process where you need to validate lots of independent rows of user input. Because the process is so complex users often times make mistakes. The task of the app is also to tell the users which input is faulty so they can fix it.
+
+Because the rows are independet to each other it makes sense to not exit at the first error but instead valdate all rows and in the end list all erorrs and even some warnings.
+
+To convenietly store these feedback messages we could use `apex_t_varchar2`. We create one array for the error messages and one for the warnings. Each time we come across of problems with the data we add the message to the corresponding array with `apex_string.push`.
+
+```sql
+procedure process_user_input
+as
+  l_errors apex_t_varchar2 := apex_t_varchar2();
+  l_warnings apex_t_varchar2 := apex_t_varchar2();
+  -- ...
+begin
+  for rec in (
+    select *
+      from user_inputs
+     order by line_no asc
+  )
+  loop
+    -- ...
+    if user_underage(rec.birthdate) then
+      apex_string.push(l_errors, 'Line' || rec.line_no || ': User is too young!');
+    end if;
+
+    if not country_code_match(rec.country, rec.phone_number) then
+      apex_string.push(l_warnings, 'Line' || rec.line_no || ': Country does not match with phone country code!');
+    end if;
+    -- ...
+  end loop;
+
+  if l_warnings.count > 0 then
+    l_warnings_list_html := '<ul><li>' || apex_string.join(l_warnings, '</li><li>') || '</li></ul>';
+  end if;
+
+  if l_errors.count > 0 then
+    l_status_error := true;
+    l_error_list_html := '<ul><li>' || apex_string.join(l_errors, '</li><li>') || '</li></ul>';
+  else
+    l_status_error := false;
+  end if;
+
+  -- ...
+end process_user_input;
+```
+
+## Handlin multipla values APEX items
+
+Shuttle Checkboxgroup
