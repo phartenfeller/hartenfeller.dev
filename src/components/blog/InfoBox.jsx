@@ -12,15 +12,21 @@ const InfoBox = ({ source, children }) => (
     </div>
     <div className="p-2 lg:p-4">
       <div className="font-normal">{children}</div>
-      <div className="text-right text-base lg:text-lg">
-        <a href={source}>Source</a>
-      </div>
+      {source && (
+        <div className="text-right text-base lg:text-lg">
+          <a href={source}>Source</a>
+        </div>
+      )}
     </div>
   </div>
 );
 
+InfoBox.defaultProps = {
+  source: null,
+};
+
 InfoBox.propTypes = {
-  source: PropTypes.string.isRequired,
+  source: PropTypes.string,
   children: PropTypes.string.isRequired,
 };
 

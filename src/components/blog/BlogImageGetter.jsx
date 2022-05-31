@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import useImagePreview from '../../state/useImagePreview';
 
-const BlogImageGetter = ({ filename, classes, alt }) => {
+const BlogImageGetter = ({ filename, classes, alt, maxWidthPx }) => {
   const { open } = useImagePreview();
 
   const filterImage = (images) =>
@@ -36,7 +36,11 @@ const BlogImageGetter = ({ filename, classes, alt }) => {
       render={(data) => (
         <div
           className="m-auto"
-          style={{ maxWidth: `${filterImage(data).node.original.width}px` }}
+          style={{
+            maxWidth: maxWidthPx
+              ? `${maxWidthPx}px`
+              : `${filterImage(data).node.original.width}px`,
+          }}
         >
           <GatsbyImage
             image={filterImage(data).node.gatsbyImageData}
@@ -57,10 +61,15 @@ const BlogImageGetter = ({ filename, classes, alt }) => {
   );
 };
 
+BlogImageGetter.defaultProps = {
+  maxWidthPx: null,
+};
+
 BlogImageGetter.propTypes = {
   filename: PropTypes.string.isRequired,
   classes: PropTypes.string.isRequired,
   alt: PropTypes.string.isRequired,
+  maxWidthPx: PropTypes.number,
 };
 
 export default BlogImageGetter;

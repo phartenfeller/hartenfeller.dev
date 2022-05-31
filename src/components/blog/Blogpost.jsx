@@ -20,11 +20,17 @@ const Blogpost = ({ postData }) => {
     <div className="group mt-12 max-w-lg mx-auto lg:max-w-none">
       <div className="flex flex-col rounded-lg overflow-hidden h-full">
         <Link to={`/blog/${slug}`} className="flex-shrink-0">
-          <GatsbyImage
-            image={titleImage.sharp.gatsbyImageData}
-            className="transform duration-300 ease-in-out overflow-hidden h-64 w-full object-cover group-hover:scale-110"
-            alt={titleImageAlt}
-          />
+          {titleImage?.sharp?.gatsbyImageData ? (
+            <GatsbyImage
+              image={titleImage.sharp.gatsbyImageData}
+              className="transform duration-300 ease-in-out overflow-hidden h-64 w-full object-cover group-hover:scale-110"
+              alt={titleImageAlt}
+            />
+          ) : (
+            <div className="h-64 w-full text-xl bg-slate-200 flex">
+              <div className="m-auto">No Image</div>
+            </div>
+          )}
         </Link>
         <div className="flex-1 border-2 border-t-0 rounded-t-none border-dashed border-red-400 pt-6 flex flex-col justify-between bg-white">
           <Link to={`/blog/${slug}`} className="px-6">
