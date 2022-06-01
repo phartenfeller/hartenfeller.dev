@@ -143,4 +143,4 @@ $('.my-link').click((event) => {
 
 I thought I can use this syntax till the environments are upgraded to 22.1 and then easily switch to the new syntax. Unfortunately while trying this out I noticed there also was a new change to the invoke function. [In versions before 22.1 there is no fourth parameter for passing values](https://docs.oracle.com/en/database/oracle/application-express/21.2/aexjs/actions.html#invoke) ([here is the new API](https://docs.oracle.com/en/database/oracle/application-express/22.1/aexjs/actions.html#invoke)).
 
-So in this case I still need to add data attributes with IDs to the links and manually listen for the events as I need the to pass the ID to set a page item.
+So in this case I still need to add data attributes with IDs to the links and manually listen for the events as I need the ID to set a page item.
