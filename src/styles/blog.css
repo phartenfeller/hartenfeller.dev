@@ -38,7 +38,7 @@
 }
 
 .blog-body ul {
-  @apply list-inside list-disc mb-6;
+  @apply list-outside list-disc mb-6 ml-2;
 }
 
 .blog-body .video-wrapper {

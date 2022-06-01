@@ -3,7 +3,7 @@ title: >
   Dynamic click handling with APEX actions in 22.1
 date: 2022-05-31
 description: APEX 22.1 changed a lot to the actions interface and added a new method with which we can call them easily from links.
-slug: apex-actions-links
+slug: apex-actions-links-22-1
 titleImage: ./unsplash-wc3jFFQxo8k.jpg
 titleImageAlt: Photo of a newton's cradle
 titleImageSource:
@@ -12,7 +12,7 @@ titleImageSource:
     href: 'https://unsplash.com/photos/wc3jFFQxo8k',
   }
 tags: ['Oracle', 'APEX']
-ghCommentsIssueId: 66
+ghCommentsIssueId: 73
 ---
 
 ## Use Case
@@ -66,11 +66,11 @@ apex.items.P99_ID.setValue(id);
   have to call it the following way: `apex.item('#ITEM_NAME#')`.
 </InfoBox>
 
-After setting the ID item we can refresh the detail report in the modal via a `Refresh` action (make sure `page items to submit` is set to the changed ID item). Afterward, we can open the modal with the `Open Region` action.
+After fetching the ID and putting it into a page item we can refresh the detail report in the modal via a `Refresh` action (make sure `page items to submit` is set to the changed ID item). Afterward, we can open the modal with the `Open Region` action.
 
 ## The new actions link syntax
 
-[John Snyders](https://twitter.com/J_Snyders) recently shared a [great blog post](https://hardlikesoftware.com/weblog/2022/05/05/exploring-new-apis-in-apex-22-1/) about JavaScript-APIs in the new APEX 22.1 release.
+[John Snyders](https://twitter.com/J_Snyders) recently shared a [great blog post](https://hardlikesoftware.com/weblog/2022/05/05/exploring-new-apis-in-apex-22-1/) about JavaScript APIs in the new APEX 22.1 release.
 
 In there he showed a way to call APEX actions from a link href-attribute. It offers a great way to omit manual listening for a click. It also has a great URL like syntax to pass parameters:
 
@@ -80,7 +80,7 @@ In there he showed a way to call APEX actions from a link href-attribute. It off
 
 ## Previous use case with action links
 
-In the link tag, we can now get rid of our data attribute as well as the class. Instead, we change the link to the following:
+Back to the previous use case, we can now get rid of our data attribute in the link as well as the class. Instead, we change the href-attribute to the following:
 
 ```html
 <a href="#action$open-slideover?id=#ID#">
@@ -122,7 +122,7 @@ If you have a different way to reach the same goal let me know!
 
 ## Bonus: I thought this would also be possible before 22.1
 
-As I still develop mostly in older versions of APEX I thought there could be a way to still user actions in the same manner there. As I thought only the link `href` syntax for actions was new I thought I could achieve the same effect with some JavaScript from the `href`. The actions API has an invoke method that can be used to trigger manually actions:
+As I still develop mostly in older versions of APEX I thought there could be a way to still use actions in the same manner there. As I thought only the link `href` syntax for actions was new I thought I could achieve the same effect with some JavaScript from the href-attribute. The actions API has an invoke method that can be used to trigger manually actions:
 
 ```html
 <a
@@ -143,4 +143,4 @@ $('.my-link').click((event) => {
 
 I thought I can use this syntax till the environments are upgraded to 22.1 and then easily switch to the new syntax. Unfortunately while trying this out I noticed there also was a new change to the invoke function. [In versions before 22.1 there is no fourth parameter for passing values](https://docs.oracle.com/en/database/oracle/application-express/21.2/aexjs/actions.html#invoke) ([here is the new API](https://docs.oracle.com/en/database/oracle/application-express/22.1/aexjs/actions.html#invoke)).
 
-So in this case I still need to add data attributes with IDs to the links and manually listen for the events as I need the event source to grab that ID.
+So in this case I still need to add data attributes with IDs to the links and manually listen for the events as I need the to pass the ID to set a page item.
