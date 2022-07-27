@@ -6,6 +6,15 @@ import SEO from '../components/seo';
 
 const talks = [
   {
+    year: 2022,
+    conference: 'APEX Connect 2022',
+    place: 'Brühl',
+    title: 'APEX Security Grundlagen',
+    language: '🇩🇪',
+    slides:
+      '/slides/APEX_Connect-2022-APEX-Security-Grundlagen-Hartenfeller.pdf',
+  },
+  {
     year: 2021,
     conference: 'DOAG 2021',
     place: 'online',
@@ -84,6 +93,14 @@ const publications = [
     title: 'Schnittstellenbündelung mit GraphQL',
     language: '🇩🇪',
     link: 'https://backoffice.doag.org/formes/pubfiles/12309827/docs/Publikationen/DOAGNews/2020/04-2020/04_2020-Red_Stack_Magazin-WEB.pdf',
+  },
+  {
+    year: 2022,
+    magazine: 'Red Stack Magazin',
+    pages: '47 - 51',
+    title: 'APEX-Security-Grundlagen',
+    language: '🇩🇪',
+    link: 'https://backoffice.doag.org/formes/pubfiles/14512917/docs/Publikationen/Red-Stack-Magazin-inkl-Business-News/2022/04-2022/04_2022-Red_Stack_Magazin-Philipp_Hartenfeller-APEX-Security-Grundlagen.pdf',
   },
 ];
 
