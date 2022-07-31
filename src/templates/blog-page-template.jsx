@@ -141,10 +141,7 @@ const BlogPageTemplate = ({ data }) => {
     BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
       <BlogImageGetter
         filename={filename}
-        classes={classNames(
-          'object-contain my-12 mx-auto xxl:w-3/4 cursor-zoom-in',
-          noShadow ? null : 'shadow-md'
-        )}
+        classes={classNames('object-contain', noShadow ? null : 'shadow-md')}
         alt={alt}
         maxWidthPx={maxWidthPx}
       />
