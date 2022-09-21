@@ -7,12 +7,18 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2022,
+    conference: 'DOAG 2022',
+    place: 'Nürnberg',
+    title: 'APEX Security Grundlagen',
+    language: '🇩🇪',
+    slides: '/slides/DOAG-2022-APEX-Security-Grundlagen-Hartenfeller.pdf',
+  },
+  {
+    year: 2022,
     conference: 'APEX Connect 2022',
     place: 'Brühl',
     title: 'APEX Security Grundlagen',
     language: '🇩🇪',
-    slides:
-      '/slides/APEX_Connect-2022-APEX-Security-Grundlagen-Hartenfeller.pdf',
   },
   {
     year: 2021,
