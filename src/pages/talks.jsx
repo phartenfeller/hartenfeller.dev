@@ -9,6 +9,13 @@ const talks = [
     year: 2022,
     conference: 'DOAG 2022',
     place: 'Nürnberg',
+    title: 'Immersive Analytics: Datenvisualisierung mit VR',
+    language: '🇩🇪',
+  },
+  {
+    year: 2022,
+    conference: 'DOAG 2022',
+    place: 'Nürnberg',
     title: 'APEX Security Grundlagen',
     language: '🇩🇪',
     slides: '/slides/DOAG-2022-APEX-Security-Grundlagen-Hartenfeller.pdf',
