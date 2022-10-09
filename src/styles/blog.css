@@ -38,7 +38,7 @@
 }
 
 .blog-body ul {
-  @apply list-inside list-disc mb-6;
+  @apply list-outside list-disc mb-6 ml-2;
 }
 
 .blog-body .video-wrapper {
@@ -53,4 +53,12 @@
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.blog-body code {
+  @apply font-light text-black mx-1 px-1 border bg-red-50 border-red-100;
+}
+
+.blog-body strong {
+  @apply text-black font-extrabold tracking-wider;
 }

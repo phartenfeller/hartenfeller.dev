@@ -6,6 +6,28 @@ import SEO from '../components/seo';
 
 const talks = [
   {
+    year: 2022,
+    conference: 'DOAG 2022',
+    place: 'Nürnberg',
+    title: 'Immersive Analytics: Datenvisualisierung mit VR',
+    language: '🇩🇪',
+  },
+  {
+    year: 2022,
+    conference: 'DOAG 2022',
+    place: 'Nürnberg',
+    title: 'APEX Security Grundlagen',
+    language: '🇩🇪',
+    slides: '/slides/DOAG-2022-APEX-Security-Grundlagen-Hartenfeller.pdf',
+  },
+  {
+    year: 2022,
+    conference: 'APEX Connect 2022',
+    place: 'Brühl',
+    title: 'APEX Security Grundlagen',
+    language: '🇩🇪',
+  },
+  {
     year: 2021,
     conference: 'DOAG 2021',
     place: 'online',
@@ -77,6 +99,14 @@ const talks = [
 ];
 
 const publications = [
+  {
+    year: 2022,
+    magazine: 'Red Stack Magazin',
+    pages: '47 - 51',
+    title: 'APEX-Security-Grundlagen',
+    language: '🇩🇪',
+    link: 'https://backoffice.doag.org/formes/pubfiles/14512917/docs/Publikationen/Red-Stack-Magazin-inkl-Business-News/2022/04-2022/04_2022-Red_Stack_Magazin-Philipp_Hartenfeller-APEX-Security-Grundlagen.pdf',
+  },
   {
     year: 2020,
     magazine: 'Red Stack Magazin',

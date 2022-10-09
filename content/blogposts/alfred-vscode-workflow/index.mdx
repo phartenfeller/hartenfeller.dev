@@ -1,0 +1,74 @@
+---
+title: >
+  Alfred workflow to quickly navigate Visual Studio Code workspaces
+date: 2022-06-25
+lastUpdate: 2022-07-02
+description: I created a workflow to open VSCode workspaces for the macOS search tool Alfred quickly. It supports local and remote repositories.
+slug: alfred-vscode-workflow
+titleImage: ./aflred-vscode-blog.png
+titleImageAlt: Screenshot of workflow in use. Query 'vsc temp' results in four VSCode workspaces.
+titleImageSource: { text: null, href: null }
+tags: ['Alfred', 'macOS', 'VSCode']
+ghCommentsIssueId: 74
+---
+
+## Usage
+
+You can activate the workflow by writing the prefix `vsc` into Alfred.
+Now, it lists all known workspaces that you can filter further.
+
+<BlogImg
+  filename="vsc-alfed-use.png"
+  alt="Screenshot of workflow in use. Query 'vsc temp' results in four VSCode workspaces."
+  maxWidthPx="700"
+/>
+
+## Installation
+
+=== Update ===
+
+**Since release 1.1.0 you don't need to set the path to code anymore**
+
+==============
+
+<YouTubeEmbed videoID="XBVflz5M4ms" />
+
+You need to have [Node.js](https://nodejs.org/en/) installed on your Mac to use the workflow.
+You can install the workflow with the Node Package Manager with the following command:
+
+```sh
+npm i -g @phartenfeller/alfred-vscode-workspaces
+```
+
+Additionally, you need to configure the path to your VSCode installation.
+You can find out where it is installed like this:
+
+```sh
+where code
+# for example /opt/homebrew/bin/code
+```
+
+Copy that path and access the workflow settings by searching for `alfred preferences` in Alfred.
+On the tab "workspaces" navigate to the new workflow and click on the variables section on the top right.
+
+<BlogImg
+  filename="alfred-variable-button.png"
+  alt="Screenshot of workflow preferences in alfred. The button to edit variables is higlighted on the top right."
+  maxWidthPx="700"
+/>
+
+In the dialog change the environment variable `codepath` to your copied path.
+Make sure to save the changes.
+
+<BlogImg
+  filename="alfred-workflow-set-var.png"
+  alt="Screenshot of workflow environment variables preferences dialog in alfred. On the right side is a variable named 'codepath' that should include your path to vscode."
+  maxWidthPx="700"
+/>
+
+Now you are set up to use the workflow and quickly open Visual Studio Code workspaces.
+Note that you can also find remote ones, for example, set up with SSH.
+
+## Contribute and Bugs
+
+If you want to improve this workflow or report bugs/ideas feel free to open issues [in this Git repo](https://github.com/phartenfeller/alfred-vscode-workspaces).

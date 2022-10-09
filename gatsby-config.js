@@ -2,6 +2,8 @@ require('dotenv').config({
   path: `.env`,
 });
 
+const siteUrl = `https://hartenfeller.dev`;
+
 module.exports = {
   siteMetadata: {
     title: `Philipp Hartenfeller`,
@@ -43,7 +45,6 @@ module.exports = {
     {
       resolve: 'gatsby-plugin-sitemap',
       options: {
-        exclude: ['/imprint', '/privacy'],
         query: `
         {
           allSitePage {
@@ -52,13 +53,7 @@ module.exports = {
             }
           }
         }`,
-        resolveSiteUrl: () => 'https://hartenfeller.dev',
-        serialize: ({ allSitePage }) =>
-          allSitePage.nodes.map((node) => ({
-            url: `https://hartenfeller.dev${node.path}`,
-            changefreq: `weekly`,
-            priority: node.path !== '/' ? 0.7 : 1,
-          })),
+        resolveSiteUrl: () => siteUrl,
       },
     },
     {
@@ -94,30 +89,30 @@ module.exports = {
         ],
       },
     },
-    {
-      resolve: `gatsby-transformer-remark`,
-      options: {
-        // CommonMark mode (default: true)
-        commonmark: true,
-        // Footnotes mode (default: true)
-        footnotes: true,
-        // Pedantic mode (default: true)
-        pedantic: true,
-        // GitHub Flavored Markdown mode (default: true)
-        gfm: true,
-        // Plugins configs
-        plugins: [
-          {
-            resolve: `gatsby-remark-images`,
-            options: {
-              maxWidth: 630,
-            },
-          },
-          `gatsby-remark-copy-linked-files`,
-          `gatsby-remark-smartypants`,
-        ],
-      },
-    },
+    // {
+    //   resolve: `gatsby-transformer-remark`,
+    //   options: {
+    //     // CommonMark mode (default: true)
+    //     commonmark: true,
+    //     // Footnotes mode (default: true)
+    //     footnotes: true,
+    //     // Pedantic mode (default: true)
+    //     pedantic: true,
+    //     // GitHub Flavored Markdown mode (default: true)
+    //     gfm: true,
+    //     // Plugins configs
+    //     plugins: [
+    //       {
+    //         resolve: `gatsby-remark-images`,
+    //         options: {
+    //           maxWidth: 630,
+    //         },
+    //       },
+    //       `gatsby-remark-copy-linked-files`,
+    //       `gatsby-remark-smartypants`,
+    //     ],
+    //   },
+    // },
     {
       resolve: `gatsby-plugin-canonical-urls`,
       options: {
@@ -186,5 +181,6 @@ module.exports = {
         ],
       },
     },
+    'gatsby-plugin-uninline-styles',
   ],
 };

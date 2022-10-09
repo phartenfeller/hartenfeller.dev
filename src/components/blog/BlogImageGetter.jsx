@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import useImagePreview from '../../state/useImagePreview';
 
-const BlogImageGetter = ({ filename, classes, alt }) => {
+const BlogImageGetter = ({ filename, classes, alt, maxWidthPx }) => {
   const { open } = useImagePreview();
 
   const filterImage = (images) =>
@@ -34,33 +34,42 @@ const BlogImageGetter = ({ filename, classes, alt }) => {
         }
       `}
       render={(data) => (
-        <div
-          className="m-auto"
-          style={{ maxWidth: `${filterImage(data).node.original.width}px` }}
+        <button
+          className="block m-auto w-full h-auto my-12 mx-auto xxl:w-3/4 cursor-zoom-in"
+          style={{
+            maxWidth: maxWidthPx
+              ? `${maxWidthPx}px`
+              : `${filterImage(data).node.original.width}px`,
+          }}
+          onClick={() => {
+            open({
+              imgSrc: filterImage(data).node.original.src,
+              alt,
+              width: filterImage(data).node.original.width,
+              height: filterImage(data).node.original.height,
+            });
+          }}
         >
           <GatsbyImage
             image={filterImage(data).node.gatsbyImageData}
             className={classes}
             alt={alt}
-            onClick={() => {
-              open({
-                imgSrc: filterImage(data).node.original.src,
-                alt,
-                width: filterImage(data).node.original.width,
-                height: filterImage(data).node.original.height,
-              });
-            }}
           />
-        </div>
+        </button>
       )}
     />
   );
+};
+
+BlogImageGetter.defaultProps = {
+  maxWidthPx: null,
 };
 
 BlogImageGetter.propTypes = {
   filename: PropTypes.string.isRequired,
   classes: PropTypes.string.isRequired,
   alt: PropTypes.string.isRequired,
+  maxWidthPx: PropTypes.number,
 };
 
 export default BlogImageGetter;

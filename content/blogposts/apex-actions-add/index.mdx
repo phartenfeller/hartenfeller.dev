@@ -1,0 +1,146 @@
+---
+title: >
+  Dynamic click handling with APEX actions in 22.1
+date: 2022-06-01
+description: APEX 22.1 changed a lot to the actions interface and added a new method with which we can call them easily from links.
+slug: apex-actions-links-22-1
+titleImage: ./unsplash-wc3jFFQxo8k.jpg
+titleImageAlt: Photo of a newton's cradle
+titleImageSource:
+  {
+    text: 'Title photo by Nadir sYzYgY on Unsplash',
+    href: 'https://unsplash.com/photos/wc3jFFQxo8k',
+  }
+tags: ['Oracle', 'APEX']
+ghCommentsIssueId: 73
+---
+
+## Use Case
+
+Sometimes we need to do something in APEX that is not as declarative as other things and therefore requires some frontend code or complex dynamic actions with custom code. It is super great to have this option because these extra steps can have huge benefits for the users. For me, one of these cases is when I need to dynamically handle click user clicks e. g. for slightly different actions for every link in a report row.
+
+One specific use case is shown in the following video:
+
+<BlogVideo
+  filename="usecase-demo-slideover.webm"
+  frame="usecase-demo-slideover-start-frame.jpg"
+  width="1280"
+  title="Use Case Demo"
+/>
+
+The table shows some basic info, to get more we can click the details link. Because the details report is on the same page as an inline drawer we need to do some manual steps:
+
+- Listen to the click on all the links in the table
+- Check which of the many rows was clicked (specifically grab the PK ID from that row)
+- Refresh the details info to fetch the data for the clicked row
+- Open the inline drawer
+
+## How I did it before 22.1
+
+I created an HTML column in the report with a link that has a href-attribute to nothing (`#`) and added a specific class that I can target later. I also added a data attribute that includes the ID of each row as a value (`data-id="#ID#"`).
+
+```html
+<a href="#" data-id="#ID#" class="modal-trigger">
+  <span class="fa fa-search" aria-hidden="true" style="font-size: 2rem;"></span>
+  Details
+</a>
+```
+
+In a dynamic action, we can then listen to a click on the used class (`modal-trigger`). It is also important to set the event scope to dynamic and use the report region ID for the static container. Otherwise, the click listener does not work when the report is refreshed after pagination or search.
+
+<BlogImg
+  filename="dynamic-click-dynamic-action.png"
+  alt="Screenshot of the Dynamic Action config. Settings for When are - Event: click, Selection Type: jQuery Selector, jQuery Selector: .modal-trigger. Settings for Advanced are - Event Scope: Dynamic, Static Container: #cust-ir"
+  maxWidthPx="600"
+/>
+
+After a click happened we can extract the ID from the data attribute with the following JS code inside the dynamic action:
+
+```js
+const id = $(this.triggeringElement).data('id');
+apex.items.P99_ID.setValue(id);
+```
+
+<InfoBox>
+  The `apex.items.#ITEM_NAME#` syntax exists since `21.2`. In prior versions you
+  have to call it the following way: `apex.item('#ITEM_NAME#')`.
+</InfoBox>
+
+After fetching the ID and putting it into a page item we can refresh the detail report in the modal via a `Refresh` action (make sure `page items to submit` is set to the changed ID item). Afterward, we can open the modal with the `Open Region` action.
+
+## The new actions link syntax
+
+[John Snyders](https://twitter.com/J_Snyders) recently shared a [great blog post](https://hardlikesoftware.com/weblog/2022/05/05/exploring-new-apis-in-apex-22-1/) about JavaScript APIs in the new APEX 22.1 release.
+
+In there he showed a way to call APEX actions from a link href-attribute. It offers a great way to omit manual listening for a click. It also has a great URL like syntax to pass parameters:
+
+```html
+<a href="#action$name_of_action?param1=value&param2=value" ...></a>
+```
+
+## Previous use case with action links
+
+Back to the previous use case, we can now get rid of our data attribute in the link as well as the class. Instead, we change the href-attribute to the following:
+
+```html
+<a href="#action$open-slideover?id=#ID#">
+  <span class="fa fa-search" aria-hidden="true" style="font-size: 2rem;"></span>
+  Details
+</a>
+```
+
+Then we can define an action in the execute on page load JavaScript field. The action and argument names have to match the ones specified in the link:
+
+```js
+apex.jQuery(window).on('theme42ready', () => {
+  apex.actions.add([
+    {
+      name: 'open-slideover',
+      Label: 'Open Slideover',
+      action: (event, element, args) => {
+        apex.items.P99_ID.setValue(args.id);
+        return true;
+      },
+    },
+  ]);
+});
+```
+
+We could also manually refresh the report and open the model in that action with JavaScript. Instead, I created a dynamic action that listens to changes to the `P99_ID` item and defined these steps in the declarative way there.
+
+[John Snyders also mentioned in his post that in the future there may be a way to directly trigger dynamic actions with these actions](https://hardlikesoftware.com/weblog/2022/05/05/exploring-new-apis-in-apex-22-1/#:~:text=My%20hope%20is%20that%20in%20the%20future%20we%20will%20have%20unification%20of%20Dynamic%20Actions%20and%20the%20actions%20interface%20such%20that%20DAs%20can%20be%20invoked%20from%20links%20and%20more.%20This%20is%20a%20step%20in%20that%20direction.). That would be a great addition.
+
+## A question of personal preference
+
+In the end, you have to decide if you like doing the listening to the action yourself or letting APEX handle it. As my excitement about this small change may indicate I prefer the `apex.actions` way and will use that in the future ([this is the way](https://youtu.be/uelA7KRLINA?t=8) :) ).
+
+The actions API also comes in handy if you want to [add keyboard shortcuts](https://docs.oracle.com/en/database/oracle/application-express/22.1/aexjs/actions.html#addShortcut) (e.g. `apex.actions.addShortcut("Ctrl+Shift+E", "send-email")`).
+
+But I think the proposed integration with dynamic actions would put the nail into the coffin as it would be very declarative. Today you have to know where the actions are defined to know how this magic works. I think new developers would expect the handling of actions would be in the dynamic actions section.
+
+If you have a different way to reach the same goal let me know!
+
+## Bonus: I thought this would also be possible before 22.1
+
+As I still develop mostly in older versions of APEX I thought there could be a way to still use actions in the same manner there. As I thought only the link `href` syntax for actions was new I thought I could achieve the same effect with some JavaScript from the href-attribute. The actions API has an invoke method that can be used to trigger manually actions:
+
+```html
+<a
+  href="javascript:apex.actions.invoke('open-slideover', null, null, {'id': '#ID#'})"
+  ...
+></a>
+```
+
+Note that we have to pass null to the 2nd and 3rd parameters (`pEvent`, `pFocusElement`) as we have no way of capturing them this way. So we can't use the event source in the action itself. This only works again in a manual click handler:
+
+```js
+$('.my-link').click((event) => {
+  apex.actions.invoke('do-something', event, event.target, {
+    id: event.target.dataset.id,
+  });
+});
+```
+
+I thought I can use this syntax till the environments are upgraded to 22.1 and then easily switch to the new syntax. Unfortunately while trying this out I noticed there also was a new change to the invoke function. [In versions before 22.1 there is no fourth parameter for passing values](https://docs.oracle.com/en/database/oracle/application-express/21.2/aexjs/actions.html#invoke) ([here is the new API](https://docs.oracle.com/en/database/oracle/application-express/22.1/aexjs/actions.html#invoke)).
+
+So in this case I still need to add data attributes with IDs to the links and manually listen for the events as I need the ID to set a page item.

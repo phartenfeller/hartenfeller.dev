@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
+import BlogVideoGetter from '../components/blog/BlogVideoGetter';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
 import { postType } from '../components/blog/Blogpost';
 import CodeHandler from '../components/blog/CodeHandler';
@@ -137,14 +138,12 @@ const BlogPageTemplate = ({ data }) => {
     h3: CustomH3,
     Gist,
     // eslint-disable-next-line react/prop-types
-    BlogImg: ({ filename, alt, noShadow = false }) => (
+    BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
       <BlogImageGetter
         filename={filename}
-        classes={classNames(
-          'object-contain my-12 mx-auto xxl:w-3/4 cursor-zoom-in',
-          noShadow ? null : 'shadow-md'
-        )}
+        classes={classNames('object-contain', noShadow ? null : 'shadow-md')}
         alt={alt}
+        maxWidthPx={maxWidthPx}
       />
     ),
     // eslint-disable-next-line react/prop-types
@@ -155,6 +154,7 @@ const BlogPageTemplate = ({ data }) => {
         classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
       />
     ),
+    BlogVideo: BlogVideoGetter,
     YouTubeEmbed,
     InfoBox,
   };
