@@ -18,13 +18,13 @@ ghCommentsIssueId: 75
 ## About APEX_T_VARCHAR2
 
 The type `apex_t_varchar2` itself is not that special.
-If we open up its declaration we can see that it has a different internal name `wwv_flow_t_varchar2` and is basically just a varchar2 array:
+If we open up its declaration we can see that it has a different internal name "`wwv_flow_t_varchar2`" and is basically just a varchar2 array:
 
 ```sql
 create or replace type wwv_flow_t_varchar2 as table of varchar2(32767);
 ```
 
-With normal arrays, you can already do great stuff but `apex_t_varchar2` gets its superpowers because of the [apex_string](https://docs.oracle.com/en/database/oracle/apex/22.1/aeapi/APEX_STRING.html#GUID-CAFD987C-7382-4F0F-8CB9-1D3BD05F054A) package which is a collection of functions to work with them.
+With normal arrays, you can already do great stuff but `apex_t_varchar2` gets its superpowers from the [apex_string](https://docs.oracle.com/en/database/oracle/apex/22.1/aeapi/APEX_STRING.html#GUID-CAFD987C-7382-4F0F-8CB9-1D3BD05F054A) package which adds plenty of functions on top of these arrays.
 
 In the following sections, I want to point out how to work with the type and how it can make your code elegant and efficient.
 
@@ -38,7 +38,7 @@ select *
  where cust_code = pi_cust_code
 ```
 
-You can only call the API with one customer code at a time, but the user wants to fetch multiple ones most of the time. We can improve this by allowing to pass multiple customer codes as a comma-separated string (CUST1,CUST2,CUST3):
+You can only call the API with one customer code at a time, but the user wants to fetch multiple ones most of the time. We can improve this by allowing to pass multiple customer codes as a comma-separated string (e.g. `CUST1,CUST2,CUST3`):
 
 ```sql
 select *
@@ -50,7 +50,7 @@ select *
 
 Now the user saves a lot of requests and the database executes fewer queries.
 
-If you want to filter the values based on a number column you can use the function `apex_string.split_numbers` which returns `apex_t_varchar2`'s sibling `apex_t_number`:
+If you want to filter the values based on a column with a number type you can use the function `apex_string.split_numbers` which returns `apex_t_varchar2`'s sibling `apex_t_number`:
 
 ```sql
 select *
@@ -62,7 +62,7 @@ select *
 
 ## Use Case 2: Handling Multi-Value APEX Items
 
-The most "APEX thing" to do with `apex_t_varchar2` is handling APEX items that store multiple values. This includes checkboxes, shuttles, multi-value select lists, etc. By default, they store the selected values in a single string colon separated (e. g. `CHESS:FOOTBALL:RACING`).
+The most "APEX thing" to do with `apex_t_varchar2` is handling APEX items that store multiple values. This includes checkboxes, shuttles, multi-value select lists, etc. By default, they store the selected values in a single string colon-separated (e. g. `CHESS:FOOTBALL:RACING`).
 
 If we want to store their value in a normalized fashion (one row for each value), we must split these values up before merging them. This can be done super easily:
 
@@ -146,13 +146,20 @@ To make this possible I added a Markdown editor to a page and stored the templat
 Because the e-mails are sent for a specific data record I allowed them to put placeholders in the template.
 These are named after their column name in a specific view and are replaced with the actual value before sending the e-mail.
 
+```
+Dear ##FIRST_NAME## ##LAST_NAME##,
+
+the data record "##RECORD_NAME##" has changed.
+...
+```
+
 I could have just done every replacement manually for each column but I wanted it to be more generic.
 I anticipated that this view and by that the available placeholders will grow in the future.
 So I wanted to loop over all the columns of a single record of that view and dynamically replace the placeholders.
 
 Unfortunately, this is not as easy as it sounds.
 As far as I know, there is no way to loop over a rowtype (please contact me if I am wrong).
-I would love a native feature where you could just get an (associative array/map)[https://hartenfeller.dev/blog/maps-oracle-plsql] from a rowtype.
+I would love a native feature where you could just get an [associative array/map](https://hartenfeller.dev/blog/maps-oracle-plsql) like structure from a rowtype.
 So instead I got a bit creative with `apex_t_varchar2`:
 
 ```sql
@@ -182,8 +189,10 @@ The downside to this approach is that we convert every value of that record into
 This conversion is not a problem in this case as I want to dump all values in a mail text.
 I try to avoid dynamic SQL because you can get [nasty SQL injection vulnerabilities if you don't sanitize your inputs](https://xkcd.com/327/) but in this case, we have no choice.
 
+Noticed how we in the first array store all values of a single column (vertically) and secondly all values of a single row (horizontally)? We achieve this with `bulk collect` und using the types constructor `apex_t_varchar2(col1,col2,col3)`.
+
 There is also a different approach to loop over a rowtype with [dbms_sql](https://docs.oracle.com/en/database/oracle/oracle-database/21/arpls/DBMS_SQL.html) where you don't lose your types (thanks [Moritz](https://twitter.com/commi235) for pointing this out to me).
-[Here is one example](https://github.com/commi235/xlsx_builder/blob/07e6de54ad0a2cf4994a1ec2c64b70d8218db1b4/xlsx_builder_pkg.pkb#L2917-L3053) from [Anton Scheffer's AS_XLSX package](https://technology.amis.nl/languages/oracle-plsql/create-an-excel-file-with-plsql/).
+[Here is one example](https://github.com/commi235/xlsx_builder/blob/07e6de54ad0a2cf4994a1ec2c64b70d8218db1b4/xlsx_builder_pkg.pkb#L2917-L3053) from [Anton Scheffer's "as_xlsx" package](https://technology.amis.nl/languages/oracle-plsql/create-an-excel-file-with-plsql/).
 But as you can see the code required for this is quite complex.
 So you have to decide for yourself what you want to do if you have a similar case.
 
