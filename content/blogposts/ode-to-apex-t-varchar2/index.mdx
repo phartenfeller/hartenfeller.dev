@@ -1,0 +1,188 @@
+---
+title: >
+  Ode to APEX_T_VARCHAR2 #JoelKallmanDay
+date: 2022-10-11
+description: APEX_T_VARCHAR2 is a database type that comes with an Oracle APEX installation. I use it quite frequently and think that with it you can write better code.
+slug: ode-to-apex-t-varchar2
+titleImage: ./jan-antonin-kolar-lRoX0shwjUQ-unsplash.jpg
+titleImageAlt: Photo of lots of small wooden file cabinets
+titleImageSource:
+  {
+    text: 'Photo by Jan Antonin Kolar on Unsplash',
+    href: 'https://unsplash.com/photos/lRoX0shwjUQ',
+  }
+tags: ['Oracle', 'APEX']
+ghCommentsIssueId: 72
+---
+
+## About APEX_T_VARCHAR2
+
+The type `apex_t_varchar2` itself is not that special.
+If we open up its declaration we can see that it has a different internal name `wwv_flow_t_varchar2` and is basically just a varchar2 array:
+
+```sql
+create or replace type wwv_flow_t_varchar2 as table of varchar2(32767);
+```
+
+With normal arrays, you can already do great stuff but `apex_t_varchar2` gets its superpowers because of the [apex_string](https://docs.oracle.com/en/database/oracle/apex/22.1/aeapi/APEX_STRING.html#GUID-CAFD987C-7382-4F0F-8CB9-1D3BD05F054A) package which is a collection of functions to work with them.
+
+In the following sections, I want to point out how to work with the type and how it can make your code elegant and efficient.
+
+## Use Case 1: Query values that are in a comma-separated string of values
+
+Imagine a REST API where the user can fetch customer data. Your API receives a customer code and returns the data for it. Your API can currently only handle one customer at a time:
+
+```sql
+select *
+  from customers
+ where cust_code = pi_cust_code
+```
+
+You can only call the API with one customer code at a time, but the user wants to fetch multiple ones most of the time. We can improve this by allowing to pass multiple customer codes as a comma-separated string (CUST1,CUST2,CUST3):
+
+```sql
+select *
+  from customers
+ where cust_code member of(
+    apex_string.split(pi_csv_cust_codes, ',')
+  );
+```
+
+Now the user saves a lot of requests and the database executes fewer queries.
+
+If you want to filter the values based on a number column you can use the function `apex_string.split_numbers` which returns `apex_t_varchar2`'s sibling `apex_t_number`:
+
+```sql
+select *
+  from customers
+ where cust_id member of(
+    apex_string.split_numbers(pi_csv_cust_ids, ',')
+  );
+```
+
+## Use Case 2: Handling Multi-Value APEX Items
+
+The most "APEX thing" to do with `apex_t_varchar2` is handling APEX items that store multiple values. This includes checkboxes, shuttles, multi-value select lists, etc. By default, they store the selected values in a single string colon separated (e. g. `CHESS:FOOTBALL:RACING`).
+
+If we want to store their value in a normalized fashion (one row for each value), we must split these values up before merging them. This can be done super easily:
+
+```sql
+-- ...
+as
+  l_fav_sports apex_t_varchar2;
+begin
+  l_fav_sports := apex_string.split( pi_fav_sports, ':' );
+
+  -- insert new entries
+  insert into people_favorite_sports
+    (person_id, sport)
+  select pi_person_id, column_value
+    from table(l_fav_sports)
+   where column_value not in ( select sport from people_favorite_sports where person_id = pi_person_id )
+  ;
+
+  -- remove old values that are not selected anymore
+  delete from people_favorite_sports
+   where person_id = pi_person_id
+     and sport not in ( select column_value from table(l_fav_sports) )
+  ;
+-- ...
+```
+
+We first split the colon-separated string into our `apex_t_varchar2` variable. With the resulting variable, we can construct both an insert and delete statement that adds newly selected and removes unselected entries from the table.
+
+Note that we can query an `apex_t_varchar2` array like a normal table. We need to pass it to the `table` function and get the value in a `column_value` col.
+
+## Use Case 3: storing values during long processes
+
+Imagine a PL/SQL data validation process where we validate multiple rows of user input. A user enters all the data, invokes a validation function, and receives a list of errors and warnings.
+
+Because the rows are independent of each other it makes sense to not exit at the first error but instead validate all rows and in the end list all errors and even some warnings.
+
+To conveniently store these feedback messages we can use an array. We create one for the error messages and one for the warnings. Each time we come across a problem with the user input we add a message to the corresponding array with `apex_string.push`.
+
+```sql
+-- ...
+begin
+  l_errors := apex_t_varchar2();
+  l_warnings := apex_t_varchar2();
+
+  for rec in (
+    select *
+      from user_inputs
+     order by line_no asc
+  )
+  loop
+    -- ...
+    if user_underage(rec.birthdate) then
+      apex_string.push(l_errors, 'Line' || rec.line_no || ': User is too young!');
+    end if;
+
+    if not country_phone_no_match(rec.country, rec.phone_number) then
+      apex_string.push(l_warnings, 'Line' || rec.line_no || ': Country does not match with phone no country code!');
+    end if;
+    -- ...
+  end loop;
+
+  -- create messages
+  if l_warnings.count > 0 then
+    po_warnings_list_html := '<ul><li>' || apex_string.join(l_warnings, '</li><li>') || '</li></ul>';
+  end if;
+
+  if l_errors.count > 0 then
+    po_status_error := true;
+    po_error_list_html := '<ul><li>' || apex_string.join(l_errors, '</li><li>') || '</li></ul>';
+  else
+    po_status_error := false;
+  end if;
+-- ...
+```
+
+## Use Case 4: Loop Over A Rowtype (kind of)
+
+I like to write code that still works under changing conditions.
+I had to implement an e-mail feature where the end users could define and edit the template.
+To make this possible I added a Markdown editor to a page and stored the template in a CLOB column.
+Because the e-mails are sent for a specific data record I allowed them to put placeholders in the template.
+These are named after their column name in a specific view and are replaced with the actual value before sending the e-mail.
+
+I could have just done every replacement manually for each column but I wanted it to be more generic.
+I anticipated that this view and by that the available placeholders will grow in the future.
+So I wanted to loop over all the columns of a single record of that view and dynamically replace the placeholders.
+
+Unfortunately, this is not as easy as it sounds.
+As far as I know, there is no way to loop over a rowtype (please contact me if I am wrong).
+I would love a native feature where you could just get an (associative array/map)[https://hartenfeller.dev/blog/maps-oracle-plsql] from a rowtype.
+So instead I got a bit creative with `apex_t_varchar2`:
+
+```sql
+as
+  l_col_arr apex_t_varchar2;
+  l_val_arr apex_t_varchar2;
+begin
+  select column_name
+    bulk collect into l_col_arr
+    from user_tab_cols
+   where table_name = 'MAIL_VALUES_V';
+
+  l_dyn_sql :=
+    'select apex_t_varchar2(' || apex_string.join(pio_col_array, ', ') || ')
+       from MAIL_VALUES_V where record_id = :1';
+
+  execute immediate l_dyn_sql into l_val_arr using pi_record_id;
+
+  for i in l_val_arr.first .. l_val_arr.last
+  loop
+    pio_mail_text := replace(pio_mail_text, '##' || l_col_arr(i) || '##', l_val_arr(i));
+  end loop;
+```
+
+We fill two arrays, one for the column names and one for the column values where importantly the positions match.
+The downside to this approach is that we convert every value of that record into a string and that we have to use dynamic SQL.
+This conversion is not a problem in this case as I want to dump all values in a mail text.
+I try to avoid dynamic SQL because you can get [nasty SQL injection vulnerabilities if you don't sanitize your inputs](https://xkcd.com/327/) but in this case, we have no choice.
+
+There is also a different approach to loop over a rowtype with [dbms_sql](https://docs.oracle.com/en/database/oracle/oracle-database/21/arpls/DBMS_SQL.html) where you don't lose your types (thanks [Moritz](https://twitter.com/commi235) for pointing this out to me).
+[Here is one example](https://github.com/commi235/xlsx_builder/blob/07e6de54ad0a2cf4994a1ec2c64b70d8218db1b4/xlsx_builder_pkg.pkb#L2917-L3053) from [Anton Scheffer's AS_XLSX package](https://technology.amis.nl/languages/oracle-plsql/create-an-excel-file-with-plsql/).
+But as you can see the code required for this is quite complex.
+So you have to decide for yourself what you want to do if you have a similar case.
