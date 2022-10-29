@@ -21,7 +21,8 @@
     "global-require": 0,
     "import/prefer-default-export": 0,
     "react/jsx-one-expression-per-line": 0,
-    "radix": 0
+    "radix": 0,
+    "react/function-component-definition": ["arrow-function"]
   },
   "plugins": ["prettier", "react-hooks", "jsx-a11y"],
   "settings": {
