@@ -1,3 +1,12 @@
+const path = require('path');
+
+const blogPageTemplate = path.resolve(`./src/templates/blog-page-template.jsx`);
+const tagPageTemplate = path.resolve(
+  `./src/templates/blog-tag-page-template.jsx`
+);
+
+let defContentFilePath = '';
+
 exports.createPages = async ({ actions, graphql }) => {
   const tagSet = new Set();
 
@@ -10,6 +19,9 @@ exports.createPages = async ({ actions, graphql }) => {
             tags
           }
           id
+          internal {
+            contentFilePath
+          }
         }
       }
     }
@@ -17,12 +29,15 @@ exports.createPages = async ({ actions, graphql }) => {
 
   const pages = blogposts.data.posts.nodes;
 
-  pages.forEach((page) => {
+  pages.forEach((page, i) => {
+    if (i === 0) {
+      defContentFilePath = page.internal.contentFilePath;
+    }
     page.frontmatter.tags.forEach((tag) => tagSet.add(tag));
 
     actions.createPage({
       path: `/blog/${page.frontmatter.slug.replace(/ /g, '-')}`,
-      component: require.resolve('./src/templates/blog-page-template.jsx'),
+      component: `${blogPageTemplate}?__contentFilePath=${page.internal.contentFilePath}`,
       context: {
         id: page.id,
       },
@@ -32,7 +47,7 @@ exports.createPages = async ({ actions, graphql }) => {
   tagSet.forEach((tag) => {
     actions.createPage({
       path: `/blog/tags/${tag.toLowerCase().replace(/ /g, '-')}`,
-      component: require.resolve('./src/templates/blog-tag-page-template.jsx'),
+      component: `${tagPageTemplate}?__contentFilePath=${defContentFilePath}`,
       context: {
         tag,
       },

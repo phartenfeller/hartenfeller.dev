@@ -4,7 +4,7 @@ import BlogGifGetter from './BlogGifGetter';
 import Gist from './Gist';
 import Codemirror from './Codemirror';
 
-const CodeHandler = ({ className, children }) => {
+const CodeHandler = ({ className = '', children }) => {
   const language = className.replace(/language-/, '');
   switch (language) {
     case 'gist':

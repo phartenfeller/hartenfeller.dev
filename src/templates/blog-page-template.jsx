@@ -1,14 +1,13 @@
 import { MDXProvider } from '@mdx-js/react';
 import { graphql, Link } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
-import { MDXRenderer } from 'gatsby-plugin-mdx';
 import PropTypes from 'prop-types';
 import React from 'react';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
-import BlogVideoGetter from '../components/blog/BlogVideoGetter';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
 import { postType } from '../components/blog/Blogpost';
+import BlogVideoGetter from '../components/blog/BlogVideoGetter';
 import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
 import CustomH3 from '../components/blog/CustomH3';
@@ -54,9 +53,10 @@ export const query = graphql`
         tags
         ghCommentsIssueId
       }
-      body
       id
-      fileAbsolutePath
+      internal {
+        contentFilePath
+      }
     }
   }
 `;
@@ -111,9 +111,10 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
   return meta;
 };
 
-const BlogPageTemplate = ({ data }) => {
+const BlogPageTemplate = ({ data, children }) => {
   const { post } = data;
-  const { frontmatter, body, fileAbsolutePath, id } = post;
+  const { frontmatter, internal, id } = post;
+  const { contentFilePath } = internal;
   const {
     title,
     date,
@@ -159,8 +160,8 @@ const BlogPageTemplate = ({ data }) => {
     InfoBox,
   };
 
-  const gitHubUrl = `https://github.com/phartenfeller/hartenfeller.dev/commits/master${fileAbsolutePath.substr(
-    fileAbsolutePath.indexOf('/content')
+  const gitHubUrl = `https://github.com/phartenfeller/hartenfeller.dev/commits/master${contentFilePath.substr(
+    contentFilePath.indexOf('/content')
   )}`;
 
   const meta = getMeta({
@@ -209,9 +210,7 @@ const BlogPageTemplate = ({ data }) => {
             </div>
           </header>
           <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl">
-            <MDXProvider components={components}>
-              <MDXRenderer>{body}</MDXRenderer>
-            </MDXProvider>
+            <MDXProvider components={components}>{children}</MDXProvider>
           </main>
           {titleImageSource.text && titleImageSource.href ? (
             <div>

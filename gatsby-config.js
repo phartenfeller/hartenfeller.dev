@@ -61,14 +61,14 @@ module.exports = {
       options: {
         extensions: [`.md`, `.mdx`],
         gatsbyRemarkPlugins: [
-          {
-            resolve: `gatsby-remark-images`,
-            options: {
-              maxWidth: 800,
-              linkImagesToOriginal: false,
-            },
-          },
-          `gatsby-remark-copy-linked-files`,
+          // {
+          //   resolve: `gatsby-remark-images`,
+          //   options: {
+          //     maxWidth: 800,
+          //     linkImagesToOriginal: false,
+          //   },
+          // },
+          // `gatsby-remark-copy-linked-files`,
           `gatsby-remark-smartypants`,
           {
             resolve: `gatsby-remark-acronyms`,
