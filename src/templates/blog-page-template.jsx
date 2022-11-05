@@ -111,6 +111,35 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
   return meta;
 };
 
+const components = {
+  code: CodeHandler,
+  // eslint-disable-next-line react/prop-types
+  pre: ({ children }) => children, // handled by codeh
+  h2: LinkedH2,
+  h3: CustomH3,
+  Gist,
+  // eslint-disable-next-line react/prop-types
+  BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
+    <BlogImageGetter
+      filename={filename}
+      classes={classNames('object-contain', noShadow ? null : 'shadow-md')}
+      alt={alt}
+      maxWidthPx={maxWidthPx}
+    />
+  ),
+  // eslint-disable-next-line react/prop-types
+  BlogGif: ({ filename, alt }) => (
+    <BlogGifGetter
+      filename={filename}
+      alt={alt}
+      classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
+    />
+  ),
+  BlogVideo: BlogVideoGetter,
+  YouTubeEmbed,
+  InfoBox,
+};
+
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
   const { frontmatter, body, fileAbsolutePath, id } = post;
@@ -129,35 +158,6 @@ const BlogPageTemplate = ({ data }) => {
     lastUpdate,
     lastUpdateFormatted,
   } = frontmatter;
-
-  const components = {
-    code: CodeHandler,
-    // eslint-disable-next-line react/prop-types
-    pre: ({ children }) => <>{children}</>, // handled by codeh
-    h2: LinkedH2,
-    h3: CustomH3,
-    Gist,
-    // eslint-disable-next-line react/prop-types
-    BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
-      <BlogImageGetter
-        filename={filename}
-        classes={classNames('object-contain', noShadow ? null : 'shadow-md')}
-        alt={alt}
-        maxWidthPx={maxWidthPx}
-      />
-    ),
-    // eslint-disable-next-line react/prop-types
-    BlogGif: ({ filename, alt }) => (
-      <BlogGifGetter
-        filename={filename}
-        alt={alt}
-        classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
-      />
-    ),
-    BlogVideo: BlogVideoGetter,
-    YouTubeEmbed,
-    InfoBox,
-  };
 
   const gitHubUrl = `https://github.com/phartenfeller/hartenfeller.dev/commits/master${fileAbsolutePath.substr(
     fileAbsolutePath.indexOf('/content')
