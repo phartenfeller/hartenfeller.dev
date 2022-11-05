@@ -19,7 +19,11 @@ const ImageGetter = ({ filename, classes, alt }) => {
           allImageSharp {
             edges {
               node {
-                gatsbyImageData(layout: FULL_WIDTH)
+                gatsbyImageData(
+                  layout: FULL_WIDTH
+                  placeholder: BLURRED
+                  formats: [AUTO, WEBP, AVIF]
+                )
               }
             }
           }
