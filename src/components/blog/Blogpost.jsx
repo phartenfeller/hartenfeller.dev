@@ -59,7 +59,7 @@ const Blogpost = ({ postData }) => {
   );
 };
 
-export const postType = {
+export const postType = PropTypes.shape({
   postData: PropTypes.shape({
     title: PropTypes.string.isRequired,
     slug: PropTypes.string.isRequired,
@@ -71,7 +71,7 @@ export const postType = {
     titleImageAlt: PropTypes.string.isRequired,
     tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
-};
+});
 
 Blogpost.propTypes = postType;
 

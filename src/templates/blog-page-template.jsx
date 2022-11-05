@@ -2,7 +2,6 @@ import { MDXProvider } from '@mdx-js/react';
 import { graphql, Link } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
-import PropTypes from 'prop-types';
 import React from 'react';
 import BlogGifGetter from '../components/blog/BlogGifGetter';
 import BlogImageGetter from '../components/blog/BlogImageGetter';
@@ -24,6 +23,7 @@ import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
 import classNames from '../util/classNames';
+import AuthorShowcase from '../components/blog/AuthorShowcase';
 
 export const query = graphql`
   query ($id: String!) {
@@ -176,82 +176,89 @@ const BlogPageTemplate = ({ data }) => {
     <Layout>
       <SEO title={title} description={description} meta={meta} />
       <ScrollTracker />
-      <article className="md:w-5/6 xl:w-4/6 hd:w-1/2 m-auto shadow-sm">
-        <GatsbyImage
-          image={titleImage.childImageSharp.gatsbyImageData}
-          className="h-100 object-cover"
-          alt={titleImageAlt}
-        />
-        <div className="bg-white px-4 md:px-8 pb-8">
-          <header>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
-              {title}
-            </h1>
-            <div className="mt-6 text-sm leading-5 font-medium text-zinc-700">
-              <TagsDisplay tags={tags} />
-              <time className="float-right" dateTime={date}>
-                {formattedDate}
-              </time>
-            </div>
-            {lastUpdate ? (
-              <div className="mb-5">
-                <a
-                  href={gitHubUrl}
-                  className="float-right text-sm leading-5 font-medium text-zinc-700 underline hover:text-zinc-400 focus:outline-none rounded focus:ring focus:ring-red-300"
-                >
-                  <span>Last updated: </span>
-                  <time dateTime={lastUpdate}>{lastUpdateFormatted}</time>
-                </a>
+      <article className="flex flex-col">
+        <div className="bg-white m-auto shadow-sm ">
+          <GatsbyImage
+            image={titleImage.childImageSharp.gatsbyImageData}
+            className="h-100 object-cover max-w-[calc(75ch + 300px)]"
+            alt={titleImageAlt}
+          />
+          <div className="flex px-4 md:px-8 pb-8 space-x-8">
+            <div className="flex-grow max-w-[75ch]">
+              <header>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
+                  {title}
+                </h1>
+                <div className="mt-6 text-sm leading-5 font-medium text-zinc-700">
+                  <TagsDisplay tags={tags} />
+                  <time className="float-right" dateTime={date}>
+                    {formattedDate}
+                  </time>
+                </div>
+                {lastUpdate ? (
+                  <div className="mb-5">
+                    <a
+                      href={gitHubUrl}
+                      className="float-right text-sm leading-5 font-medium text-zinc-700 underline hover:text-zinc-400 focus:outline-none rounded focus:ring focus:ring-red-300"
+                    >
+                      <span>Last updated: </span>
+                      <time dateTime={lastUpdate}>{lastUpdateFormatted}</time>
+                    </a>
+                  </div>
+                ) : null}
+                <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-stone-600 leading-8 font-raleway">
+                  {description}
+                </div>
+              </header>
+              <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl">
+                <MDXProvider components={components}>
+                  <MDXRenderer>{body}</MDXRenderer>
+                </MDXProvider>
+              </main>
+              {titleImageSource.text && titleImageSource.href ? (
+                <div>
+                  <a
+                    href={titleImageSource.href}
+                    className="text-zinc-700 font-light mt-8 hover:text-zinc-800 hover:underline"
+                  >
+                    {titleImageSource.text}
+                  </a>
+                </div>
+              ) : null}
+
+              <div className="my-8">
+                <OtherPosts postId={id} />
               </div>
-            ) : null}
-            <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-stone-600 leading-8 font-raleway">
-              {description}
-            </div>
-          </header>
-          <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl">
-            <MDXProvider components={components}>
-              <MDXRenderer>{body}</MDXRenderer>
-            </MDXProvider>
-          </main>
-          {titleImageSource.text && titleImageSource.href ? (
-            <div>
-              <a
-                href={titleImageSource.href}
-                className="text-zinc-700 font-light mt-8 hover:text-zinc-800 hover:underline"
-              >
-                {titleImageSource.text}
-              </a>
-            </div>
-          ) : null}
 
-          <div className="my-8">
-            <OtherPosts postId={id} />
-          </div>
-
-          <div className="my-12">
-            <div className="pt-4 pb-16 text-center">
-              <LinkButton
-                type="twitter"
-                link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${slug}`}
-                text="Tweet about this"
-                newWindow
-              />
-              <LinkButton type="rss" link="/rss.xml" newWindow />
+              <div className="my-12">
+                <div className="pt-4 pb-16 text-center">
+                  <LinkButton
+                    type="twitter"
+                    link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${slug}`}
+                    text="Tweet about this"
+                    newWindow
+                  />
+                  <LinkButton type="rss" link="/rss.xml" newWindow />
+                </div>
+                <h2 className="mb-8 text-2xl brown-header-text font-semibold">
+                  Comments
+                </h2>
+                <Comments ghCommentsIssueId={ghCommentsIssueId} />
+              </div>
+              <footer className="text-center mt-8 text-xl text">
+                <Link to="/" className="text-slate-600 hover:underline">
+                  Homepage
+                </Link>
+                <span className="mx-4 text-slate-900">•</span>
+                <Link to="/blog/" className="text-slate-600 hover:underline">
+                  All Blogposts
+                </Link>
+              </footer>
             </div>
-            <h2 className="mb-8 text-2xl brown-header-text font-semibold">
-              Comments
-            </h2>
-            <Comments ghCommentsIssueId={ghCommentsIssueId} />
+            <aside className="hidden lg:block lg:w-[280px] grow-0 border-l border-zinc-300 my-5 pl-8 py-5">
+              <AuthorShowcase />
+            </aside>
           </div>
-          <footer className="text-center mt-8 text-xl text">
-            <Link to="/" className="text-slate-600 hover:underline">
-              Homepage
-            </Link>
-            <span className="mx-4 text-slate-900">•</span>
-            <Link to="/blog/" className="text-slate-600 hover:underline">
-              All Blogposts
-            </Link>
-          </footer>
         </div>
       </article>
       <BlogImagePopup />
@@ -260,7 +267,7 @@ const BlogPageTemplate = ({ data }) => {
 };
 
 BlogPageTemplate.propTypes = {
-  data: PropTypes.shape({ post: postType.isRequired }).isRequired,
+  data: postType.isRequired,
 };
 
 export default BlogPageTemplate;
