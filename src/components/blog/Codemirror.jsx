@@ -9,7 +9,7 @@ const Codemirror = ({ lang, code }) => {
     fontSize: 14,
   });
 
-  return <div ref={codeRef} />;
+  return <div className="max-w-[90vw]" ref={codeRef} />;
 };
 
 Codemirror.propTypes = {

@@ -176,15 +176,15 @@ const BlogPageTemplate = ({ data }) => {
     <Layout>
       <SEO title={title} description={description} meta={meta} />
       <ScrollTracker />
-      <article className="flex flex-col">
+      <article className="flex flex-col max-w-[100vw] overflow-hidden">
         <div className="bg-white m-auto shadow-sm ">
           <GatsbyImage
             image={titleImage.childImageSharp.gatsbyImageData}
-            className="h-100 object-cover max-w-[calc(75ch + 300px)]"
+            className="h-100 object-cover lg:max-w-[calc(75ch + 300px)]"
             alt={titleImageAlt}
           />
           <div className="flex px-4 md:px-8 pb-8 space-x-8">
-            <div className="flex-grow max-w-[75ch]">
+            <div className="flex-grow lg:max-w-[75ch]">
               <header>
                 <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
                   {title}

@@ -89,7 +89,7 @@ const OtherPosts = ({ postId }) => {
       : data.allPosts.nodes[currIndex + 1];
 
   return (
-    <div className="grid grid-cols-2 border border-zinc-300 rounded">
+    <div className="grid sm:grid-cols-2 border border-zinc-300 rounded">
       <PostDisplay last post={lastPost} />
       <PostDisplay post={nextPost} />
     </div>
