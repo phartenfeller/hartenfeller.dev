@@ -1,0 +1,57 @@
+---
+title: >
+  Oracle APEX AG-Grid Plug-In 0.2 (beta)
+date: 2022-11-15
+description: Second beta release of the AG-Grid plug-in for Oracle APEX. Find out what's new and how to get it.
+slug: apex-ag-grid-plugin-v0.2
+titleImage: ./kelly-sikkema-7alo7OJVNVw-unsplash.jpg
+titleImageAlt: A plug in front of a wall with a socket
+titleImageSource:
+  {
+    text: 'Title photo by Kelly Sikkema on Unsplash',
+    href: 'https://unsplash.com/photos/7alo7OJVNVw',
+  }
+tags: ['APEX', 'Plug-In']
+---
+
+## The Plug-In
+
+I am working on an APEX plug-in that allows you to use the [AG-Grid](https://www.ag-grid.com/) component in your APEX applications. It offers a spreadsheet-like data editing experience and thus can be used as an alternative to the Interactive Grid.
+
+Take a look at the [demo app](https://apex.oracle.com/pls/apex/r/hartenfeller_dev/ag-grid-plugin-demo) to experience the plug-in in action. The source code of the plug-in is available on [GitHub](https://github.com/phartenfeller/apex-ag-grid-plugin).
+
+## New Features
+
+The following features have been added since the first beta release:
+
+### Checkbox column type
+
+Edit boolean values in a column with a checkbox.
+
+<BlogImg filename="apex-ag-grid-checkbox-col.png" alt="" maxWidthPx="450" />
+
+### Reactive HTML column type
+
+Put an HTML template that also allows [APEX template syntax](https://docs.oracle.com/en/database/oracle/apex/22.2/aexjs/apex.util.html#.applyTemplate). The column acts reactive meaning that after changes to other columns the template is re-evaluated and the HTML is rerendered.
+
+<BlogGif filename="apex-ag-grid-html-col.gif" alt="" />
+
+### Revert changes and duplicate row
+
+You can now revert changes on a modified row. You can also duplicate a row to create a new one.
+
+<BlogImg filename="apex-ag-grid-duplicate-revert.jpg" alt="" maxWidthPx="450" />
+
+### Define max column width
+
+You can now define a maximum width for a column so you can limit ones which a foreseeable content length.
+
+## Installation and Usage
+
+You can download the latest version of the plug-in from the [GitHub releases page](https://github.com/phartenfeller/apex-ag-grid-plugin/releases). For detailed installation and usage instructions watch the following video:
+
+<YouTubeEmbed videoID="9IVx2rp9N2k" />
+
+## Bugs, feedback, and feature requests
+
+If you find a bug or have a feature request please [open an issue on GitHub](https://github.com/phartenfeller/apex-ag-grid-plugin).
