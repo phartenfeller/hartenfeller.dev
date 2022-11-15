@@ -240,10 +240,15 @@ const BlogPageTemplate = ({ data }) => {
                   />
                   <LinkButton type="rss" link="/rss.xml" newWindow />
                 </div>
-                <h2 className="mb-8 text-2xl brown-header-text font-semibold">
-                  Comments
-                </h2>
-                <Comments ghCommentsIssueId={ghCommentsIssueId} />
+                {ghCommentsIssueId && (
+                  <>
+                    <h2 className="mb-8 text-2xl brown-header-text font-semibold">
+                      Comments
+                    </h2>
+
+                    <Comments ghCommentsIssueId={ghCommentsIssueId} />
+                  </>
+                )}
               </div>
               <footer className="text-center mt-8 text-xl text">
                 <Link to="/" className="text-slate-600 hover:underline">
