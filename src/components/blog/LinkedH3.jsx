@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const CustomH3 = ({ children }) => {
+const LinkedH3 = ({ children }) => {
   let titleText = '';
   if (typeof children === 'string') {
     titleText = children;
@@ -12,30 +12,38 @@ const CustomH3 = ({ children }) => {
       } else if (typeof fragment === 'object') {
         titleText += fragment.props.children;
       } else {
-        throw new Error(`Unknown Type of CustomH3 fragnent:`, fragment);
+        throw new Error(`Unknown Type of LinkedH3 fragnent:`, fragment);
       }
     });
   } else {
-    throw new Error(`Unknown Type of CustomH3 props:`, children);
+    throw new Error(`Unknown Type of LinkedH3 props:`, children);
   }
 
   const id = titleText.toLowerCase().replace(/ /g, '-');
 
   return (
-    <h3
-      id={id}
-      className="mt-5 mb-2 text-xl font-merriweather text-title-brown"
+    <a
+      href={`#${id}`}
+      className="custom-link flex mt-5 mb-3 group items-center font-merriweather"
     >
-      {titleText}
-    </h3>
+      <h3
+        id={id}
+        className="text-2xl text-title-brown group-hover:underline group-hover:decoration-red-100"
+      >
+        {titleText}
+      </h3>
+      <span className="invisible group-hover:visible ml-2 text-slate-400">
+        #
+      </span>
+    </a>
   );
 };
 
-CustomH3.propTypes = {
+LinkedH3.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.arrayOf(PropTypes.any),
   ]).isRequired,
 };
 
-export default CustomH3;
+export default LinkedH3;

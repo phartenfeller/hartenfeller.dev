@@ -10,9 +10,10 @@ import BlogImagePopup from '../components/blog/BlogImagePopup';
 import { postType } from '../components/blog/Blogpost';
 import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
-import CustomH3 from '../components/blog/CustomH3';
+import LinkedH3 from '../components/blog/LinkedH3';
 import Gist from '../components/blog/Gist';
 import InfoBox from '../components/blog/InfoBox';
+import WarningBox from '../components/blog/WarningBox';
 import LinkedH2 from '../components/blog/LinkedH2';
 import OtherPosts from '../components/blog/OtherPosts';
 import ScrollTracker from '../components/blog/ScrollTracker';
@@ -116,7 +117,7 @@ const components = {
   // eslint-disable-next-line react/prop-types
   pre: ({ children }) => children, // handled by codeh
   h2: LinkedH2,
-  h3: CustomH3,
+  h3: LinkedH3,
   Gist,
   // eslint-disable-next-line react/prop-types
   BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
@@ -138,6 +139,8 @@ const components = {
   BlogVideo: BlogVideoGetter,
   YouTubeEmbed,
   InfoBox,
+  WarningBox,
+  Link,
 };
 
 const BlogPageTemplate = ({ data }) => {
