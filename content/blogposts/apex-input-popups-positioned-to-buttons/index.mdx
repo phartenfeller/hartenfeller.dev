@@ -1,8 +1,7 @@
 ---
 title: >
   APEX input popups that that appear close to the triggering button
-date: 2022-06-25
-lastUpdate: 2022-07-02
+date: 2022-11-18
 description: Creating popups in APEX that are positioned to a button that triggers it
 slug: apex-input-popups-positioned-to-buttons
 titleImage: ./apex-input-popup-hero.png
@@ -88,11 +87,131 @@ Unfortunately it is not enough to change the referenced element in hte `data-par
 This attribute is checked on page load and a this point is the popup positioned.
 This results in changes to teh attribute not having any effect.
 
-### Setup the card region
+### Setup
 
-You can also follow the next steps more easily in a video I created:
+I recommend watching this video of the next steps because we have lots to do and seeing it will make it easier to follow.
 
 <YouTubeEmbed videoID="9IVx2rp9N2k" />
 
+**Cards Region**
+
 We start by creating a card region.
 In my example I used a sample employees table.
+
+- Add button to the card region (Actions > Add Action > Type: Button)
+- Set Link type to "Redirect to URL"
+- Add following target: `#action$edit-salary?id=&ID.&sal=&SALARY.`
+- Add ID to button in Link Attributes: `id="SAL-BTN-&ID."`
+
+Note that we refrence the two columns **ID** and **SALARY** in the target URL and the ID attribute.
+Make sure to include these columns in the region source.
+Because we want to update the salary we first need the current salary and second the ID to update the correct row.
+The ID column is also used to add a HTML ID to the button we can later use to reference it and position the popup.
+
+The link target uses the APEX actions API. <Link to="/blog/apex-actions-links-22-1">You can find more about it here.</Link>
+
+**Create the popup**
+
+We create the popup region like we did before.
+Afterwards we cann add two page items to the region.
+First the salary input field and second a hidden one that will store the ID of the current edited row.
+
+We also add a button to invoke the save process.
+
+We again need to add a `data-parent-element` attribute to the popup region. This seems odd but we need to reference anything static on the page. For example any button. We need APEX to run the initialisation binding code so we can modify the result later:
+
+```html
+data-parent-element="#ANY_RANDOM_BUTTOn"
+```
+
+Additionally we need to set a static ID to the popup region.
+
+**Define the called action**
+
+In a referenced JavaScript file or in "Execute when Page Loads" we need to define the action that is called from the link.
+
+We use following code:
+
+```js
+apex.jQuery(window).on('theme42ready', () => {
+  apex.actions.add([
+    {
+      name: 'edit-salary',
+      Label: 'Edit Salary',
+      action: (event, element, args) => {
+        apex.items.P2_SALARY.setValue(args.sal);
+        apex.items.P2_EDIT_SAL_ID.setValue(args.id);
+
+        return true;
+      },
+    },
+  ]);
+});
+```
+
+**Create a dynamic action to open the region**
+
+We still need to actually open the popup.
+To achieve this we create a dynamic action that runs when our previously set item `P2_EDIT_SAL_ID` is changed.
+This means that our defined action directly triggers the dynamic action.
+In there we just use the "Open Region" step to open the popup region.
+
+**Create save dynamic action**
+
+The dynamic action that saves the salary to the database should be triggered on the button click of the popup.
+As action we run the DML code that updates the salary:
+
+```sql
+update emp_demo
+   set salary = :P2_SALARY
+ where id = :P2_EDIT_SAL_ID;
+```
+
+Don't forget to add both page items to "Items to Submit".
+Afterwards we can run "Close Dialog" and if we want refresh the cards region to reflect the changes.
+
+**Finally the dynamic binding part**
+
+Currently the popup is bound to the random button we assigned in the `data-parent-element` attribute.
+Now we need to change this target by changing some code in the action JavaScript:
+
+```js
+apex.jQuery(window).on('theme42ready', () => {
+  apex.actions.add([
+    {
+      name: 'edit-salary',
+      Label: 'Edit Salary',
+      action: (event, element, args) => {
+        // get ID of clicked cards button
+        const $popupAnchor = $(`#SAL-BTN-${args.id}`);
+
+        // sal_popup is the ID of the popup region
+        // get the "apexPopup" attribute of the popup region
+        // this stores the jQuery magic that is computed on page load
+        // and binds the popup to the anchor
+        let temp = $('#sal_popup').data('apexPopup');
+
+        // change the properties of the popup anchor
+        temp.positionTo$ = $popupAnchor;
+        temp.options.parentElement = `#SAL-BTN-${args.id}`;
+        temp.options.position.of = $popupAnchor;
+
+        apex.items.P2_SALARY.setValue(args.sal);
+
+        // add a small delay to make sure the popup is
+        // positioned correctly before opening
+        setTimeout(() => {
+          apex.items.P2_EDIT_SAL_ID.setValue(args.id);
+        }, 100);
+        return true;
+      },
+    },
+  ]);
+});
+```
+
+This is now the undocumented unsafe part.
+I just found out that the popup region stores the jQuery magic that binds popup to its anchor in the `apexPopup` data attribute.
+After changing some properties of this object we can make the popup appear at the a different position.
+
+Et voilà! We are done and the popup will no position dynamically to the clicked button.
