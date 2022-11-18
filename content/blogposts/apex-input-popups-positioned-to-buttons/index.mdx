@@ -1,15 +1,17 @@
 ---
 title: >
-  APEX input popups that that appear close to the triggering button
+  Oracle APEX anchored inline popups for data input
 date: 2022-11-18
-description: Creating popups in APEX that are positioned to a button that triggers it
-slug: apex-input-popups-positioned-to-buttons
+description: How to create anchored popups in Oracle APEX that are positioned close to the button that triggers it. They offer a nice UX for quick data input.
+slug: apex-anchored-inline-popups
 titleImage: ./apex-input-popup-hero.png
 titleImageAlt: Screenshot of an APEX input popup positioned to a button
 titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
 ghCommentsIssueId: 74
 ---
+
+You can also watch [this video on YouTube]() that features the same topic visually.
 
 ## This feature is not new
 
@@ -18,13 +20,13 @@ While watching a recent APEX Office Hour episode, I noticed a button that trigge
 <BlogGif filename="apex-input-popup-demo.gif" alt="" />
 
 I first thought that this was a new feature in APEX 22.2, but it turns out that this is not the case.
-I got suspicous that I could not find this in the release notes and validated that this is achievable in a APEX 19.2 environment.
+I got suspicious that I could not find this in the release notes and validated that this is achievable in an APEX 19.2 environment.
 So the feature has been around for a while, but I never noticed it before.
 
 I think from a User-Experience point this feature offers two advantages.
-First, you can hide a input in a popup so the the page does not get cluttered with input fields that the user might not need every time.
+First, you can hide an input in a popup so the page does not get cluttered with input fields that the user might not need every time.
 Second, the popup position and visuals offer a smooth transition from the button click to discovering the input field.
-A normal centered popup with a darkened background is a bit jarring and might distract the user from the main task.
+A standard centered popup with a darkened background is a bit jarring and might distract the user from the main task.
 It feels like a "hard cut".
 
 ## How to implement this popup
@@ -44,9 +46,9 @@ APEX popup with a single text input in it. It is centered on the page and the ba
   maxWidthPx="450"
 />
 
-Afterwards we need to change the template options of the popup region.
+Afterward, we need to change the template options of the popup region.
 Check "Auto Height", "Remove Page Overlay" and "Display Popup Callout".
-Additionally change the size to "None".
+Additionally, we need to change the size to "None".
 
 <BlogImg
   filename="apex-input-popup-template-options.png"
@@ -55,13 +57,13 @@ Additionally change the size to "None".
 />
 
 Now we need to add a static ID to the calling button.
-Afterwards we go back to the popup region to "Custom Attributes" and add the following:
+Now we go back to the popup region to "Custom Attributes" and add the following:
 
 ```html
 data-parent-element="#ID_OF_THE_CALLING_BUTTON"
 ```
 
-No we are set and get the popup is positioned to the button.
+Now we are set and get the popup positioned to the button.
 
 ## Binding the popup dynamically
 
@@ -76,16 +78,16 @@ The problem is that each card has its own button so we need to bind the popup to
 />
 
 <WarningBox>
-  We will now enter undocumented territory. The following is not officially
+  We will now enter the undocumented territory. The following is not officially
   supported by Oracle and might break in future versions. So use at your own
   risk and at best only in fun projects.
 </WarningBox>
 
 ### It is not as easy as it looks
 
-Unfortunately it is not enough to change the referenced element in hte `data-parent-element` html attribute.
-This attribute is checked on page load and a this point is the popup positioned.
-This results in changes to teh attribute not having any effect.
+Unfortunately, it is not enough to change the referenced element in the `data-parent-element` HTML attribute.
+This attribute is checked on page load and this point is the popup positioned.
+This results in changes to the attribute not having any effect.
 
 ### Setup
 
@@ -96,41 +98,41 @@ I recommend watching this video of the next steps because we have lots to do and
 **Cards Region**
 
 We start by creating a card region.
-In my example I used a sample employees table.
+In my example, I used a sample employees table.
 
 - Add button to the card region (Actions > Add Action > Type: Button)
 - Set Link type to "Redirect to URL"
-- Add following target: `#action$edit-salary?id=&ID.&sal=&SALARY.`
+- Add the following target: `#action$edit-salary?id=&ID.&sal=&SALARY.`
 - Add ID to button in Link Attributes: `id="SAL-BTN-&ID."`
 
-Note that we refrence the two columns **ID** and **SALARY** in the target URL and the ID attribute.
+Note that we reference the two columns **ID** and **SALARY** in the target URL and the ID attribute.
 Make sure to include these columns in the region source.
 Because we want to update the salary we first need the current salary and second the ID to update the correct row.
-The ID column is also used to add a HTML ID to the button we can later use to reference it and position the popup.
+The ID column is also used to add an HTML ID to the button we can later use to reference it and position the popup.
 
 The link target uses the APEX actions API. <Link to="/blog/apex-actions-links-22-1">You can find more about it here.</Link>
 
 **Create the popup**
 
-We create the popup region like we did before.
-Afterwards we cann add two page items to the region.
-First the salary input field and second a hidden one that will store the ID of the current edited row.
+We create the popup region as we did before.
+Now we can add two page items to the region.
+First the salary input field and second a hidden one that will store the ID of the currently edited row.
 
 We also add a button to invoke the save process.
 
-We again need to add a `data-parent-element` attribute to the popup region. This seems odd but we need to reference anything static on the page. For example any button. We need APEX to run the initialisation binding code so we can modify the result later:
+We again need to add a `data-parent-element` attribute to the popup region. This seems odd but we need to reference anything static on the page. For example any button. We need APEX to run the initialization binding code so we can modify the result later:
 
 ```html
 data-parent-element="#ANY_RANDOM_BUTTOn"
 ```
 
-Additionally we need to set a static ID to the popup region.
+Additionally, we need to set a static ID to the popup region.
 
 **Define the called action**
 
 In a referenced JavaScript file or in "Execute when Page Loads" we need to define the action that is called from the link.
 
-We use following code:
+We use the following code:
 
 ```js
 apex.jQuery(window).on('theme42ready', () => {
@@ -151,7 +153,7 @@ apex.jQuery(window).on('theme42ready', () => {
 
 **Create a dynamic action to open the region**
 
-We still need to actually open the popup.
+We still need to open the popup.
 To achieve this we create a dynamic action that runs when our previously set item `P2_EDIT_SAL_ID` is changed.
 This means that our defined action directly triggers the dynamic action.
 In there we just use the "Open Region" step to open the popup region.
@@ -168,11 +170,11 @@ update emp_demo
 ```
 
 Don't forget to add both page items to "Items to Submit".
-Afterwards we can run "Close Dialog" and if we want refresh the cards region to reflect the changes.
+Now we can run "Close Dialog" and if we want to refresh the cards region to reflect the changes.
 
 **Finally the dynamic binding part**
 
-Currently the popup is bound to the random button we assigned in the `data-parent-element` attribute.
+Currently, the popup is bound to the random button we assigned in the `data-parent-element` attribute.
 Now we need to change this target by changing some code in the action JavaScript:
 
 ```js
@@ -211,7 +213,7 @@ apex.jQuery(window).on('theme42ready', () => {
 ```
 
 This is now the undocumented unsafe part.
-I just found out that the popup region stores the jQuery magic that binds popup to its anchor in the `apexPopup` data attribute.
-After changing some properties of this object we can make the popup appear at the a different position.
+I just found out that the popup region stores the jQuery magic that binds the popup to its anchor in the `apexPopup` data attribute.
+After changing some properties of this object we can make the popup appear at a different position.
 
-Et voilà! We are done and the popup will no position dynamically to the clicked button.
+Et voilà! We are done and the popup will now position dynamically to the clicked button.
