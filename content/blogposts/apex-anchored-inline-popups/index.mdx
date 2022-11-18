@@ -8,19 +8,20 @@ titleImage: ./apex-input-popup-hero.png
 titleImageAlt: Screenshot of an APEX input popup positioned to a button
 titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
-ghCommentsIssueId: 74
+ghCommentsIssueId: 77
 ---
 
-You can also watch [this video on YouTube]() that features the same topic visually.
+You can also watch [this video on YouTube](https://www.youtube.com/watch?v=Yrn23kwzI0U) that features the same topic visually.
 
-## This feature is not new
+## Anchored Popups
 
-While watching a recent APEX Office Hour episode, I noticed a button that triggered a small popup with an input field. Here is a small example from the "Sample Approvals" application:
+While watching a recent [APEX Office Hour episode](https://youtu.be/EEYLgNxx3Wo?t=849), I noticed a button that triggered a small popup with an input field that was anchored to the button.
+Here is a small example of it from the "Sample Approvals" application:
 
 <BlogGif filename="apex-input-popup-demo.gif" alt="" />
 
 I first thought that this was a new feature in APEX 22.2, but it turns out that this is not the case.
-I got suspicious that I could not find this in the release notes and validated that this is achievable in an APEX 19.2 environment.
+I got suspicious that I could not find this in the release notes and validated that this is also achievable in an APEX 19.2 environment.
 So the feature has been around for a while, but I never noticed it before.
 
 I think from a User-Experience point this feature offers two advantages.
@@ -31,10 +32,10 @@ It feels like a "hard cut".
 
 ## How to implement this popup
 
-We can start the same as implementing a normal inline popup:
+We can start the same way as implementing a normal inline popup:
 
 - Create the triggering button
-- Create the popup (**position**: "Dialogs, Drawers, Popups" and **template**: "Inline Popup")
+- Create the popup region (**position**: "Dialogs, Drawers, Popups" and **template**: "Inline Popup")
 - Create a dynamic action on the button click and add an "Open Region" action and select your popup region
 
 Now we get our standard inline popup:
@@ -46,7 +47,7 @@ APEX popup with a single text input in it. It is centered on the page and the ba
   maxWidthPx="450"
 />
 
-Afterward, we need to change the template options of the popup region.
+To get the neat anchored one from the office hours we need to change the template options of the popup region.
 Check "Auto Height", "Remove Page Overlay" and "Display Popup Callout".
 Additionally, we need to change the size to "None".
 
@@ -56,14 +57,14 @@ Additionally, we need to change the size to "None".
   maxWidthPx="450"
 />
 
-Now we need to add a static ID to the calling button.
-Now we go back to the popup region to "Custom Attributes" and add the following:
+We also need to add a static ID to the calling button.
+Now go back to the popup region to "Custom Attributes" and add the following:
 
 ```html
 data-parent-element="#ID_OF_THE_CALLING_BUTTON"
 ```
 
-Now we are set and get the popup positioned to the button.
+With this magic attribute we are set and get the popup positioned to the button.
 
 ## Binding the popup dynamically
 
@@ -93,7 +94,7 @@ This results in changes to the attribute not having any effect.
 
 I recommend watching this video of the next steps because we have lots to do and seeing it will make it easier to follow.
 
-<YouTubeEmbed videoID="9IVx2rp9N2k" />
+<YouTubeEmbed videoID="Yrn23kwzI0U?start=306" />
 
 **Cards Region**
 
@@ -114,16 +115,14 @@ The link target uses the APEX actions API. <Link to="/blog/apex-actions-links-22
 
 **Create the popup**
 
-We create the popup region as we did before.
+Create the popup region as we did before.
 Now we can add two page items to the region.
-First the salary input field and second a hidden one that will store the ID of the currently edited row.
+First the salary input field and second a hidden one that will store the ID of the currently edited row. We also need a button to invoke the save process.
 
-We also add a button to invoke the save process.
-
-We again need to add a `data-parent-element` attribute to the popup region. This seems odd but we need to reference anything static on the page. For example any button. We need APEX to run the initialization binding code so we can modify the result later:
+We again need to add a `data-parent-element` attribute to the popup region. This seems odd but it need to reference anything static on the page. For example a random button. We need APEX to run the initialization binding code so we can modify the result later:
 
 ```html
-data-parent-element="#ANY_RANDOM_BUTTOn"
+data-parent-element="#ANY_RANDOM_BUTTON"
 ```
 
 Additionally, we need to set a static ID to the popup region.
@@ -153,7 +152,7 @@ apex.jQuery(window).on('theme42ready', () => {
 
 **Create a dynamic action to open the region**
 
-We still need to open the popup.
+The popup still needs to be opened.
 To achieve this we create a dynamic action that runs when our previously set item `P2_EDIT_SAL_ID` is changed.
 This means that our defined action directly triggers the dynamic action.
 In there we just use the "Open Region" step to open the popup region.
@@ -170,7 +169,7 @@ update emp_demo
 ```
 
 Don't forget to add both page items to "Items to Submit".
-Now we can run "Close Dialog" and if we want to refresh the cards region to reflect the changes.
+Now we can run "Close Dialog" and optionally refresh the cards region to reflect the changes.
 
 **Finally the dynamic binding part**
 
