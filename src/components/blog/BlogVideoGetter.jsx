@@ -59,7 +59,7 @@ const BlogVideoGetter = ({ filename, width = 1280, title, frame }) => {
         return (
           <div className="flex justify-center my-12">
             <div
-              style={{ width: `${width}px` }}
+              style={{ width: `${width}px`, maxWidth: '90vw' }}
               className="relative overflow-hidden"
             >
               <video
