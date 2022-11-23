@@ -4,26 +4,21 @@ import PostPreviewHome from '../blog/PostPreviewHome';
 import SectionHeader from '../SectionHeader';
 
 const LatestBlogposts = () => {
-  const data = useStaticQuery(graphql`
-    {
-      posts: allMdx(
-        sort: { fields: frontmatter___date, order: DESC }
-        limit: 2
-      ) {
-        nodes {
-          frontmatter {
-            title
-            date
-            dateFormattedMonth: date(formatString: "MMM")
-            dateFormattedDay: date(formatString: "DD")
-            description
-            slug
-            tags
-          }
-        }
+  const data = useStaticQuery(graphql`{
+  posts: allMdx(sort: {frontmatter: {date: DESC}}, limit: 2) {
+    nodes {
+      frontmatter {
+        title
+        date
+        dateFormattedMonth: date(formatString: "MMM")
+        dateFormattedDay: date(formatString: "DD")
+        description
+        slug
+        tags
       }
     }
-  `);
+  }
+}`);
 
   const posts = data.posts.nodes;
 

@@ -5,29 +5,27 @@ import Blogpost, { postType } from '../components/blog/Blogpost';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
-export const query = graphql`
-  {
-    posts: allMdx(sort: { fields: frontmatter___date, order: DESC }) {
-      nodes {
-        frontmatter {
-          title
-          date
-          formattedDate: date(formatString: "MMMM DD, YYYY")
-          year: date(formatString: "YYYY")
-          description
-          slug
-          titleImage {
-            sharp: childImageSharp {
-              gatsbyImageData(layout: FULL_WIDTH)
-            }
+export const query = graphql`{
+  posts: allMdx(sort: {frontmatter: {date: DESC}}) {
+    nodes {
+      frontmatter {
+        title
+        date
+        formattedDate: date(formatString: "MMMM DD, YYYY")
+        year: date(formatString: "YYYY")
+        description
+        slug
+        titleImage {
+          sharp: childImageSharp {
+            gatsbyImageData(layout: FULL_WIDTH)
           }
-          titleImageAlt
-          tags
         }
+        titleImageAlt
+        tags
       }
     }
   }
-`;
+}`;
 
 const Blog = ({ data }) => {
   const blogposts = data.posts.nodes;

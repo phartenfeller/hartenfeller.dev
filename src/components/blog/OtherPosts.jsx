@@ -66,20 +66,18 @@ PostDisplay.propTypes = {
 };
 
 const OtherPosts = ({ postId }) => {
-  const data = useStaticQuery(graphql`
-    {
-      allPosts: allMdx(sort: { fields: frontmatter___date }) {
-        nodes {
-          id
-          frontmatter {
-            formattedDate: date(formatString: "MMMM DD, YYYY")
-            title
-            slug
-          }
-        }
+  const data = useStaticQuery(graphql`{
+  allPosts: allMdx(sort: {frontmatter: {date: ASC}}) {
+    nodes {
+      id
+      frontmatter {
+        formattedDate: date(formatString: "MMMM DD, YYYY")
+        title
+        slug
       }
     }
-  `);
+  }
+}`);
 
   const currIndex = data.allPosts.nodes.findIndex((p) => p.id === postId);
   const lastPost = currIndex === 0 ? null : data.allPosts.nodes[currIndex - 1];

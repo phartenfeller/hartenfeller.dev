@@ -5,6 +5,9 @@ require('dotenv').config({
 const siteUrl = `https://hartenfeller.dev`;
 
 module.exports = {
+  trailingSlash: 'never',
+  graphqlTypegen: true,
+  jsxRuntime: 'automatic',
   siteMetadata: {
     title: `Philipp Hartenfeller`,
     description: `Blog and Portfolio of software developer Philipp Hartenfeller`,
@@ -152,29 +155,27 @@ module.exports = {
                   length: null,
                 },
               })),
-            query: `
-              {
-                allMdx(sort: {fields: frontmatter___date, order: DESC}) {
-                  edges {
-                    node {
-                      frontmatter {
-                        title
-                        description
-                        date
-                        titleImage {
-                          childImageSharp {
-                            fixed(toFormat: JPG, jpegQuality: 50) {
-                              src
-                            }
-                          }
-                        }
-                      }
-                      slug
-                    }
-                  }
-                }
-              }            
-            `,
+            query: `{
+  allMdx(sort: {frontmatter: {date: DESC}}) {
+    edges {
+      node {
+        frontmatter {
+          title
+          description
+          date
+          titleImage {
+            childImageSharp {
+              fixed(toFormat: JPG, jpegQuality: 50) {
+                src
+              }
+            }
+          }
+        }
+        slug
+      }
+    }
+  }
+}`,
             output: '/rss.xml',
             title: 'Philipp Hartenfeller Blog RSS Feed',
           },
