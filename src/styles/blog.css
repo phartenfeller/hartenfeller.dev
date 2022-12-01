@@ -26,7 +26,7 @@
 }
 
 .blog-body p {
-  @apply mb-6 leading-7;
+  @apply mb-6 leading-9;
 }
 
 .blog-body abbr[title] {
