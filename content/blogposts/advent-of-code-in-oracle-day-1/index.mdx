@@ -1,0 +1,165 @@
+---
+title: >
+  Advent of Code 2022 in Oracle - Day 1
+date: 2022-12-01
+description: >
+  My solution of the first day of Advent of Code 2022 challenge "Calorie Counting" with Oracle.
+slug: advent-of-code-in-oracle-day-1
+titleImage: ./adv-of-code-2022-1-thumb.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
+ghCommentsIssueId: 78
+---
+
+## Advent of Code
+
+[Advent of Code](https://adventofcode.com/) is a cool yearly programming challenge.
+Each day from 1st to 25th December a new challenge appears.
+You can solve it in any programming language you like.
+After [deepening my Go skills last year](https://github.com/phartenfeller/advent-of-code-2021) I will do this in Oracle (so PL/SQL and SQL) this year.
+I try to blog about my solutions but I won't make it every day or give up after a while as they get more difficult and time-consuming.
+You can find my solutions for this year in [this repository](https://github.com/phartenfeller/advent-of-code-2022).
+
+I really suggest you check Advent of Code out yourself as it is a lot of fun and you will improve your problem-solving skills.
+The challenges are clearly phrased with a simple example you can do in your head.
+You then get a way bigger generated and **user-specific** input and have to solve the challenge with that.
+You have to enter a solution in an input field and get a star for each day you solved.
+There is also a second challenge every day where you have to adapt some part of your algorithm to solve it.
+
+## Challenge 1
+
+[You can read the challenge yourself here](https://adventofcode.com/2022/day/1).
+
+We get a user input that consists of numbers and line breaks:
+
+```txt
+1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000
+```
+
+The numbers represent the calories of a single food item an elf has.
+A completely empty line states that the data for the next elf starts.
+So the first elf has 1000, 2000, and 3000 calories, and the second elf has 4000 calories.
+
+We must find out how many calories the elf with the most calories has.
+
+## Solving challenge 1
+
+We need to store the data.
+So let's first create a table:
+
+```sql
+CREATE TABLE elf_calories (
+  id           NUMBER,
+  calories     NUMBER,
+  constraint elf_pk primary key (id)
+)
+INMEMORY;
+```
+
+The input I received has over 2000 lines. So I must find a way to programmatically get the data into the table.
+
+First off I wanted to group the data by single elves and then add up the single calories.
+So I first split the line by **two** line breaks and then split the resulting lines by **a single** line break.
+For that I use `apex_string.split` to get an <Link to="/blog/ode-to-apex-t-varchar2">apex_t_varchar2 array</Link>.
+
+Afterward, we can just sum up the calories for each elf and then store the result in the table:
+
+```sql
+declare
+  l_input varchar2(32767 char) := q'!6471
+1935
+1793
+...
+...
+...
+16077
+
+6030
+1807!';
+
+  l_elves        apex_t_varchar2;
+  l_elf_str      varchar2(2000 char);
+  l_elf_calories apex_t_varchar2;
+
+  l_cal_sum      pls_integer;
+  l_single_cal   pls_integer;
+begin
+  -- split input by two LFs -> array for every elf
+  l_elves := apex_string.split(l_input, apex_application.LF || apex_application.LF );
+  dbms_output.put_line('Elf count: ' || l_elves.count);
+
+  for i in 1..l_elves.count
+  loop
+    l_cal_sum := 0;
+    l_elf_str := l_elves(i);
+    l_elf_calories := apex_string.split(l_elf_str, apex_application.LF);
+
+    for j in 1..l_elf_calories.count
+    loop
+      -- convert single cal string to number
+      l_single_cal := to_number(l_elf_calories(j));
+      l_cal_sum := l_cal_sum + l_single_cal;
+    end loop;
+
+    -- insert sum of calories into table
+    insert into elf_calories values(i, l_cal_sum);
+  end loop;
+
+end;
+/
+```
+
+To get the result we just need to query the data for the maximum calories:
+
+```sql
+prompt Most calories:
+select *
+  from elf_calories
+ where calories = (select max(calories) from elf_calories)
+;
+
+```
+
+Et voilà, we get our result. Check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/01/1.sql).
+
+## Challenge 2
+
+For challenge two we have to get the sum of calories for the 3 elves that have the most calories.
+
+## Solving challenge 2
+
+This part is super easy when we have access to SQL so we just need to add a small query. With the [rank analytic function](https://oracle-base.com/articles/misc/rank-dense-rank-first-last-analytic-functions#rank) we can get a sequential order (ranking) for a custom order or even with groups. We just rank the calories column in descending order:
+
+```sql
+prompt Top Three elves sum:
+with rank_data as (
+select id, calories, rank() over (order by calories desc)  as cal_rank
+  from elf_calories
+)
+ select sum(calories)
+   from rank_data
+  where cal_rank between 1 and 3
+;
+```
+
+Check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/01/2.sql).
+
+## Conclusion
+
+This was a fairly easy challenge so let's see what the next days will bring.
+
+If you have a different approach or have some optimizations for my solution, please let me know!
