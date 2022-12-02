@@ -1,0 +1,254 @@
+---
+title: >
+  Advent of Code 2022 in Oracle - Day 2
+date: 2022-12-02
+description: >
+  My solution of the second day of the Advent of Code 2022 challenge "Rock Paper Scissors" with Oracle. This time in pure SQL.
+slug: advent-of-code-in-oracle-day-2
+titleImage: ./adv-of-code-2022-2-thumb.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
+ghCommentsIssueId: 79
+---
+
+## Advent of Code
+
+[Advent of Code](https://adventofcode.com/) is a cool yearly programming challenge.
+Each day from 1st to 25th December a new challenge appears.
+You can solve it in any programming language you like.
+After [deepening my Go skills last year](https://github.com/phartenfeller/advent-of-code-2021)
+
+I will do this in Oracle (so PL/SQL and SQL) this year.
+I try to blog about my solutions but I won't make it every day or give up after a while as they get more difficult and time-consuming.
+You can find my solutions for this year in [this repository](https://github.com/phartenfeller/advent-of-code-2022).
+
+I really suggest you check Advent of Code out yourself as it is a lot of fun and you will improve your problem-solving skills.
+
+The challenges are clearly phrased with a simple example you can do in your head.
+You then get a way bigger generated and **user-specific** input and have to solve the challenge with that.
+You have to enter a solution in an input field and get a star for each day you solved.
+There is also a second challenge every day where you have to adapt some part of your algorithm to solve it.
+
+## Challenge 1
+
+[You can read the challenge yourself here](https://adventofcode.com/2022/day/2).
+
+Today is about Rock Paper Scissors.
+
+We get an encrypted input that consists of A, B, or C a whitespace X, Y, Z, and then a linefeed:
+
+```txt
+A Y
+B X
+C Z
+```
+
+The first letter stands for what the opponent plays and the second is what we should play. A or X stands for rock, B or Y for paper, etc...
+
+We need to calculate and summarize points for every game.
+We get 0 for a loss, 3 for a draw, and 6 for a win.
+Additionally, we get points for what we play.
+For some rather funny reason, the signs are not equally treated. Rock is worth 1 point, paper 2, and scissors 3.
+
+The task is understood so let's code...
+
+## Solving challenge 1
+
+This time I want to do it in pure SQL.
+
+The first table we create is a rule table.
+For every possible sign we insert against which we win and lose and the points it is worth:
+
+```sql
+create table rps_options (
+  shape         varchar2(1)
+, wins_against  varchar2(1)
+, loses_against varchar2(1)
+, points        number
+) inmemory;
+
+-- R -> Rock, P -> Paper, S -> Scissors
+insert into rps_options values ('R', 'S', 'P', 1);
+insert into rps_options values ('P', 'R', 'S', 2);
+insert into rps_options values ('S', 'P', 'R', 3);
+```
+
+The second table holds the plays:
+
+```sql
+create table rps_plays (
+  id number
+, shape_opo varchar2(1)
+, shape_own varchar2(1)
+, encrypted_own varchar2(1)
+, constraint pk_rps_plays primary key (id)
+) inmemory;
+```
+
+To get prepare the plays data I inserted the input into a single table with a clob col:
+
+```sql
+create table rps_input (
+  input clob
+) inmemory;
+```
+
+We can then go ahead and split the input first by lines and second by whitespace to get each player's sign.
+I also used the `translate` function to decrypt both player's signs to represent the actual sign:
+
+```sql
+insert into rps_plays
+  with plays_concat as (
+    select rownum id
+         , column_value play
+      -- split by linefeed with apex_string.split
+      from table( select apex_string.split(input) from rps_input )
+  )
+  select id
+         -- \S matches a non-whitespace character
+         -- translate instead of three replaces: All A -> R, B -> P, C -> S
+       , translate(regexp_substr(play, '\S', 1, 1), 'ABC', 'RPS') as shape_opo
+       , translate(regexp_substr(play, '\S', 1, 2), 'XYZ', 'RPS') as shape_own
+       , regexp_substr(play, '\S', 1, 2) as encrypted_own
+    from plays_concat
+;
+```
+
+With this set up we can go ahead and calculate the points for each play. We can do this by joining the plays with the options table on our sign and checking whether the opponent's sign is equal to `wins_against` or `loses_against` or else the game is a draw.
+
+We assign the defined points to the outcome and also add up the `points` column of our played sign:
+
+```sql
+prompt First 10 play results
+select id
+     , shape_opo
+     , shape_own
+     -- wins_against has the sign our sign wins against
+     -- 6 pts for win, 3 for draw, 0 for lose
+     , case when shape_opo = wins_against then 6
+            when shape_opo = loses_against then 0
+            else 3
+       end
+       + points
+       as result
+  from rps_plays p
+  join rps_options o
+    on p.shape_own = o.shape
+ order by id
+ fetch first 10 rows only;
+```
+
+Resulting in:
+
+```txt
+   ID SHAPE_OPO    SHAPE_OWN       RESULT
+_____ ____________ ____________ _________
+    1 S            R                    7
+    2 S            R                    7
+    3 R            P                    8
+    4 S            R                    7
+    5 P            P                    5
+    6 R            R                    4
+    7 R            S                    3
+    8 P            P                    5
+    9 S            S                    6
+   10 S            S                    6
+```
+
+To get the output score we just need to sum the points up:
+
+```sql
+prompt Score
+with data as (
+select id
+     , shape_opo
+     , shape_own
+     , case when shape_opo = wins_against then 6
+            when shape_opo = loses_against then 0
+            else 3
+       end
+       + points
+       as result
+  from rps_plays p
+  join rps_options o
+    on p.shape_own = o.shape
+)
+select sum(result) as score
+  from data
+;
+```
+
+Great, we are done! Check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/02/1.sql).
+
+## Challenge 2
+
+So it turns out we understood the X, Y, Z column wrong. It is not our encrypted sign but the outcome we want to achieve.
+So X stands for we want to lose, Y for a draw, and Z for a win.
+
+We still need to calculate the points for the game but now need to find out what we should play to achieve the desired outcome.
+
+## Solving challenge 2
+
+We just need to modify the query a bit by first adding a new subquery.
+First I assign the points for our desired outcome and store them in the col `result_points`.
+
+Then I join the options table again but this time on the opponent's play. Now I can find out what we should play by either selecting `wins_against`, `loses_against`, or the opponent's play.
+
+I then query against that subquery and join the options table again to get the points for our play. Then I just add these points up with our outcome points and we get our results:
+
+```sql
+prompt First 10 play results
+with data as (
+select id
+     , shape_opo
+     , shape_own
+     -- we want to Z -> win, Y -> draw, X -> lose
+     , case when encrypted_own = 'Z' then 6
+            when encrypted_own = 'X' then 0
+            else 3
+       end
+       as result_points
+     -- when we want to lose we play 'loses_against' of the opponent's sign
+     , case when encrypted_own = 'Z' then loses_against
+            when encrypted_own = 'X' then wins_against
+            else shape_opo
+       end
+       as what_i_need_to_play
+     , encrypted_own
+  from rps_plays p
+  join rps_options o
+    on p.shape_opo = o.shape
+)
+   select id
+       , shape_opo
+       , encrypted_own
+       , what_i_need_to_play
+       , o.points + result_points as points
+    from data d
+    join rps_options o
+      on d.what_i_need_to_play = o.shape
+  order by id
+  fetch first 10 rows only;
+```
+
+Resulting in:
+
+```txt
+   ID SHAPE_OPO    ENCRYPTED_OWN   WHAT_I_NEED_TO_PLAY     POINTS
+_____ ____________ _______________ ______________________ _______
+    1 S            X               P                            2
+    2 S            X               P                            2
+    3 R            Y               R                            4
+    4 S            X               P                            2
+    5 P            Y               P                            5
+    6 R            X               S                            3
+    7 R            Z               P                            8
+    8 P            Y               P                            5
+    9 S            Z               R                            7
+   10 S            Z               R                            7
+```
+
+We can again sum up the points and also solved the second part! Check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/02/2.sql).
+
+Let me know if you used a different approach or have some feedback!
