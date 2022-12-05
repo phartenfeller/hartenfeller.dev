@@ -1,0 +1,306 @@
+---
+title: >
+  Advent of Code 2022 in Oracle - Day 5
+date: 2022-12-05
+description: >
+  My solution of the third day of the Advent of Code 2022 challenge "Supply Stacks" with Oracle. Its starting to get complex...
+slug: advent-of-code-in-oracle-day-5
+titleImage: ./adv-of-code-2022-5-thumb.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
+ghCommentsIssueId: 81
+---
+
+## Solution for Day 4
+
+As I enjoyed my weekend yesterday I did not describe my solution for day 4.
+I still solved it [you can find my solution on GitHub](https://github.com/phartenfeller/advent-of-code-2022/tree/main/src/04).
+Spoiler: it was fairly easy with SQL.
+For today's challenge, I used a fairly complex approach (I struggled a lot...).
+
+## Advent of Code
+
+[Advent of Code](https://adventofcode.com/) is a cool yearly programming challenge.
+Each day from 1st to 25th December a new challenge appears.
+You can solve it in any programming language you like.
+After [deepening my Go skills last year](https://github.com/phartenfeller/advent-of-code-2021) I will do this in Oracle (so PL/SQL and SQL) this year.
+
+I try to blog about my solutions but I won't make it every day or give up after a while as they get more difficult and time-consuming.
+You can find my solutions for this year in [this repository](https://github.com/phartenfeller/advent-of-code-2022).
+
+I really suggest you check Advent of Code out yourself as it is a lot of fun and you will improve your problem-solving skills.
+
+The challenges are clearly phrased with a simple example you can do in your head.
+You then get a way bigger generated and **user-specific** input and have to solve the challenge with that.
+You have to enter a solution in an input field and get a star for each day you solved.
+There is also a second challenge every day where you have to adapt some part of your algorithm to solve it.
+
+## Challenge 1
+
+[You can find the challenge here](https://adventofcode.com/2022/day/3).
+
+The elves have a crane and different stacks of goods.
+We get the initial stack setup in the first part of the input.
+Below that we get a list of commands to move the goods around.
+We need to find the topmost good in every stack after all commands are executed.
+
+This is the sample input:
+
+```txt
+    [D]
+[N] [C]
+[Z] [M] [P]
+ 1   2   3
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2
+```
+
+## Solving challenge 1
+
+### Parsing the initial stack setup
+
+We first need to parse the initial stack setup.
+To make it easier to parse I want to change the not filled goods from spaces to `[-]`. Basically, I want it to look like this:
+
+```txt
+[-] [D] [-]
+[N] [C] [-]
+[Z] [M] [P]
+```
+
+This was more complex than I thought.
+As an empty box is represented as three spaces I replaced four spaces with ` [-]`.
+This works great except for an empty box in the first stack:
+
+```txt
+ [-][D] [-]
+[N] [C] [-]
+[Z] [M] [P]
+```
+
+So I needed to add another `replace` that adds a space between two boxes that are not separated by a space.
+An additional `trim` removes the leading space.
+I then excluded all not stack lines with a simple `like` resulting in the following query:
+
+```sql
+with lines as (
+  select rownum as line_no, trim(replace(
+              replace(column_value, '    ', ' [-]')
+            , '][', '] ['
+         )) as line
+                 -- split by newline
+    from table ( select apex_string.split(sample_input) from aoc_input where year = 2022 and day = 5 )
+)
+select line_no, line
+    from lines
+   where line like '[%'
+;
+
+/* Result:
+
+   LINE_NO LINE
+__________ ______________
+         1 [-] [D] [-]
+         2 [N] [C] [-]
+         3 [Z] [M] [P]
+*/
+```
+
+My next step is to get each box in a single line.
+In the real input, the amount of stacks is 8 instead of 3 so I need this query to work for any amount of stacks.
+To achieve that I generated the rows with a hierarchical query and got each box with a `regexp_substr`:
+
+```sql
+select distinct line_no
+     , block_no
+       -- basically match "[{any single uppercase letter}]" or "[-]"
+       -- and only capture the letter or "-"
+       --
+       -- block_no cycles through every stack number (1-3 for the sample input)
+       -- and thus gets a different block every time from the regex
+     , regexp_substr(line, '\[([A-Z]|-)\]', 1, block_no, null, 1) as block
+  from starting_grid
+  -- generate a row for each block
+  cross join lateral(
+    select level block_no
+      from dual
+   -- each block sperated by a ' ' so count the number
+   -- of spaces +1 to get amount of needed rows
+   connect by level <= regexp_count(line, ' ') + 1
+  ) block_rows
+order by line_no
+;
+
+/* Result:
+
+   LINE_NO    BLOCK_NO BLOCK
+__________ ___________ ________
+         1           1 -
+         1           2 D
+         1           3 -
+         2           1 N
+         2           2 C
+         2           3 -
+         3           1 Z
+         3           2 M
+         3           3 P
+*/
+```
+
+I got the hierarchical query approach from [Kim Berg Hansen's book Practical Oracle SQL](https://link.springer.com/book/10.1007/978-1-4842-5617-6). I highly recommend it if you want to deepen your SQL skills.
+
+### Parsing the crane inputs
+
+Getting the crane inputs into a relational structure is fairly easy.
+We need to split the input by lines, only get the ones that start with `move`, and then extract the relevant information with `regexp_substr`:
+
+```sql
+insert into aoc_moves
+ with lines as (
+    select rownum as line_no, trim(replace(
+                replace(column_value, '    ', ' [-]')
+              , '][', '] ['
+          )) as line
+      from table ( select apex_string.split(input) from aoc_input where year = 2022 and day = 5 )
+  )
+  select line_no
+       , regexp_substr(line, 'move ([0-9]+) from [0-9]+ to [0-9]+', 1, 1, null, 1) as amount
+       , regexp_substr(line, 'move [0-9]+ from ([0-9]+) to [0-9]+', 1, 1, null, 1) as from_stack
+       , regexp_substr(line, 'move [0-9]+ from [0-9]+ to ([0-9]+)', 1, 1, null, 1) as to_stack
+    from lines
+   where line like 'move%'
+;
+
+/* Result:
+
+   LINE_NO    AMOUNT    FROM_STACK    TO_STACK
+__________ _________ _____________ ___________
+         6         1             2           1
+         7         3             1           3
+         8         2             2           1
+         9         1             1           2
+*/
+```
+
+### Store stack state
+
+To simulate the crane inputs we need to keep track of the current state of the stacks.
+For that I created a PL/SQL <Link to="/blog/maps-oracle-plsql">map / associative array</Link> I can access via the stack number.
+Each entity holds another array of the blocks in the stack indexed by the block number (1 lowest stacking up to X).
+
+```sql
+type t_block_arr is table of varchar2(1 char) index by pls_integer;
+type t_stack_arr is table of t_block_arr index by pls_integer;
+l_stack_arr t_stack_arr;
+```
+
+To set up the initial state I used a `bulk collect` query for each stack:
+
+```sql
+select max(stack_no) into l_stack_count from aoc_initial_blocks;
+dbms_output.put_line('stack count: ' || l_stack_count);
+
+for i in 1 .. l_stack_count
+loop
+  select block
+    bulk collect into l_stack_arr(i)
+    from aoc_initial_blocks
+   where stack_no = i
+     and block != '-'
+   order by line_no desc;
+
+  dbms_output.put_line('stack ' || i || ' has ' || l_stack_arr(i).count || ' blocks');
+end loop;
+```
+
+### Simulating the crane inputs
+
+To process the crane inputs I looped over every entry of the stored moves. In there I need another loop to process multiple blocks being transferred from the same stack one after another.
+The moving part itself is just getting the last block of the "from" stack and adding it to the "to" stack.
+And don't forget to delete the removed block from the "from" stack:
+
+```sql
+for rec in (
+  select amount
+       , from_stack -- number
+       , to_stack   -- number
+    from aoc_moves order by line_no
+)
+loop
+
+  for i in 1 .. rec.amount
+  loop
+
+    l_tmp_from_index := l_stack_arr(rec.from_stack).count;
+    l_tmp_block_to_move := l_stack_arr(rec.from_stack)(l_tmp_from_index);
+    l_stack_arr(rec.from_stack).delete(l_tmp_from_index);
+
+    l_tmp_to_index := l_stack_arr(rec.to_stack).count + 1;
+    l_stack_arr(rec.to_stack)(l_tmp_to_index) := l_tmp_block_to_move;
+
+  end loop;
+end loop;
+```
+
+### Output sequence
+
+After all moves are processed we can get the final sequence by logging the top block of every stack:
+
+```sql
+for i in 1 .. l_stack_count
+loop
+  l_result := l_result || l_stack_arr(i)(l_stack_arr(i).count);
+end loop;
+
+dbms_output.put_line('result: ' || l_result);
+```
+
+You can check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/05/1.sql).
+
+## Challenge 2
+
+Part 2 just needs a small change to process the crane inputs.
+In the first part, the crane moved one box at a time meaning that when it moves more than one block the order gets reversed during this process.
+
+In the second part the crane instead grabs multiple blocks at once and moves them in the same order they were stacked.
+
+## Solving challenge 2
+
+To achieve that I first collect all blocks from a single move operation in a temporary array and then move them to the new stack in the same order with a reversed loop:
+
+```sql
+for rec in (
+  select * from aoc_moves order by line_no
+)
+loop
+
+  l_tmp_block_arr := t_block_arr();
+
+  for i in 1 .. rec.amount
+  loop
+    l_tmp_from_index := l_stack_arr(rec.from_stack).count;
+    l_tmp_block_to_move := l_stack_arr(rec.from_stack)(l_tmp_from_index);
+    l_stack_arr(rec.from_stack).delete(l_tmp_from_index);
+
+    -- collect blocks to move
+    l_tmp_block_arr(i) := l_tmp_block_to_move;
+  end loop;
+
+  -- reversed loop because lowest of old stack
+  -- is highest of temp array
+  for i in reverse 1 .. rec.amount
+  loop
+    l_tmp_to_index := l_stack_arr(rec.to_stack).count + 1;
+    l_stack_arr(rec.to_stack)(l_tmp_to_index) := l_tmp_block_arr(i);
+    l_tmp_block_arr.delete(i);
+  end loop;
+end loop;
+```
+
+You can check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/05/2.sql).
+
+I really enjoyed this challenge. I can imagine that there are many different approaches to solving it. I would love to see your solutions.
