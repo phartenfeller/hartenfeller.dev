@@ -1,0 +1,297 @@
+---
+title: >
+  Advent of Code 2022 in Oracle - Day 7
+date: 2022-12-07
+description: >
+  My solution of the third day of the Advent of Code 2022 challenge "No Space Left On Device" with Oracle. Tody with a tree (not for christmas)...
+slug: advent-of-code-in-oracle-day-7
+titleImage: ./adv-of-code-2022-7-thumb.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
+ghCommentsIssueId: 82
+---
+
+## Advent of Code
+
+[Advent of Code](https://adventofcode.com/) is a cool yearly programming challenge.
+Each day from 1st to 25th December a new challenge appears.
+You can solve it in any programming language you like.
+After [deepening my Go skills last year](https://github.com/phartenfeller/advent-of-code-2021) I will do this in Oracle (so PL/SQL and SQL) this year.
+
+I try to blog about my solutions but I won't make it every day or give up after a while as they get more difficult and time-consuming.
+You can find my solutions for this year in [this repository](https://github.com/phartenfeller/advent-of-code-2022).
+
+I really suggest you check Advent of Code out yourself as it is a lot of fun and you will improve your problem-solving skills.
+
+The challenges are clearly phrased with a simple example you can do in your head.
+You then get a way bigger generated and **user-specific** input and have to solve the challenge with that.
+You have to enter a solution in an input field and get a star for each day you solved.
+There is also a second challenge every day where you have to adapt some part of your algorithm to solve it.
+
+## Challenge 1
+
+[You can find the challenge here](https://adventofcode.com/2022/day/7).
+
+Today's challenge is really interesting.
+The elves gave us a (UNIX-like) device that ran out of storage.
+From some shell commands, we have to build an index that keeps track of folder and file sizes.
+
+The input has some commands starting with a `$` the other lines are output.
+The history basically traverses through a file system and lists directory contents:
+
+```txt
+$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+```
+
+In the end, we need to provide the total size of all directories that are smaller than 100000 (elf-bytes?).
+
+## Solving challenge 1
+
+### Creating a table to store the file system info
+
+I first went ahead and created a table to store all the info that could be extracted from the input.
+
+```sql
+create table aoc_filesystem (
+  fs_path       varchar2(100 char) primary key
+, fs_type       varchar2(1 char) not null -- D for directory, F for file
+, fs_size       number(32,0) -- null for directories
+, fs_level      number(32,0)
+, fs_parent_dir varchar2(100 char)
+) inmemory;
+```
+
+We can also start by inserting the root directory:
+
+```sql
+insert into aoc_filesystem (fs_path, fs_type, fs_size, fs_level, fs_parent_dir)
+values ('/', 'D', null, 0, null);
+```
+
+### Parsing the directory changes
+
+As we need to figure out directory sizes we first need to get the absolute file path for each file to be able to sum these up.
+For that, we need to process the directory changes.
+
+I created an `apex_t_varchar2` array where I append or remove a directory when we go deeper or higher in the file system:
+
+```sql
+-- ...
+for rec in (
+  -- loop through every line
+  select rownum as line_no, column_value as line
+    from table ( select apex_string.split(input)
+                   from aoc_input
+                  where year = 2022 and day = 7 )
+)
+loop
+  -- commands start with a $
+  if rec.line like '$ %' then
+
+    -- ignore ls commands
+    if rec.line = '$ ls' then
+      continue;
+    elsif rec.line like '$ cd %' then
+      -- get cd destination
+      l_dest := substr(rec.line, 6);
+
+      if l_dest = '/' then
+        -- clear current path array
+        l_curr_path := apex_t_varchar2();
+      elsif l_dest = '..' then
+        -- delete last element from current path array (go up one level)
+        l_curr_path.trim(1);
+      else
+        -- add new path element to current path array (go down one level)
+        apex_string.push(l_curr_path, l_dest);
+      end if;
+
+       dbms_output.put_line('cd ' || l_dest || ' | ' || get_curr_path());
+    else
+      dbms_output.put_line('Unknown command: ');
+      dbms_output.put_line(rec.line_no || ' ' || rec.line);
+    end if;
+  -- ...
+```
+
+### Parse size outputs
+
+```sql
+-- ...
+-- inside same loop through every input line
+else
+
+  -- directory info starts with "dir"
+  if rec.line like 'dir%' then
+    -- get dirname
+    l_dest := substr(rec.line, 5);
+    l_path := join_to_curr_path(l_dest); -- get absolute path
+    l_level := l_curr_path.count + 1;
+    l_parent := get_curr_path();
+
+    insert into aoc_filesystem (fs_path, fs_type, fs_size, fs_level, fs_parent_dir)
+    values (l_path, 'D', null, l_level, l_parent);
+
+  -- file info starts with a number
+  else
+    -- file info looks like this: "14848514 b.txt"
+    l_size := regexp_substr(rec.line, '([0-9]+) .*', 1, 1, null, 1 );
+    l_dest := regexp_substr(rec.line, '[0-9]+ (.*)', 1, 1, null, 1 );
+    l_path := join_to_curr_path(l_dest); -- get absolute path
+    l_level := l_curr_path.count + 1;
+    l_parent := get_curr_path();
+
+    insert into aoc_filesystem (fs_path, fs_type, fs_size, fs_level, fs_parent_dir)
+    values (l_path, 'F', l_size, l_level, l_parent);
+  end if;
+
+end if;
+```
+
+After inserting all the info our table looks like this:
+
+```sql
+select *
+  from aoc_filesystem
+ order by fs_path
+;
+/*
+FS_PATH     FS_TYPE        FS_SIZE    FS_LEVEL FS_PARENT_DIR
+___________ __________ ___________ ___________ ________________
+/           D                                0
+/a          D                                1 /
+/a/e        D                                2 /a
+/a/e/i      F                  584           3 /a/e
+/a/f        F                29116           2 /a
+/a/g        F                 2557           2 /a
+/a/h.lst    F                62596           2 /a
+/b.txt      F             14848514           1 /
+/c.dat      F              8504156           1 /
+/d          D                                1 /
+/d/d.ext    F              5626152           2 /d
+/d/d.log    F              8033020           2 /d
+/d/j        F              4060174           2 /d
+/d/k        F              7214296           2 /d
+*/
+```
+
+### Calculate directory sizes
+
+Looking at the table data hierarchical queries immediately come to mind.
+After some googling and trial and error I came up with the following query that sums up the dir sizes.
+
+What it does is produce multiple rows for each file. Each file is listed in a directory it is included in, not only the direct parent.
+Look how `/d/d.log` is both in `/d` and `/`:
+
+```sql
+select fs_size
+     , fs_path
+     , connect_by_root fs_path as contained_in
+  from aoc_filesystem
+connect by prior fs_path = fs_parent_dir
+order by contained_in;
+;
+
+/* Rusult:
+
+    FS_SIZE FS_PATH     CONTAINED_IN
+___________ ___________ _______________
+            /           /
+            /a          /
+            /a/e        /
+        584 /a/e/i      /
+      29116 /a/f        /
+    7214296 /d/k        /
+       2557 /a/g        /
+    8033020 /d/d.log    /
+    ............................
+    8033020 /d/d.log    /d
+    ............................
+    8033020 /d/d.log    /d/d.log
+    4060174 /d/j        /d/j
+    7214296 /d/k        /d/k
+*/
+```
+
+What we need to do now is to sum the sizes up and group them by directories.
+I also joined the result again with the source table to filter out the files and only get the directories:
+
+```sql
+with contained_data as (
+  select fs_size
+       , fs_path
+       , connect_by_root fs_path as contained_in
+    from aoc_filesystem
+  connect by prior fs_path = fs_parent_dir
+), size_sums as (
+select sum(fs_size) dir_size_sum, contained_in as dir_path
+  from contained_data
+ group by contained_in
+)
+select dir_path, dir_size_sum
+  from size_sums
+  join aoc_filesystem
+    on dir_path = fs_path
+   and fs_type = 'D'
+;
+
+/* Result:
+DIR_PATH       DIR_SIZE_SUM
+___________ _______________
+/                  48381165
+/a                    94853
+/a/e                    584
+/d                 24933642
+*/
+```
+
+With that in place, we only need to sum up the size of the dirs that are smaller than 100000. You can check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/07/1.sql).
+
+## Challenge 2
+
+In the second challenge, we need to calculate what (single) folder to delete if we want to have 30M elf-bytes of free space.
+We know that the drive has a capacity of 70M elf-bytes.
+We also want to delete the smallest folder possible.
+The input needed is the exact size of the folder that gets deleted.
+
+## Solving challenge 2
+
+Because we have a pretty good setup from part 1 we don't need to change that much. First, we need to know how much space we need to delete to get to 30M elf-bytes:
+
+```sql
+def size_needed
+col needed_size for a30 new_value size_needed
+
+       --- 70000000 -> drive capacity
+       --- 30000000 -> what we want free
+       --- dir_size_sum -> used up space (just size of /)
+select 30000000 - (70000000 - dir_size_sum) as needed_size
+  from only_folders -- our query from part 1 that lists all folder sizes
+ where dir_path = '/'
+;
+```
+
+We can then use that value to find the folder that has the size closest to that
+
+```sql
+select dir_path, dir_size_sum
+  from only_folders
+ where dir_size_sum >= &size_needed
+ order by dir_size_sum
+ fetch first 1 rows only
+;
+```
+
+You can check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/07/2.sql).
