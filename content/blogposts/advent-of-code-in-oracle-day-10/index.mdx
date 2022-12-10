@@ -1,0 +1,323 @@
+---
+title: >
+  Advent of Code 2022 in Oracle - Day 10
+date: 2022-12-10
+description: >
+  My solution for the tenth day of the Advent of Code 2022 challenge "Cathode-Ray Tube" with Oracle. We simulate a CPU and a Pixel-Screen in pure SQL!
+slug: advent-of-code-in-oracle-day-10
+titleImage: ./adv-of-code-2022-10-thumb.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
+ghCommentsIssueId: 83
+---
+
+## Advent of Code
+
+[Advent of Code](https://adventofcode.com/) is a cool yearly programming challenge.
+Each day from 1st to 25th December a new challenge appears.
+You can solve it in any programming language you like.
+After [deepening my Go skills last year](https://github.com/phartenfeller/advent-of-code-2021) I will do this in Oracle (so PL/SQL and SQL) this year.
+
+I try to blog about my solutions but I won't make it every day or give up after a while as they get more difficult and time-consuming.
+You can find my solutions for this year in [this repository](https://github.com/phartenfeller/advent-of-code-2022).
+
+I really suggest you check Advent of Code out yourself as it is a lot of fun and you will improve your problem-solving skills.
+
+The challenges are clearly phrased with a simple example you can do in your head.
+You then get a way bigger generated and **user-specific** input and have to solve the challenge with that.
+You have to enter a solution in an input field and get a star for each day you solved.
+There is also a second challenge every day where you have to adapt some part of your algorithm to solve it.
+
+## Challenge 1
+
+[You can find the challenge here](https://adventofcode.com/2022/day/10).
+
+Today's challenge was really fun.
+We receive some inputs that look like this:
+
+```txt
+noop
+noop
+noop
+addx 6
+addx -1
+addx 5
+noop
+noop
+noop
+addx 5
+...
+```
+
+These are inputs for a CPU we have to simulate.
+`Noop` does nothing for one cycle whereas `addx` takes two cycles.
+In the first cycle nothing happens in the second we add up the given value to a register "x".
+
+In the end, we have to calculate the state of the register at the cycles 20, 60, 100, 140, and 180.
+We also have to multiply the state by the cycle number to get the signal strength and sum up all these values.
+
+## Solving challenge 1
+
+### Parsing the input
+
+After parsing cryptic input for the last 10 days this was a breeze.
+We split the lines and extract the command (`noop` or `addx`) and the value:
+
+```sql
+with lines as (
+      select rownum as line_no, column_value as line
+        from table (
+          select apex_string.split(input) from aoc_input where year = 2022 and day = 10
+        )
+)
+select line_no, substr(line, 1, 4) as op, to_number(substr(line, 6)) as add_x
+  from lines;
+
+/* Result_
+   LINE_NO OP         ADD_X
+__________ _______ ________
+         1 noop
+         2 noop
+         3 noop
+         4 addx           6
+         5 addx          -1
+         6 addx           5
+         7 noop
+         8 noop
+         9 noop
+        10 addx           5
+*/
+```
+
+### Simulating the CPU Cycles
+
+We can then simulate the CPU cycles by creating a second row for every `addx` command as it takes two cycles. I added a `cycle_no` column with `row_number` so we always know in which cycle we are. I also only display the `add_x` value for the second cycle of an `addx` command as it gets added after the first cycle and we can sum the column up now without getting adding the values two times. Additionally, I added an initial state with `x = 1`:
+
+```sql
+-- ... previous part
+select row_number() over (order by line_no, command_cycle) + 1 as cycle_no
+     , case when command_cycle = 2 then add_x else null end as add_x
+     , op
+  from statements
+ cross join lateral(
+      select level command_cycle
+        from dual
+     connect by level <= case when op = 'noop' then 1 else 2 end
+  ) char_rows
+ union
+ select 1, 1, 'init' from dual -- initial state -> x = 1
+ fetch first 20 rows only
+;
+
+
+/* Result
+   CYCLE_NO    ADD_X OP
+___________ ________ _______
+          1        1 init
+          2          noop
+          3          noop
+          4          noop
+          5          addx
+          6        6 addx
+          7          addx
+          8       -1 addx
+          9          addx
+         10        5 addx
+         11          noop
+         12          noop
+         13          noop
+         14          addx
+         15        5 addx
+         16          addx
+         17       11 addx
+         18          addx
+         19      -10 addx
+*/
+```
+
+Now we have a table with all the commands and their cycles. The next step is to calculate the state of the register at the given cycle. For that, we can use rolling sums with the `sum` window function. The function adds up all the values in the `add_x` column until the current row. Additionally, we can calculate the signal strength by multiplying the state with the cycle number:
+
+```sql
+-- ... previous part
+select cycle_no
+     , sum(add_x) over (order by cycle_no) as curr_x
+     , sum(add_x) over (order by cycle_no) * cycle_no as signal_strength
+  from cycle_times
+;
+
+/* Result
+   CYCLE_NO    CURR_X    SIGNAL_STRENGTH
+___________ _________ __________________
+          1         1                  1
+          2         1                  2
+          3         1                  3
+          4         1                  4
+          5         1                  5
+          6         7                 42
+          7         7                 49
+          8         6                 48
+          9         6                 54
+         10        11                110
+         11        11                121
+         12        11                132
+         13        11                143
+         14        11                154
+         15        16                240
+         16        16                256
+         17        27                459
+         18        27                486
+         19        17                323
+*/
+```
+
+### Getting the result
+
+Now we can just filter for the cycles we need and sum up the signal strength:
+
+```sql
+-- ... previous part
+select sum(signal_strength) as sum_signal_strength
+  from signal_strength
+ where cycle_no in (20, 60, 100, 140, 180, 220)
+;
+```
+
+You can check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/10/1.sql).
+
+## Challenge 2
+
+The second part goes a few steps further. Here I struggled a lot because of one little misunderstanding of the challenge description that lead to a completely different solution. Lesson learned for me: Read the challenge description carefully!
+
+Turns out the CPU also renders pixels onto a screen with a width of 40 pixels.
+The x-register value is used for a sprite that is 3 pixels wide (so +1 and -1 of x) and 1 pixel high.
+
+If the current pixel position (basically CPU Cycle) is within the sprite range we draw a pixel. Because the screen is also 6 pixels high, cycles 1 - 40 are for the first row, 41 - 80 for the second, and so on.
+
+If we draw the screen correctly we can see letters appearing that we have to input to complete the challenge.
+
+## Solving challenge 2
+
+We start with our prior query and move on by getting the current state of the register at every cycle. Then we need to figure out at which cycle which pixel is drawn:
+
+```sql
+-- ... previous part
+), sprite_info as (
+select cycle_no
+     , sum(add_x) over (order by cycle_no) as sprite_position
+  from cycle_times
+)
+select cycle_no
+     , mod(cycle_no - 1, 40) as pixel_position -- starts at 0
+     , floor( (cycle_no - 1) / 40) as row_position
+     , sprite_position
+  from sprite_info
+;
+
+/* Result
+   CYCLE_NO    PIXEL_POSITION    ROW_POSITION    SPRITE_POSITION
+___________ _________________ _______________ __________________
+          1                 0               0                  1
+          2                 1               0                  1
+          3                 2               0                  1
+          4                 3               0                  1
+          5                 4               0                  1
+          6                 5               0                  7
+          7                 6               0                  7
+          8                 7               0                  6
+          9                 8               0                  6
+         10                 9               0                 11
+*/
+```
+
+With that we can easily determine if a pixel should be drawn or not by checking if the pixel position is within the sprite range:
+
+```sql
+-- ... previous part
+select cycle_no
+     , pixel_position
+     , row_position
+     , sprite_position
+     , case when
+        pixel_position between sprite_position - 1 and sprite_position + 1
+          then 1 else 0
+       end as draw_pixel
+  from sprite_data
+;
+
+/* Result
+   CYCLE_NO    PIXEL_POSITION    ROW_POSITION    SPRITE_POSITION    DRAW_PIXEL
+___________ _________________ _______________ __________________ _____________
+          1                 0               0                  1             1
+          2                 1               0                  1             1
+          3                 2               0                  1             1
+          4                 3               0                  1             0
+          5                 4               0                  1             0
+          6                 5               0                  7             0
+          7                 6               0                  7             1
+          8                 7               0                  6             1
+          9                 8               0                  6             0
+         10                 9               0                 11             0
+*/
+```
+
+Now comes the tricky part, how to draw the screen?!
+I eventually went with a huge pivot query and some [SQLcl](https://www.oracle.com/database/sqldeveloper/technologies/sqlcl/) column format options to get the result drawn in a readable way:
+
+```sql
+-- show no headings, paginations and set the linesize to 1000
+set heading off
+set pagesize 0
+set linesize 1000
+
+-- every col should be 1 char wide
+column 0 Format a1
+column 1 Format a1
+column 2 Format a1
+-- ...
+column 39 Format a1
+
+--- ... previous part
+), prep_data as (
+select row_position
+     , pixel_position
+     , draw_pixel
+  from pixel_data
+ where cycle_no <= 240
+)
+  select row_position
+       , case when "0" = 1 then '#' else '.' end as "0"
+       , case when "1" = 1 then '#' else '.' end as "1"
+       , case when "2" = 1 then '#' else '.' end as "2"
+       -- ...
+       , case when "39" = 1 then '#' else '.' end as "39"
+    from prep_data
+  pivot (
+    max(draw_pixel)
+    for pixel_position in (
+      0  as "0"
+    , 1  as "1"
+    , 2  as "2"
+    -- ...
+    , 39 as "39"
+    )
+  )
+;
+
+/* Result
+0 # # # . . . # # . . # # # . . # . . # . # # # . . # # # # . . # # . . # # # . .
+1 # . . # . # . . # . # . . # . # . . # . # . . # . # . . . . # . . # . # . . # .
+2 # . . # . # . . . . # . . # . # # # # . # # # . . # # # . . # . . # . # # # . .
+3 # # # . . # . # # . # # # . . # . . # . # . . # . # . . . . # # # # . # . . # .
+4 # . . . . # . . # . # . . . . # . . # . # . . # . # . . . . # . . # . # . . # .
+5 # . . . . . # # # . # . . . . # . . # . # # # . . # # # # . # . . # . # # # . .
+*/
+```
+
+Seeing the resulting letters take shape was a beautiful moment.
+I took some time as I thought that at the render time the sprite was not yet updated. This small change caused the output to look really chaotic.
+I thought I was doing something fundamentally wrong.
+So close and yet so far...
+But I eventually figured it out!
+
+You can check out the [full solution here](https://github.com/phartenfeller/advent-of-code-2022/blob/main/src/10/2.sql).
