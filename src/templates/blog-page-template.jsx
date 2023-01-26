@@ -25,6 +25,7 @@ import SEO from '../components/seo';
 import '../styles/blog.css';
 import classNames from '../util/classNames';
 import AuthorShowcase from '../components/blog/AuthorShowcase';
+import SeriesTeaser from '../components/blog/SeriesTeaser';
 
 export const query = graphql`
   query ($id: String!) {
@@ -141,6 +142,7 @@ const components = {
   InfoBox,
   WarningBox,
   Link,
+  SeriesTeaser,
 };
 
 const BlogPageTemplate = ({ data }) => {
