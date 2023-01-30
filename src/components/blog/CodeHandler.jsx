@@ -4,7 +4,7 @@ import BlogGifGetter from './BlogGifGetter';
 import Gist from './Gist';
 import Codemirror from './Codemirror';
 
-const CodeHandler = ({ className, children }) => {
+const CodeHandler = ({ className, children, header }) => {
   const language = className.replace(/language-/, '');
   switch (language) {
     case 'gist':
@@ -34,15 +34,27 @@ const CodeHandler = ({ className, children }) => {
     }
     default:
       return (
-        <div className="mx-auto my-8 font-normal">
-          <Codemirror code={children} lang={language} />
-        </div>
+        <figure className="mx-auto my-8 ">
+          {header && (
+            <figcaption className="px-2 py-1 text-sm lg:text-md bg-zinc-900 text-zinc-200 font-semibold">
+              {header}
+            </figcaption>
+          )}
+          <div className="font-normal">
+            <Codemirror code={children} lang={language} />
+          </div>
+        </figure>
       );
   }
 };
 CodeHandler.propTypes = {
   className: PropTypes.string.isRequired,
   children: PropTypes.string.isRequired,
+  header: PropTypes.string,
+};
+
+CodeHandler.defaultProps = {
+  header: null,
 };
 
 export default CodeHandler;

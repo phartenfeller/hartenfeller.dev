@@ -83,6 +83,8 @@ module.exports = {
                 HTTP: `Hypertext Transfer Protocol`,
                 HTTPS: `Hypertext Transfer Protocol Secure`,
                 SSL: `Secure Sockets Layer`,
+                CRUD: `Create, Read, Update, Delete`,
+                DB: `Database`,
               },
             },
           },

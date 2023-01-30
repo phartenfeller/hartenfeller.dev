@@ -1,10 +1,10 @@
 ---
 title: >
-  SvelteKit 1 with SQLite: Displaying, Writing and Searching Data
-date: 2023-12-20
-description: With two lines in your zsh config file, Oracle SQLcl will still work after an upgrade with Homebrew.
+  SvelteKit 1 with SQLite: Displaying, Changing and Searching Data
+date: 2023-01-30
+description: SvelteKit and SQLite are a great combo as they are both lightweight and easy to use, making it simple to build high-performance, data-driven web applications.
 slug: sveltekit-with-sqlite
-titleImage: ./sveltekit-sqlite-tracks-table.png
+titleImage: ./thumb-sveltekit-sqlite.jpg
 titleImageAlt: Photo of a hammer on a wooden background
 titleImageSource: { text: 'Photo by iMattSmart
       ', href: 'https://unsplash.com/photos/jaLaLQdkBOE' }
@@ -23,19 +23,19 @@ ghCommentsIssueId: 67
 
 ## A perfect match
 
-SvelteKit 1.0 released in december 2022. As it now has a stable API I took a peek at how data-driven applications can be build with it. I am impressed by its simplicity and how fast you can achieve great results.
+SvelteKit 1.0 released in December 2022. As it now has a stable API I took a peek at how data-driven applications can be built with it. I am impressed by its simplicity and how fast you can achieve great results.
 
-Together, SvelteKit and SQLite make a great combo because they both have a small footprint and are easy to set up and use. SQLite can be easily integrated into a SvelteKit application, allowing developers to easily store and retrieve data in a structured way, making it easy to build high-performance, data-driven web applications.
+Together, SvelteKit and SQLite make a great combo because they both have a small footprint and are easy to set up and use. SQLite can be easily integrated into a SvelteKit application, allowing developers to easily store and retrieve data in a structured way, making it easy to build CRUD web applications.
 
-[SQLite is serverless](https://www.sqlite.org/serverless.html) (not the new buzzword) meaning that it runs within the same process from the consuming application. Traditional relational client/server databases like MySQL or Postgres run in their own process and lead to the burden of maintaining them. This approach can have big advantages if you have a huge amount clients directly connecting to the database. In our SvelteKit app approach this is not the case, as only the SvelteKit backend is accessing the database.
+[SQLite is serverless](https://www.sqlite.org/serverless.html) (not the new cloud buzzword) meaning that it runs within the same process from the consuming application. Traditional relational client/server databases like MySQL or Postgres run in their own process and lead to the burden of having to maintain them. This approach can have big advantages if you have a high amount clients directly connecting to the database. In our SvelteKit app approach, this is not the case, as only the SvelteKit backend is directly accessing the database.
 
 ## My setup
 
-I use SvelteKit in combination with TypeScript and highly recommend you doing this as well. We can type our data shapes in the backend and later use them also in the frontend to safely access the data in the UI and make our lives easier in case of structural changes.
+I use SvelteKit in combination with TypeScript and highly recommend you do this as well. We can type our data shapes in the backend and later reuse them in the frontend to safely access the data in the UI and make our lives easier in case of type changes.
 
 I will use [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) as the Node.js SQLite driver as I like its synchronous API.
 
-Instead of setting up a schema with data myself I used the [chinook sample database](https://www.sqlitetutorial.net/sqlite-sample-database/) that includes music data with tables like artists, albums and tracks.
+Instead of setting up a schema with data myself, I used the [chinook sample database](https://www.sqlitetutorial.net/sqlite-sample-database/) that includes music data with tables like artists, albums, and tracks.
 
 <InfoBox>
   You can access{' '}
@@ -51,13 +51,15 @@ The example database has a table called `tracks`. We will query this table to di
 
 ### Setting up the database
 
-As the database file only sits on the server, we can create the main db file in `lib/server`. `lib` is the place to put your code that does not strictly belong to any route. The code can be imported with the `$lib` prefix in the path. Any code in `server` subfolder cannot be imported in the frontend. So any code in there is hidden from the eyes of the site users. You can read more about the project structure in the [docs](https://kit.svelte.dev/docs/project-structure).
+As the database file only sits on the server, we can create the main DB file in `lib/server`. `lib` is the place to put your code that does not strictly belong to any route and can be imported with the `$lib` prefix.
 
-I created a subfolder `db` with an `index.ts`. We can import `Database` from `better-sqlite3` and use it's constructor to start our database. I outsourced the path to my database file in a `.env` file with the content `DB_PATH=./data/chinook.db`.
+Any code in the `server` subfolder cannot be imported in the frontend. So any code in there is hidden from the eyes of the users. You can read more about the project structure in the [docs](https://kit.svelte.dev/docs/project-structure).
 
-I created the function `getInitialTracks` that just returns the first 50 tracks from the corresponding table. I store the query in a variable and later call `db.prepare` with it. The prepared statement can then be executed with the `.all` function as we want to get multiple rows. This functions also receives an object of the parameters we want to bind to the query. In our case this is the limit amount we can now provide as a function parameter. We don’t want to manually concatenate that input into the SQL-Query as this can lead to nasty SQL-Injection vulnerabilities. The whole file now looks like this:
+I created another subfolder `db` with an `index.ts`. We can import `Database` from `better-sqlite3` and use its constructor to start our database. Afterward, we can outsource the path to my database file in a `.env` file with the content `DB_PATH=./data/chinook.db`.
 
-```typescript
+We start with the function `getInitialTracks` that just returns the first 50 tracks from the corresponding table. I store the query in a variable and later call `db.prepare` with it. The prepared statement can then be executed with the `.all` function as we want to get multiple rows. This function also receives an object of the parameters we want to bind to the query. In our case, this is the limit amount we can now provide as a function parameter. We don't want to manually concatenate that input into the SQL-Query as this can lead to nasty SQL-Injection vulnerabilities. The whole file now looks like this:
+
+```typescript header=src/lib/server/db/index.ts
 import Database from 'better-sqlite3';
 import { DB_PATH } from '$env/static/private';
 import type { Track } from './types';
@@ -88,9 +90,9 @@ limit $limit
 }
 ```
 
-As I used TypeScript we also need to add a definition for our `Track` type. I created a `types.ts` next to the database `index.ts` with following content:
+As I used TypeScript we also need to add a definition for our `Track` type. I created a `types.ts` next to the database `index.ts` with the following content:
 
-```typescript
+```typescript header=src/lib/server/db/types.ts
 export type Track = {
   trackId: number;
   trackName: string;
@@ -106,7 +108,7 @@ export type Track = {
 
 To show the data on our home page we need to create a `+page.server.ts` in `src/routes`. In there we can add a load function that simply returns the data of our function:
 
-```typescript
+```typescript header=src/routes/+page.server.ts
 import { getInitialTracks } from '$lib/server/db';
 import type { PageServerLoad } from './$types';
 
@@ -121,7 +123,7 @@ export const load = (() => {
 
 These few lines are enough for us to consume the data in our frontend svelte file. In the neighboring `+page.svelte` we can consume and display the data:
 
-```svelte
+```svelte header=src/routes/+page.svelte
 <script lang="ts">
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -164,20 +166,20 @@ A neat addition to the app is an album details page that shows some basic inform
 
 <BlogImg
   filename="sveltekit-sqlite-album-route.png"
-  alt="Webpage that shows name and interpret of the albunm 'For those about to rock we salute you' by 'AC/DC'. Additionally there is a table that lists name and length of each track."
+  alt="Webpage that shows the name and interpret of the album 'For those about to rock we salute you' by 'AC/DC'. Additionally, there is a table that lists the name and length of each track."
 />
 
 ### Creating the route
 
-As SvelteKit uses a [filesystem-based router](https://kit.svelte.dev/docs/routing) we can create new folders to allow for an album detail route. Inside `src/routes` we can create `album/[albumId]`. We put the albumId in squared brackets so that SvelteKit treats this as a parameter so that different content is loaded for different IDs.
+As SvelteKit uses a [filesystem-based router](https://kit.svelte.dev/docs/routing) we can create new folders to allow for an album detail route. Inside `src/routes` we can create `album/[albumId]`. We put the `albumId` in squared brackets so that SvelteKit treats this as a parameter so that different content is loaded for different IDs.
 
-In the newly created folders we can add empty `+page.server.ts` and `+page.svelte` files.
+In the newly created folders, we can add empty `+page.server.ts` and `+page.svelte` files.
 
 ### Database functions
 
 Back in our database `index.ts` we can add following two functions for the new page:
 
-```typescript
+```typescript header=src/lib/server/db/index.ts
 export function getAlbumById(albumId: number): Album {
   const sql = `
   select a.AlbumId as albumId
@@ -208,9 +210,9 @@ order by t.TrackId
 }
 ```
 
-In the `types.ts` file we then add the newly used types:
+In the `types.ts` file, we then add the newly used types:
 
-```typescript
+```typescript header=src/lib/server/db/types.ts
 export type Album = {
   albumId: number;
   albumTitle: string;
@@ -227,9 +229,9 @@ export type AlbumTrack = {
 
 ### Page load function
 
-In the new `+page.server.ts` file we can then define our load function. We can received the `albumId` of the url from the `params` object. The value is named exactly the same as we defined in the folder name (`[albumId]`).
+In the new `+page.server.ts` file, we can then define our load function. We can receive the `albumId` of the URL from the `params` object. The value is named the same as we defined in the folder name (`[albumId]`).
 
-```typescript
+```typescript header=src/routes/album/[albumId]/+page.server.ts
 export const load = (({ params }) => {
 	const albumId = parseInt(params.albumId);
 
@@ -247,7 +249,7 @@ export const load = (({ params }) => {
 
 It is now trivial to display the loaded data on the page:
 
-```svelte
+```svelte header=src/routes/album/[albumId]/+page.svelte
 <script lang="ts">
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -280,11 +282,11 @@ It is now trivial to display the loaded data on the page:
 
 ## Error handling
 
-We we call our album route with any non existing album ID we get a default unstyled error page that says "500 Internal Error".
+We call our album route with any non-existing album ID we get a default unstyled error page that says "500 Internal Error".
 
 The 500 error code is not great as 404 "not found" would be better as the error was caused by an unknown album ID. We can manually fix this by adding error handling mechanisms in our `+page.server.ts`. We can check after parsing the parameter as an integer if we have any value left as parsing only characters would result in no value. If this is the case we can throw the error function provided by SvelteKit. We can then define our wanted HTTP code and the message. We do the same when our database function still returns without a value:
 
-```typescript
+```typescript header=src/routes/album/[albumId]/+page.server.ts
 import { error, type Actions } from '@sveltejs/kit';
 
 export const load = (({ params }) => {
@@ -311,9 +313,9 @@ export const load = (({ params }) => {
 
 We may want this error page to match our page style or add more information. We can achieve this by adding a `+error.svelte` file next to the page file. Note that we could also create a global error file [as SvelteKit will use the closest file while traversing up the file tree](https://kit.svelte.dev/docs/routing#error).
 
-For a really simple page we can just display the HTTP status code and a message by importing both from the `page` store:
+For a really simple page, we can just display the HTTP status code and a message by importing both from the `page` store:
 
-```svelte
+```svelte header=src/routes/album/[albumId]/+error.svelte
 <script>
 	import { page } from '$app/stores';
 </script>
@@ -335,9 +337,9 @@ To cover sending data to the backend to write data back to the database I decide
 
 ### Database operation
 
-We have to extend our database functions again that runs the update statement. We only need our primary key column, the `AlbumId` and the new value for the `Title` column. We can add a prepared statement as before and pass the values as an object:
+We have to extend our database functions again with a new one that runs the update statement. We only need our primary key column, the `AlbumId`, and the new value for the `Title` column. We can add a prepared statement as before and pass the values as an object:
 
-```typescript
+```typescript header=src/lib/server/db/index.ts
 export function updateAlbumTitle(albumId: number, albumTitle: string): void {
   const sql = `
   update albums
@@ -353,11 +355,12 @@ export function updateAlbumTitle(albumId: number, albumTitle: string): void {
 
 The [easiest way to send data to the backend and start an operation is by utilizing forms](https://kit.svelte.dev/docs/form-actions). We can add one to the album page and set the HTTP method to `POST` instead of `GET` as [this makes sense for writing operations](https://kit.svelte.dev/docs/form-actions#get-vs-post).
 
-We add a hidden input field for the album ID that is prefilled by our load data. Additionally we create a text input field for the new album title. Both items need the name property so we can access the values later on.
+We add a hidden input field for the album ID that is prefilled by our load data. Additionally, we create a text input field for the new album title. Both items need the name property so we can access the values later on.
 
-We can then add a button that submits the form. We can add the `formaction` property and set a function name that is then triggered in the `+page.server.ts` file. This way we can do different operations based on a single form (e. g. Create, Update, Delete). Note that we [prefix the function name with a question mark and slashto make it a relative path](https://kit.svelte.dev/docs/form-actions#get-vs-post:~:text=prefixed%20by%20a,character%3A).
+We can then add a button that submits the form. We can add the `formaction` property and set a function name that is then triggered in the `+page.server.ts` file. This way we can do different operations based on a single form (e. g. Create, Update, Delete). Note that we [prefix the function name with a question mark and slash to make it a relative path](https://kit.svelte.dev/docs/form-actions#get-vs-post:~:text=prefixed%20by%20a,character%3A).
 
-```svelte
+```svelte header=src/routes/album/[albumId]/+page.svelte
+<!-- ... -->
 <h2 class="is-size-3 mb-4 mt-6">Update Album Name</h2>
 <form method="post">
 	<input
@@ -379,11 +382,11 @@ We can then add a button that submits the form. We can add the `formaction` prop
 
 ### Handle form submission
 
-We can now handle the form submission in our `+page.server.ts` file. For that we create a const called `actions`. In there we define a function called the same as our `formaction` attribute on our button.
+We can now handle the form submission in our `+page.server.ts` file. For that, we create a const called `actions`. In there we define a function called the same as our `formaction` attribute on our button.
 
-We can access the form data by calling `request.formData()` and then access the values by their name. Afterward we call our database function and pass the values:
+We can access the form data by calling `request.formData()` and then grab the values by their name. Now we call our database function and pass the values:
 
-```typescript
+```typescript header=src/lib/server/db/index.ts
 export const actions: Actions = {
   updateAlbumTitle: async ({ request }) => {
     const data = await request.formData();
@@ -412,13 +415,13 @@ export const actions: Actions = {
 
 ## Make tracks searchable
 
-Back on our home page we want to make the tracks searchable. I think the most user convinient way is to do a search while you type solution. So this time we can not use any load function as we have to make request our backend while the user types and not on inital page load.
+Back on our home page, we want to make the tracks searchable. I think the most user-convenient way is to implement a search while you type. So this time we can not use any load function as we have to send a request to our backend while the user types and not on the initial page load.
 
 ### Database function
 
-We have to to create a new db function that takes a search term. We can then use the `like` operator to search for the term in the track name. By using the `lower` function to make the search case insensitive:
+We have to create a new DB function that takes a search term. We can then use the `like` operator to search for the term in the track name. By using the `lower` function to make the search case insensitive:
 
-```typescript
+```typescript header=src/lib/server/db/index.ts
 export function searchTracks(searchTerm: string, limit = 50): Track[] {
   const sql = `
   select t.TrackId as trackId
@@ -446,11 +449,11 @@ limit $limit
 
 ### API route
 
-So instead of calling the new function in our load function we can make use of [API routes](https://kit.svelte.dev/docs/routing#server). These endpoints don't support any page and thus need to be calles `+server.ts` (instead of `+page.server.ts`). I think it makes sense to create an `api` folder so my API route sits in `src/routes/api/searchTracks/+server.ts`.
+So instead of calling the new function in our load, we can make use of [API routes](https://kit.svelte.dev/docs/routing#server). These endpoints don't support any page and thus need to be called `+server.ts` (instead of `+page.server.ts`). I think it makes sense to create an `api` folder so my API route sits in `src/routes/api/searchTracks/+server.ts`.
 
-We can create a function `GET` as we want it to be triggered by the HTTP GET method. The search term should be passed as a [query parameter](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams). We can access it by calling `url.searchParams.get('searchTerm')?.toString();`. If there is no search term we can return the initial tracks. Otherwise we can pass our array to the `json` function and return it.
+We can create a function `GET` as we want it to be triggered by the HTTP GET method. The search term should be passed as a [query parameter](https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams). We can access it by calling `url.searchParams.get('searchTerm')?.toString();`. If there is no search term we can return the initial tracks. Otherwise, we can pass our array to the `json` function and return it.
 
-```typescript
+```typescript header=src/routes/api/searchTracks/+server.ts
 import { getInitialTracks, searchTracks } from '$lib/server/db';
 import type { Track } from '$lib/server/db/types';
 import { json } from '@sveltejs/kit';
@@ -476,7 +479,7 @@ export const GET = (({ url }) => {
 
 We add an input of type `search` to our home page. We can then add an `on:keyup` and `on:search` event listener. The `on:keyup` event is triggered on every key press. The `on:search` event is triggered when the user presses the enter key or clicks the 'x' to reset the input:
 
-```svelte
+```svelte header=src/routes/+page.svelte
 <input
 	type="search"
 	placeholder="Search..."
@@ -488,11 +491,11 @@ We add an input of type `search` to our home page. We can then add an `on:keyup`
 />
 ```
 
-Then `handleSearch` function receives the event and we can access the input value by calling `e.target.value`. I recommend to [debounce](https://en.wiktionary.org/wiki/debounce) the search to throttle the amount of requests send to the server. So we don't actually filter while the user types, only after he has not typed in 300 ms. We can do this by using timeouts.
+Then `handleSearch` function receives the event and we can access the input value by calling `e.target.value`. I recommend to [debounce](https://en.wiktionary.org/wiki/debounce) the search to throttle the number of requests send to the server. So we don't actually filter while the user types, only after he has not typed in 300 ms. We can do this by using timeouts.
 
 The real request is done in the `fetchTracks` function. It uses the `fetch` API to make a GET request to our API route. We pass the search term as a query parameter. After the request is done we can parse the response as JSON and set the result to the **new** `tracks` variable.
 
-```svelte
+```svelte header=src/routes/+page.svelte
 <script lang="ts">
 // ...
 let timer: NodeJS.Timeout;
@@ -516,9 +519,9 @@ let tracks = data.tracks;
 </script>
 ```
 
-We the need to change the table loop to accessing the `tracks` variable instead of `data.tracks` so that it updates after a search:
+We still need to change the table loop to accessing the `tracks` variable instead of `data.tracks` so that it updates after a search:
 
-```svelte
+```svelte header=src/routes/+page.svelte
 {#each tracks as track}
 	<tr>
 		<td>{track.trackName}</td>
