@@ -36,7 +36,7 @@ const CodeHandler = ({ className, children, header }) => {
       return (
         <figure className="mx-auto my-8 ">
           {header && (
-            <figcaption className="px-2 py-1 text-sm lg:text-md bg-zinc-900 text-zinc-200 font-semibold">
+            <figcaption className="font-mono px-2 py-1 lg:py-2 text-sm lg:text-md bg-zinc-900 text-zinc-200 font-semibold tracking-tight selection:bg-zinc-700 selection:text-zinc-100">
               {header}
             </figcaption>
           )}
