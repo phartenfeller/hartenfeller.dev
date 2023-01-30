@@ -194,7 +194,7 @@ const BlogPageTemplate = ({ data }) => {
                 <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
                   {title}
                 </h1>
-                <div className="mt-6 text-sm leading-5 font-medium text-zinc-700">
+                <div className="mt-6 text-sm leading-5 font-medium text-zinc-700 max-w-[90vw]">
                   <TagsDisplay tags={tags} />
                   <time className="float-right" dateTime={date}>
                     {formattedDate}
@@ -215,7 +215,7 @@ const BlogPageTemplate = ({ data }) => {
                   {description}
                 </div>
               </header>
-              <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl">
+              <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl  max-w-[85vw]">
                 <MDXProvider components={components}>
                   <MDXRenderer>{body}</MDXRenderer>
                 </MDXProvider>
@@ -231,7 +231,7 @@ const BlogPageTemplate = ({ data }) => {
                 </div>
               ) : null}
 
-              <div className="my-8">
+              <div className="my-8 max-w-[90vw]">
                 <OtherPosts postId={id} />
               </div>
 
