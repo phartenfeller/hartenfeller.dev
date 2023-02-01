@@ -53,15 +53,6 @@ const talks = [
   },
   {
     year: 2020,
-    conference: 'DOAG.tv ',
-    place: 'online',
-    title: 'Datenschnittstellen mit GraphQL',
-    language: '🇩🇪',
-    recording:
-      'https://www.doag.org/de/home/news/aufgezeichnet-datenschnittstellen-mit-graphql/detail/',
-  },
-  {
-    year: 2020,
     conference: 'APEX Connect 2020',
     place: 'online',
     title: 'Advanced AOP Templates',
@@ -117,6 +108,33 @@ const publications = [
   },
 ];
 
+const other = [
+  {
+    year: 2020,
+    type: 'Webinar',
+    publication: 'DOAG.tv ',
+    title: 'Datenschnittstellen mit GraphQL',
+    language: '🇩🇪',
+    link: 'https://www.doag.org/de/home/news/aufgezeichnet-datenschnittstellen-mit-graphql/detail/',
+  },
+  {
+    year: 2022,
+    type: 'Webcast',
+    publication: 'apex.world for Dummies',
+    title: 'The most important APEX Task (LCT Testing Framework for APEX)',
+    language: '🇬🇧',
+    link: 'https://www.youtube.com/watch?v=vM8s5IQ5AAI',
+  },
+  {
+    year: 2022,
+    type: 'Podcast',
+    publication: 'Devs On Tape',
+    title: 'Zu Gast: Philipp Hartenfeller - ChatGPT und Github Copilot',
+    language: '🇩🇪',
+    link: 'https://devsontape.podigee.io/27-philipp-hartenfeller',
+  },
+];
+
 const talkData = talks.map((t) => ({
   year: t.year,
   medium: `${t.conference} (${t.place})`,
@@ -142,14 +160,26 @@ const pubData = publications.map((p) => ({
   medium: `${p.magazine} (pp. ${p.pages})`,
   title: `${p.title} (${p.language})`,
   linkComp: (
-    <>
-      <a
-        href={p.link}
-        className="px-2 py-1 rounded text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
-      >
-        Link
-      </a>
-    </>
+    <a
+      href={p.link}
+      className="px-2 py-1 rounded text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
+    >
+      Link
+    </a>
+  ),
+}));
+
+const otherData = other.map((o) => ({
+  year: o.year,
+  medium: `${o.type}: "${o.publication}"`,
+  title: `${o.title} (${o.language})`,
+  linkComp: (
+    <a
+      href={o.link}
+      className="px-2 py-1 rounded text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
+    >
+      Link
+    </a>
   ),
 }));
 
@@ -165,7 +195,7 @@ const PubList = ({ data }) => (
         >
           <span className="px-6 py-4 hidden xl:block">{d.year}</span>
 
-          <span className="px-6 py-4 xl:col-span-2" title="conference">
+          <span className="px-6 py-4 xl:col-span-2" title="conference/medium">
             {d.medium}
           </span>
 
@@ -220,6 +250,12 @@ const Talks = () => (
             Publications
           </h2>
           <PubList data={pubData} />
+        </div>
+        <div className="pb-32">
+          <h2 className="text-3xl brown-header-text font-extrabold mb-8">
+            Other
+          </h2>
+          <PubList data={otherData} />
         </div>
       </div>
     </div>
