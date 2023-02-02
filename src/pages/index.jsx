@@ -16,8 +16,8 @@ const IndexPage = () => (
     <div className="text-zinc-800">
       <Hero />
       <SocialLinks />
-      <About />
       <LatestBlogposts />
+      <About />
       <ProjectsPreview />
       <div
         style={{

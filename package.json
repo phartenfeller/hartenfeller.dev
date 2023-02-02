@@ -9,6 +9,7 @@
     "@heroicons/react": "^1.0.6",
     "@mdx-js/mdx": "^1.6.22",
     "@mdx-js/react": "^1.6.22",
+    "@tailwindcss/line-clamp": "^0.4.2",
     "gatsby": "^4.24.8",
     "gatsby-image": "^3.11.0",
     "gatsby-plugin-canonical-urls": "^4.24.0",
@@ -50,7 +51,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "postcss": "^8.4.19",
     "postcss-cli": "^10.0.0",
-    "prettier": "^2.7.1"
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.2.2"
   },
   "browserslist": [
     ">1%",

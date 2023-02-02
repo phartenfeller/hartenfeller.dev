@@ -74,7 +74,7 @@ const BlogVideoGetter = ({ filename, width = 1280, title, frame }) => {
               <div ref={videoOverlay}>
                 <button
                   type="button"
-                  className="absolute h-full w-full top-0 left-0 mx-auto z-40 text-violet-900 hover:text-violet-600/70 transition-colors duration-150 ase-in-out"
+                  className="absolute h-full w-full top-0 left-0 mx-auto z-40 text-violet-900 hover:text-violet-600/70 transition-colors duration-150 ease-in-out"
                   onClick={handleClick}
                   aria-label={`Play video "${title}"`}
                 >

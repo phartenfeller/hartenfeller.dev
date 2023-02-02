@@ -5,17 +5,21 @@ import svg from '../../images/svg';
 
 const getTagUrl = (tag) => `/blog/tags/${tag.toLowerCase().replace(/ /g, '-')}`;
 
-const TagsDisplay = ({ tags }) => {
+const TagsDisplay = ({ tags, icon = true }) => {
   if (!tags || tags.length === 0) return null;
   return (
     <div className="inline-flex ml-1">
-      <svg
-        className="-ml-1 mr-2 h-5 w-5 text-zinc-500"
-        fill="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path d={svg.tag.path} />
-      </svg>
+      {icon ? (
+        <svg
+          className="-ml-1 mr-2 h-5 w-5 text-zinc-500"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d={svg.tag.path} />
+        </svg>
+      ) : (
+        <span>#</span>
+      )}
       {tags.map((tag, i) => (
         <span key={tag} className="mr-2">
           <Link
@@ -33,10 +37,12 @@ const TagsDisplay = ({ tags }) => {
 
 TagsDisplay.propTypes = {
   tags: PropTypes.arrayOf(PropTypes.string),
+  icon: PropTypes.bool,
 };
 
 TagsDisplay.defaultProps = {
   tags: null,
+  icon: true,
 };
 
 export default TagsDisplay;
