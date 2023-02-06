@@ -19,7 +19,12 @@ const LinkedH2 = ({ children }) => {
     throw new Error(`Unknown Type of LinkedH2 props:`, children);
   }
 
-  const id = titleText.toLowerCase().replace(/ /g, '-');
+  const id = titleText
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/'/g, '')
+    .replace(/"/g, '')
+    .replace(/:/g, '');
 
   return (
     <a
