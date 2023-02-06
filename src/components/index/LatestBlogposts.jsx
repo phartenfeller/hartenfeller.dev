@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Tab } from '@headlessui/react';
 import TagsDisplay from '../blog/TagsDisplay';
 import SectionHeader from '../SectionHeader';
+import LinkButton from '../LinkButton';
 
 const PostPreview = ({ frontmatter }) => (
   <li className="mb-3">
@@ -38,6 +39,22 @@ PostPreview.propTypes = {
     slug: PropTypes.string.isRequired,
     tags: PropTypes.arrayOf(PropTypes.string).isRequired,
   }).isRequired,
+};
+
+const MoreLink = ({ target, text }) => (
+  <div className="mt-8 mb-3 text-center">
+    <Link
+      to={target}
+      className="transform select-none rounded-md border border-zinc-200 bg-white px-12 py-2 text-lg font-semibold text-zinc-700 duration-150 ease-in-out hover:scale-105 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-red-300 motion-reduce:transition-none motion-reduce:translate-z-0"
+    >
+      {text}
+    </Link>
+  </div>
+);
+
+MoreLink.propTypes = {
+  target: PropTypes.string.isRequired,
+  text: PropTypes.string.isRequired,
 };
 
 const tabs = ['Latest', 'Oracle APEX', 'Oracle', 'WebDev'];
@@ -171,6 +188,7 @@ const LatestBlogposts = () => {
                       frontmatter={frontmatter}
                     />
                   ))}
+                  <MoreLink target="/blog" text="More Posts" />
                 </Tab.Panel>
                 <Tab.Panel>
                   {apexPosts.map(({ frontmatter }) => (
@@ -179,6 +197,7 @@ const LatestBlogposts = () => {
                       frontmatter={frontmatter}
                     />
                   ))}
+                  <MoreLink target="/blog/tags/apex" text="More APEX Posts" />
                 </Tab.Panel>
                 <Tab.Panel>
                   {oraclePosts.map(({ frontmatter }) => (
@@ -187,6 +206,10 @@ const LatestBlogposts = () => {
                       frontmatter={frontmatter}
                     />
                   ))}
+                  <MoreLink
+                    target="/blog/tags/oracle"
+                    text="More Oracle Posts"
+                  />
                 </Tab.Panel>
                 <Tab.Panel>
                   {webDevPosts.map(({ frontmatter }) => (
@@ -195,6 +218,10 @@ const LatestBlogposts = () => {
                       frontmatter={frontmatter}
                     />
                   ))}
+                  <MoreLink
+                    target="/blog/tags/web-development"
+                    text="More WebDev Posts"
+                  />
                 </Tab.Panel>
               </Tab.Panels>
             </ul>
