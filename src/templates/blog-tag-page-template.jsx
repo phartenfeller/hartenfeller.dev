@@ -41,27 +41,27 @@ const BlogTagTemplate = ({ data, pageContext }) => {
   const { tag } = pageContext;
 
   return (
-    <Layout>
+    <Layout header>
       <SEO
         title={`Blog | ${tag}`}
         description={`Blogposts tagged with: ${tag}`}
       />
-      <div className="relative pt-16 pb-20 px-4 sm:px-6 lg:pb-28 lg:px-8">
-        <div className="relative max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl sm:leading-10">
+      <div className="relative px-4 pt-16 pb-20 sm:px-6 lg:px-8 lg:pb-28">
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mb-24 text-center">
+            <h1 className="brown-header-text text-3xl font-extrabold leading-9 sm:text-4xl sm:leading-10">
               <span>
                 Blogposts tagged with:{' '}
                 <span className="text-red-700">{tag}</span>
               </span>
             </h1>
           </div>
-          <div className="mx-6 lg:m-auto lg:w-2/3 mt-8 lg:grid lg:gap-6 lg:grid-cols-2">
+          <div className="mx-6 mt-8 lg:m-auto lg:grid lg:w-2/3 lg:grid-cols-2 lg:gap-6">
             {blogposts.map(({ frontmatter }) => (
               <Blogpost postData={frontmatter} key={frontmatter.slug} />
             ))}
           </div>
-          <div className="text-center mt-8 text-xl text">
+          <div className="text mt-8 text-center text-xl">
             <Link to="/" className="text-zinc-600 hover:underline">
               Homepage
             </Link>

@@ -3,10 +3,10 @@ import React from 'react';
 import { InformationCircleIcon } from '@heroicons/react/solid';
 
 const InfoBox = ({ source, children }) => (
-  <div className="border border-zinc-200 rounded lg:flex text-center md:my-16 max-w-[90vw]">
-    <div className="flex-shrink-0 bg-sky-50 p-2 lg:p-4 flex items-center">
+  <div className="max-w-[90vw] rounded border border-zinc-200 text-center md:my-16 lg:flex">
+    <div className="flex flex-shrink-0 items-center bg-sky-50 p-2 lg:p-4">
       <InformationCircleIcon
-        className="h-5 w-5 md:h-8 md:w-8 text-sky-500 "
+        className="h-5 w-5 text-sky-500 md:h-8 md:w-8 "
         aria-hidden="true"
       />
     </div>
@@ -27,7 +27,7 @@ InfoBox.defaultProps = {
 
 InfoBox.propTypes = {
   source: PropTypes.string,
-  children: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
 };
 
 export default InfoBox;

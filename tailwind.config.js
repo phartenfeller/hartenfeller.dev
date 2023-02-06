@@ -19,6 +19,8 @@ module.exports = {
       },
       colors: {
         'title-brown': '#3e2121',
+        'title-brown-light': '#544242',
+        cappuccino: '#93776c',
       },
       fontFamily: {
         merriweather: ['Merriweather', 'serif'],

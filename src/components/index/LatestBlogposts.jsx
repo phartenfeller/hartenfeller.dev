@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { Tab } from '@headlessui/react';
 import TagsDisplay from '../blog/TagsDisplay';
 import SectionHeader from '../SectionHeader';
-import LinkButton from '../LinkButton';
 
 const PostPreview = ({ frontmatter }) => (
   <li className="mb-3">

@@ -23,16 +23,16 @@ const PostDisplay = ({ last = false, post }) => {
     return (
       <div
         className={classNames(
-          'p-4 flex items-center select-none cursor-not-allowed',
+          'flex cursor-not-allowed select-none items-center p-4',
           !last ? 'justify-end' : null
         )}
       >
         {last && (
-          <ChevronDoubleLeftIcon className="h-6 w-6 text-zinc-100 mr-6" />
+          <ChevronDoubleLeftIcon className="mr-6 h-6 w-6 text-zinc-100" />
         )}
-        <div className="text-zinc-400 font-light">No {text}</div>
+        <div className="font-light text-zinc-400">No {text}</div>
         {!last && (
-          <ChevronDoubleRightIcon className="h-6 w-6 text-zinc-100 ml-6" />
+          <ChevronDoubleRightIcon className="ml-6 h-6 w-6 text-zinc-100" />
         )}
       </div>
     );
@@ -42,11 +42,11 @@ const PostDisplay = ({ last = false, post }) => {
     <a
       href={`/blog/${post.frontmatter.slug}`}
       className={classNames(
-        'p-4 rounded hover:bg-red-50 focus:outline-none focus:ring focus:ring-red-300 flex items-center justify-between select-none'
+        'flex select-none items-center justify-between rounded p-4 hover:bg-red-50 focus:outline-none focus:ring focus:ring-red-300'
       )}
     >
       {last && (
-        <ChevronDoubleLeftIcon className="h-4 w-4 lg:h-6 lg:w-6 text-zinc-300 mr-3 lg:mr-6 flex-shrink-0" />
+        <ChevronDoubleLeftIcon className="mr-3 h-4 w-4 flex-shrink-0 text-zinc-300 lg:mr-6 lg:h-6 lg:w-6" />
       )}
       <div className="flex-grow">
         <div className="font-semibold">{text}</div>
@@ -54,15 +54,20 @@ const PostDisplay = ({ last = false, post }) => {
         <div className="text-zinc-500">{post.frontmatter.formattedDate}</div>
       </div>
       {!last && (
-        <ChevronDoubleRightIcon className="h-4 w-4 lg:h-6 lg:w-6 text-zinc-300 ml-3 lg:ml-6 flex-shrink-0" />
+        <ChevronDoubleRightIcon className="ml-3 h-4 w-4 flex-shrink-0 text-zinc-300 lg:ml-6 lg:h-6 lg:w-6" />
       )}
     </a>
   );
 };
 
 PostDisplay.propTypes = {
-  last: PropTypes.bool.isRequired,
-  post: postShape.isRequired,
+  last: PropTypes.bool,
+  post: postShape,
+};
+
+PostDisplay.defaultProps = {
+  last: false,
+  post: undefined,
 };
 
 const OtherPosts = ({ postId }) => {
@@ -89,7 +94,7 @@ const OtherPosts = ({ postId }) => {
       : data.allPosts.nodes[currIndex + 1];
 
   return (
-    <div className="grid sm:grid-cols-2 border border-zinc-300 rounded">
+    <div className="grid rounded border border-zinc-300 sm:grid-cols-2">
       <PostDisplay last post={lastPost} />
       <PostDisplay post={nextPost} />
     </div>

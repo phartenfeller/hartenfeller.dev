@@ -2,30 +2,20 @@ import { MDXProvider } from '@mdx-js/react';
 import { graphql, Link } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
+import PropTypes from 'prop-types';
 import React from 'react';
-import BlogGifGetter from '../components/blog/BlogGifGetter';
-import BlogImageGetter from '../components/blog/BlogImageGetter';
-import BlogVideoGetter from '../components/blog/BlogVideoGetter';
+import { ClockIcon } from '@heroicons/react/outline';
+import AuthorShowcase from '../components/blog/AuthorShowcase';
+import components from '../components/blog/blogComponents';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
-import { postType } from '../components/blog/Blogpost';
-import CodeHandler from '../components/blog/CodeHandler';
 import Comments from '../components/blog/Comments';
-import LinkedH3 from '../components/blog/LinkedH3';
-import Gist from '../components/blog/Gist';
-import InfoBox from '../components/blog/InfoBox';
-import WarningBox from '../components/blog/WarningBox';
-import LinkedH2 from '../components/blog/LinkedH2';
 import OtherPosts from '../components/blog/OtherPosts';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
-import YouTubeEmbed from '../components/blog/YouTubeEmbed';
 import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
-import classNames from '../util/classNames';
-import AuthorShowcase from '../components/blog/AuthorShowcase';
-import SeriesTeaser from '../components/blog/SeriesTeaser';
 
 export const query = graphql`
   query ($id: String!) {
@@ -59,6 +49,8 @@ export const query = graphql`
       body
       id
       fileAbsolutePath
+      timeToRead
+      tableOfContents
     }
   }
 `;
@@ -113,41 +105,16 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
   return meta;
 };
 
-const components = {
-  code: CodeHandler,
-  // eslint-disable-next-line react/prop-types
-  pre: ({ children }) => children, // handled by codeh
-  h2: LinkedH2,
-  h3: LinkedH3,
-  Gist,
-  // eslint-disable-next-line react/prop-types
-  BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
-    <BlogImageGetter
-      filename={filename}
-      classes={classNames('object-contain', noShadow ? null : 'shadow-md')}
-      alt={alt}
-      maxWidthPx={maxWidthPx}
-    />
-  ),
-  // eslint-disable-next-line react/prop-types
-  BlogGif: ({ filename, alt }) => (
-    <BlogGifGetter
-      filename={filename}
-      alt={alt}
-      classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
-    />
-  ),
-  BlogVideo: BlogVideoGetter,
-  YouTubeEmbed,
-  InfoBox,
-  WarningBox,
-  Link,
-  SeriesTeaser,
-};
-
 const BlogPageTemplate = ({ data }) => {
   const { post } = data;
-  const { frontmatter, body, fileAbsolutePath, id } = post;
+  const {
+    frontmatter,
+    body,
+    fileAbsolutePath,
+    id,
+    timeToRead,
+    tableOfContents,
+  } = post;
   const {
     title,
     date,
@@ -178,23 +145,23 @@ const BlogPageTemplate = ({ data }) => {
   });
 
   return (
-    <Layout>
+    <Layout header toc={tableOfContents}>
       <SEO title={title} description={description} meta={meta} />
       <ScrollTracker />
-      <article className="flex flex-col max-w-[100vw] overflow-hidden">
-        <div className="bg-white m-auto shadow-sm ">
+      <article className="flex max-w-[100vw] flex-col overflow-hidden">
+        <div className="m-auto bg-white shadow-sm ">
           <GatsbyImage
             image={titleImage.childImageSharp.gatsbyImageData}
-            className="h-100 object-cover lg:max-w-[calc(75ch + 300px)]"
+            className="lg:max-w-[calc(75ch + 300px)] h-100 object-cover"
             alt={titleImageAlt}
           />
-          <div className="flex px-4 md:px-8 pb-8 space-x-8">
+          <div className="flex space-x-8 px-4 pb-8 md:px-8">
             <div className="flex-grow lg:max-w-[75ch]">
               <header>
-                <h1 className="text-2xl md:text-3xl lg:text-4xl leading-12 brown-header-text font-extrabold pt-8">
+                <h1 className="leading-12 brown-header-text pt-8 text-2xl font-extrabold md:text-3xl lg:text-4xl">
                   {title}
                 </h1>
-                <div className="mt-6 text-sm leading-5 font-medium text-zinc-700 max-w-[90vw]">
+                <div className="mt-6 max-w-[90vw] text-sm font-medium leading-5 text-zinc-700">
                   <TagsDisplay tags={tags} />
                   <time className="float-right" dateTime={date}>
                     {formattedDate}
@@ -204,18 +171,18 @@ const BlogPageTemplate = ({ data }) => {
                   <div className="mb-5">
                     <a
                       href={gitHubUrl}
-                      className="float-right text-sm leading-5 font-medium text-zinc-700 underline hover:text-zinc-400 focus:outline-none rounded focus:ring focus:ring-red-300"
+                      className="float-right rounded text-sm font-medium leading-5 text-zinc-700 underline hover:text-zinc-400 focus:outline-none focus:ring focus:ring-red-300"
                     >
                       <span>Last updated: </span>
                       <time dateTime={lastUpdate}>{lastUpdateFormatted}</time>
                     </a>
                   </div>
                 ) : null}
-                <div className="mt-12 mb-16 text-base md:text-lg lg:text-xl text-stone-600 leading-8 font-raleway">
+                <div className="font-raleway mt-12 mb-16 text-base leading-8 text-stone-600 md:text-lg lg:text-xl">
                   {description}
                 </div>
               </header>
-              <main className="blog-body mt-6 leading-8 font-raleway font-semibold text-stone-600 text-base md:text-lg lg:text-xl  max-w-[85vw]">
+              <main className="blog-body font-raleway mt-6 max-w-[85vw] text-base font-semibold leading-8 text-stone-600 md:text-lg  lg:text-xl">
                 <MDXProvider components={components}>
                   <MDXRenderer>{body}</MDXRenderer>
                 </MDXProvider>
@@ -224,7 +191,7 @@ const BlogPageTemplate = ({ data }) => {
                 <div>
                   <a
                     href={titleImageSource.href}
-                    className="text-zinc-700 font-light mt-8 hover:text-zinc-800 hover:underline"
+                    className="mt-8 font-light text-zinc-700 hover:text-zinc-800 hover:underline"
                   >
                     {titleImageSource.text}
                   </a>
@@ -247,7 +214,7 @@ const BlogPageTemplate = ({ data }) => {
                 </div>
                 {ghCommentsIssueId && (
                   <>
-                    <h2 className="mb-8 text-2xl brown-header-text font-semibold">
+                    <h2 className="brown-header-text mb-8 text-2xl font-semibold">
                       Comments
                     </h2>
 
@@ -255,7 +222,7 @@ const BlogPageTemplate = ({ data }) => {
                   </>
                 )}
               </div>
-              <footer className="text-center mt-8 text-xl text">
+              <footer className="text mt-8 text-center text-xl">
                 <Link to="/" className="text-slate-600 hover:underline">
                   Homepage
                 </Link>
@@ -265,7 +232,12 @@ const BlogPageTemplate = ({ data }) => {
                 </Link>
               </footer>
             </div>
-            <aside className="hidden lg:block lg:w-[280px] grow-0 border-l border-zinc-300 my-5 pl-8 py-5">
+            <aside className="my-5 hidden grow-0 border-l border-zinc-300 py-5 pl-8 lg:block lg:w-[280px]">
+              <div className="mb-12 flex items-center text-stone-700">
+                <ClockIcon className="mr-1 h-4 w-4 text-stone-400" />
+                Time to read:{' '}
+                <span className="mx-1 font-bold">{timeToRead}</span> min
+              </div>
               <AuthorShowcase />
             </aside>
           </div>
@@ -277,7 +249,38 @@ const BlogPageTemplate = ({ data }) => {
 };
 
 BlogPageTemplate.propTypes = {
-  data: postType.isRequired,
+  data: PropTypes.shape({
+    post: PropTypes.shape({
+      frontmatter: PropTypes.shape({
+        title: PropTypes.string.isRequired,
+        date: PropTypes.string.isRequired,
+        formattedDate: PropTypes.string.isRequired,
+        description: PropTypes.string.isRequired,
+        slug: PropTypes.string.isRequired,
+        // eslint-disable-next-line react/forbid-prop-types
+        titleImage: PropTypes.object.isRequired,
+        titleImageAlt: PropTypes.string.isRequired,
+        titleImageSource: PropTypes.shape({
+          text: PropTypes.string,
+          href: PropTypes.string,
+        }),
+        tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+        ghCommentsIssueId: PropTypes.number,
+        // eslint-disable-next-line react/forbid-prop-types
+        fixedTitleImage: PropTypes.object.isRequired,
+        lastUpdate: PropTypes.string,
+        lastUpdateFormatted: PropTypes.string,
+      }).isRequired,
+      body: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      fileAbsolutePath: PropTypes.string.isRequired,
+      timeToRead: PropTypes.number.isRequired,
+      tableOfContents: PropTypes.shape({
+        // eslint-disable-next-line react/forbid-prop-types
+        items: PropTypes.arrayOf(PropTypes.object),
+      }).isRequired,
+    }).isRequired,
+  }).isRequired,
 };
 
 export default BlogPageTemplate;

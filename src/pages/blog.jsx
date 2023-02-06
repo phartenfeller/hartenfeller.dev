@@ -41,12 +41,12 @@ const Blog = ({ data }) => {
   const years = Object.keys(groupedByYear).sort((a, b) => b - a);
 
   return (
-    <Layout>
+    <Layout header>
       <SEO title="Blog" description="Blog posts from Philipp Hartenfeller" />
-      <div className="relative pt-16 px-4 sm:px-6 lg:px-8">
-        <div className="relative max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl sm:leading-10">
+      <div className="relative px-4 pt-16 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl">
+          <div className="mb-24 text-center">
+            <h1 className="brown-header-text text-3xl font-extrabold leading-9 sm:text-4xl sm:leading-10">
               Philipp Hartenfeller&apos;s Blog
             </h1>
           </div>
@@ -55,7 +55,7 @@ const Blog = ({ data }) => {
               <h2 className="mb-8 mt-16 text-center text-3xl font-light text-zinc-800">
                 {year}
               </h2>
-              <div className="mx-6 lg:m-auto lg:w-2/3 lg:grid lg:gap-6 lg:grid-cols-2">
+              <div className="mx-6 lg:m-auto lg:grid lg:w-2/3 lg:grid-cols-2 lg:gap-6">
                 {groupedByYear[year].map(({ frontmatter }) => (
                   <Blogpost postData={frontmatter} key={frontmatter.slug} />
                 ))}
@@ -63,7 +63,7 @@ const Blog = ({ data }) => {
             </div>
           ))}
         </div>
-        <div className="text-center my-16 text-xl text">
+        <div className="text my-16 text-center text-xl">
           <Link to="/" className="text-zinc-600  hover:underline">
             Homepage
           </Link>

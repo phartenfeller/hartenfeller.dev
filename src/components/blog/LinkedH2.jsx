@@ -24,15 +24,15 @@ const LinkedH2 = ({ children }) => {
   return (
     <a
       href={`#${id}`}
-      className="custom-link flex mt-16 mb-4 text-xl md:text-2x lg:text-3xl font-semibold font-merriweather group"
+      className="custom-link md:text-2x group mt-16 mb-4 flex font-merriweather text-xl font-semibold lg:text-3xl"
     >
       <h2
         id={id}
-        className="text-title-brown group-hover:underline group-hover:decoration-red-100"
+        className="scroll-mt-20 text-title-brown group-hover:underline group-hover:decoration-red-100"
       >
         {titleText}
       </h2>
-      <span className="invisible group-hover:visible ml-2 text-slate-400">
+      <span className="invisible ml-2 text-slate-400 group-hover:visible">
         #
       </span>
     </a>
