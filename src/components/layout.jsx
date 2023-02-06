@@ -64,7 +64,7 @@ const Layout = ({ children, header = false, toc }) => (
           </Link>
         </div>
         <div>
-          {toc ? (
+          {toc && toc.items ? (
             <Menu as="div" className="flex">
               {({ open }) => (
                 <>
