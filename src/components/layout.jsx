@@ -68,7 +68,7 @@ const Layout = ({ children, header = false, toc }) => (
             <Menu as="div" className="flex">
               {({ open }) => (
                 <>
-                  <Menu.Button className="flex items-center rounded px-4 py-2 align-middle text-red-100 text-opacity-60 focus:outline-none focus:ring focus:ring-red-400">
+                  <Menu.Button className="mr-3 flex items-center rounded px-4 py-2 align-middle text-red-100 text-opacity-60 focus:outline-none focus:ring focus:ring-red-400">
                     <MenuAlt1Icon className="h-4 w-4" />
                     <span className="hidden pl-2 text-red-100 text-opacity-80 lg:block">
                       Table of Contents
