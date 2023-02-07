@@ -22,7 +22,7 @@
 }
 
 .blog-body a:not(.custom-link) {
-  @apply text-red-600 underline decoration-red-100 hover:decoration-red-300 rounded focus:ring-1 focus:ring-red-600;
+  @apply rounded text-red-600 underline decoration-red-100 hover:decoration-red-300 focus:ring-1 focus:ring-red-600;
 }
 
 .blog-body p {
@@ -38,7 +38,7 @@
 }
 
 .blog-body ul {
-  @apply list-outside list-disc mb-6 ml-2;
+  @apply mb-6 ml-2 list-outside list-disc;
 }
 
 .blog-body .video-wrapper {
@@ -56,10 +56,23 @@
 }
 
 .blog-body code {
-  @apply font-mono font-light tracking-tight bg-red-50;
+  @apply bg-red-50 font-mono font-light tracking-tight;
   padding: 0.1em 0.2em;
 }
 
 .blog-body strong {
-  @apply text-black font-extrabold tracking-wider;
+  @apply font-extrabold tracking-wider text-black;
+}
+
+.blog-body .footnotes::before {
+  content: 'Footnotes';
+  @apply mt-12 mb-3 block font-merriweather text-2xl font-bold text-title-brown;
+}
+
+.blog-body .footnotes hr {
+  @apply hidden;
+}
+
+.blog-body .footnotes ol {
+  @apply ml-8 list-outside list-decimal;
 }

@@ -1,0 +1,656 @@
+---
+title: >
+  DIY Authentication and Authorization in SvelteKit 1 with SQLite
+date: 2023-01-30
+description: SvelteKit and SQLite are a great combo as they are both lightweight and easy to use, making it simple to build high-performance, data-driven web applications.
+slug: sveltekit-with-sqlite
+titleImage: ./thumb-sveltekit-sqlite.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['SvelteKit', 'SQLite', 'Web-Development']
+ghCommentsIssueId: 84
+---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/XRa-b5E7x8w">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
+
+## The DIY approach
+
+Of course there are many off the shelf solutions to do authentication and authorization in SvelteKit. But I think it makes sense sometimes to build an own implementation of something to learn how it works and to understand the underlying concepts.
+
+I do want to point out, that storing credentials yourself leads to great risks. [Although we salt and hash the passwords](https://blog.moertel.com/posts/2006-12-15-never-store-passwords-in-a-database.html), any sensible information you store comes with the burden of protecting it. You need to make sure that no data leaks to the outside and your systems are always patched. You won't have that problem with a third-party service like Social-Logins, Auth0, Supabase or Firebase etc.
+
+## My setup
+
+I use SvelteKit in combination with TypeScript and highly recommend you do this as well. We can type our data shapes in the backend and later reuse them in the frontend to safely access the data in the UI and make our lives easier in case of type changes.
+
+I combined SvelteKit with SQLite as a database as it is lightweight and easy to maintaine and fast. You can read more about SvelteKit + SQLite in my <Link to="/blog/sveltekit-with-sqlite">previous post</Link>. I will also expand the app from that post to include authentication and authorization. As a node SQLite driver I usesd [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) as I like its synchronous API.
+
+<InfoBox>
+  You can access{' '}
+  <a href="https://github.com/phartenfeller/sveltekit-1.0-sqlite-demo-app/tree/tut-2-authorization-authentication">
+    the source code for this post on GitHub
+  </a>
+  .
+</InfoBox>
+
+## Allow user registration
+
+We first need to allow users to register before we can do anything else.
+
+### Users Table and DB Code
+
+We start off by creating a small table to store our users. We will use the username as the primary key and store the password as a salted and hashed string. We also store the roles of users to differentiate between privileges.
+
+```sql
+CREATE TABLE
+  `users` (
+    `username` TEXT not null,
+    `password` TEXT not null,
+    `created_at` datetime not null default CURRENT_TIMESTAMP,
+    `roles` TEXT not null, -- : separated list of roles (e.g. admin:moderator)
+		-- you might want to normalize this into a separate table
+    primary key (`username`)
+  );
+```
+
+Now we can add a method that creates a new user in the database. We will use the `bcrypt` library to hash the password as it is extremely bad to store plain text passwords. A hashing algorithm is a one-way function that transforms the input into a fixed-size cryptographic output. If we later look at the hashes we can't tell what the original password was. When the user logs in we can hash the password they entered and compare it to the stored hash. If they match we know the user entered the correct password.[^1]
+
+We also want to add a salt before we hash. It is a random value added to the password to ensure that even if multiple users have the same password, the hashed values will be different.[^2] We set the `saltRound` to 12 which takes some computing time (~1 sec) which makes brute forcing harder.
+
+[^1]: https://en.wikipedia.org/wiki/Cryptographic_hash_function
+[^2]: https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/
+
+```ts header="src/lib/server/db/index.ts"
+export async function createUser(
+  username: string,
+  password: string
+): Promise<void> {
+  const sql = `
+  insert into users (username, password, roles)
+  values ($username, $password, 'admin:moderator')
+`;
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  const stmnt = db.prepare(sql);
+  stmnt.run({ username, password: hashedPassword });
+}
+```
+
+### Register / Login Page
+
+I created a new page that allows both registration and login. I started with two inputs for username and password and a button to register.
+
+```svelte header=src/routes/login/+page.svelte
+<script lang="ts">
+	import type { ActionData } from './$types';
+</script>
+
+<div class="container">
+	<h1 class="is-size-3 has-text-weight-semibold my-4">Login or Register</h1>
+	<form method="post">
+		<input class="input my-2" type="text" placeholder="Username" name="username" required />
+		<input class="input my-2" type="password" placeholder="Password" name="password" required />
+
+		<button class="button mt-4 mr-3" type="submit" formaction="?/register">Register</button>
+		<button class="button is-primary mt-4" type="submit" formaction="?/login">Login</button>
+	</form>
+</div>
+```
+
+We also need to implement the `register` action in the backend. We will use the `createUser` method we created earlier.
+
+```ts header="src/routes/login/+page.server.ts"
+import { createUser } from '$lib/server/db';
+import { fail, type Actions } from '@sveltejs/kit';
+
+export const actions: Actions = {
+  register: async ({ request, cookies }) => {
+    const data = await request.formData();
+    const username = data.get('username')?.toString();
+    const password = data.get('password')?.toString();
+
+    if (username && password) {
+      try {
+        createUser(username, password);
+      } catch (err) {
+        return fail(400, { errorMessage: 'Internal Server Error' });
+      }
+    } else {
+      return fail(400, { errorMessage: 'Missing username or password' });
+    }
+  },
+};
+```
+
+To make use of the `errorMessage` thrown by the `fail` function we need to add a little bit of code to the `login` page.
+
+```svelte header=src/routes/login/+page.svelte
+<script lang="ts">
+	import type { ActionData } from './$types';
+
+	// receive form data from server
+	export let form: ActionData;
+</script>
+
+<div class="container">
+	<h1 class="is-size-3 has-text-weight-semibold my-4">Login or Register</h1>
+	<form method="post">
+		<input class="input my-2" type="text" placeholder="Username" name="username" required />
+		<input class="input my-2" type="password" placeholder="Password" name="password" required />
+
+		<!-- display error message -->
+		{#if form?.errorMessage}
+			<div class="has-text-danger my-2">{form.errorMessage}</div>
+		{/if}
+
+		<button class="button mt-4 mr-3" type="submit" formaction="?/register">Register</button>
+		<button class="button is-primary mt-4" type="submit" formaction="?/login">Login</button>
+	</form>
+</div>
+```
+
+## Authentication: Cookies and Sessions
+
+In this section we will implement the login functionality. We check if the credentials are valid, create a session and store its id in a cookie.
+
+### Validate Credentials
+
+The password hashing library `bcrypt` also offers a function to compare a plain text password with a hashed one. We can use this to validate the credentials. Note that when the user enters an invalid username we do a hash to "waste" some time. This makes brute forcing harder.
+
+```ts header="src/lib/server/db/index.ts"
+export async function checkUserCredentials(
+  username: string,
+  password: string
+): Promise<boolean> {
+  const sql = `
+  select password
+    from users
+   where username = $username
+`;
+  const stmnt = db.prepare(sql);
+  const row = stmnt.get({ username });
+  if (row) {
+    return bcrypt.compare(password, row.password);
+  } else {
+    // spend some time to "waste" some time
+    // this makes brute forcing harder
+    // could also do a timeout here
+    await bcrypt.hash(password, 12);
+    return false;
+  }
+}
+```
+
+We need to call this function in our form handler for the login button. When the credentials are valid we call the function `performLogin` which creates a session. In there we define a maximum session length of 30 days. We call a `createSession` function which we will implement later that returns an ID. We store this ID in a cookie with `cookies.set`.
+
+```ts header="src/routes/login/+page.server.ts"
+import { checkUserCredentials, createUser } from '$lib/server/db';
+import { createSession } from '$lib/server/sesstionStore';
+import { fail, redirect, type Actions, type Cookies } from '@sveltejs/kit';
+
+function performLogin(cookies: Cookies, username: string) {
+  const maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
+  const sid = createSession(username, maxAge);
+  cookies.set('sid', sid, { maxAge });
+}
+
+export const actions: Actions = {
+  // register: ...
+
+  login: async ({ request, cookies }) => {
+    const data = await request.formData();
+    const username = data.get('username')?.toString();
+    const password = data.get('password')?.toString();
+
+    if (username && password) {
+      const res = await checkUserCredentials(username, password);
+
+      if (!res) {
+        return fail(401, { errorMessage: 'Invalid username or password' });
+      }
+
+      performLogin(cookies, username);
+
+      // redirect to home page
+      throw redirect(303, '/');
+    } else {
+      return fail(400, { errorMessage: 'Missing username or password' });
+    }
+  },
+};
+```
+
+### Session Store
+
+Now that we stored the session ID in a cookie we can check if the user is logged in. We also want to store some information about the session like the username and his roles. For this we will create a `sessionStore` module. We will use a simple in-memory store for now. In a big production app you might want to use a cache like Redis.
+
+The in-memory store is just a `Map` of the type `SessionInfo`. The key will be the session ID also stored in the user cookie.
+
+In the `createSession` function we start by creating a random session ID. For that we use the `randomBytes` funcion from nodes internal `crybto` moudule. Now we can fetch all the user info we want to store in our session map. In our case we already get the username from the login form and only need to query his roles from the `users` table.
+
+```ts header="src/lib/server/sessionStore/index.ts"
+import { randomBytes } from 'node:crypto';
+import { getUserRoles } from '../db';
+
+type SessionInfo = {
+  username: string;
+  roles: string[];
+  invalidAt: number;
+};
+type Sid = string;
+
+const sessionStore = new Map<Sid, SessionInfo>();
+
+function getSid(): Sid {
+  return randomBytes(32).toString('hex');
+}
+
+export function createSession(username: string, maxAge: number): string {
+  let sid: Sid = '';
+
+  do {
+    sid = getSid();
+  } while (sessionStore.has(sid));
+
+  const roles = getUserRoles(username);
+
+  sessionStore.set(sid, {
+    username,
+    roles,
+    invalidAt: Date.now() + maxAge,
+  });
+
+  return sid;
+}
+```
+
+We also need to expire the session server-side. For that we creat a small function that loops over all sessions and deletes the ones that are expired. We call this function every hour when a session is created. We do this in a `setTimeout` to not block the server.
+
+```ts header="src/lib/server/sessionStore/index.ts"
+let nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
+// ...
+function clean() {
+	const now = Date.now();
+	for (const [sid, session] of sessionStore) {
+		if (session.invalidAt < now) {
+			sessionStore.delete(sid);
+		}
+	}
+	nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
+}
+// ...
+
+function createSession //...
+// ...
+
+if (Date.now() > nextClean) {
+	setTimeout(() => {
+		clean();
+	}, 5000);
+}
+
+// ...
+```
+
+### Hooks and locals
+
+Now that the users have a session cookie and we have a store that keeps track of which session belongs to which user we might want to use this info in some of our components.
+
+To make this work **globally** in our app we can use [hooks and locals](https://kit.svelte.dev/docs/hooks). We can define our hook in a file called `hooks.server.ts` in the `src` folder.
+
+In there we grab the session ID from the cookie, and get the session data for it. We then store the username and roles in the `event.locals` object. This object is available in all components and pages.
+
+```ts header="src/hooks.server.ts"
+import { getSession } from '$lib/server/sesstionStore';
+import type { Handle } from '@sveltejs/kit';
+
+export const handle = (async ({ event, resolve }) => {
+	const { cookies } = event;
+	const sid = cookies.get('sid');
+	if (sid) {
+		const session = getSession(sid);
+		if (session) {
+			event.locals.username = session.username;
+			event.locals.roles = session.roles;
+		} else {
+			// remove invalid/expired/unknown cookie
+			cookies.delete('sid');
+		}
+	}
+
+	const response = await resolve(event);
+	return response;
+}) satisfies Handle;
+```
+
+For the `getSession` function we just return the data of our map if the session is still valid. If the session is invalid we delete it from the map and return `undefined` and delete the cookie in the function above.
+
+```ts header="src/lib/server/sessionStore/index.ts"
+export function getSession(sid: Sid): SessionInfo | undefined {
+  const session = sessionStore.get(sid);
+  if (session) {
+    if (Date.now() > session.invalidAt) {
+      console.log('delete invalid session', sid);
+      sessionStore.delete(sid);
+      return undefined;
+    } else {
+      return session;
+    }
+  } else {
+    console.log('session not found', sid);
+    return undefined;
+  }
+}
+```
+
+We also to define the types for the `event.locals` object. We do this in a file called `types.d.ts` in the `src` folder.
+
+```ts header="src/types.d.ts"
+declare namespace App {
+  // interface Error {}
+  interface Locals {
+    username?: string;
+    roles?: string[];
+  }
+  // interface PageData {}
+  // interface Platform {}
+}
+```
+
+## Consuming Locals in our App
+
+### Display username in header
+
+The most obvious thing to do is to greet the user in the header so he knows he is logged in. As the header sits in our global `+layout.svelte` file we first need to add a `+layout.server.ts` next to it. In there we can access the locals and return the username in the `load` function.
+
+```ts header="src/routes/+layout.server.ts"
+import type { LayoutServerLoad } from './$types';
+
+export const load = (async ({ locals }) => {
+	const { username } = locals;
+
+	return { username };
+}) satisfies LayoutServerLoad;
+```
+
+We can then just display the username in the header like with any other value from the load function.
+
+```svelte header="src/routes/+layout.svelte"
+<script lang="ts">
+	import type { LayoutServerData } from './$types';
+
+	export let data: LayoutServerData;
+</script>
+
+<header>
+	<nav class="navbar is-primary px-4" aria-label="main navigation">
+		<div class="navbar-brand pr-4">
+			<span class="is-size-3 has-text-weight-semibold">SvelteKit + SQLite</span>
+		</div>
+		<div class="navbar-menu">
+			<div class="navbar-start">
+				<a href="/" class="navbar-item">Home</a>
+			</div>
+		</div>
+
+		<div class="navbar-end">
+			<div class="navbar-item">
+				<div class="buttons">
+					{#if data?.username}
+						<span>Hello {data.username}</span>
+					{:else}
+						<a href="/login" class="button is-primary">Log in</a>
+					{/if}
+				</div>
+			</div>
+		</div>
+	</nav>
+</header>
+<slot />
+```
+
+### Authorization
+
+As we defined user-roles in our table we might wan't to lock some pages behind a role. We can do this by using the `load` function of the page. In there we can check if the user has the required role and return an error if not.
+
+```ts header="src/routes/admin/index.server.ts"
+import type { PageServerLoad } from './$types';
+import { error } from '@sveltejs/kit';
+
+// store this in a file and import it wherever you need it
+function isAdmin(locals: App.Locals) {
+	if (!locals?.roles || !locals?.roles?.includes('admin')) {
+		throw error(401, 'Unauthorized');
+	}
+}
+
+export const load = (({ locals }) => {
+	isAdmin(locals);
+}) satisfies PageServerLoad;
+```
+
+You can of course also check if the username local is empty to only check if the user is logged in. And you can reuse this check in any form or API action handler to check if the user is allowed to do something.
+
+Like we did with the header component we can also hide specific regions of a page with an `if` block when we return something like the `username` or an `isAdmin` boolean from the load function. But make sure to **never return sensitive data from the load function** when the user is not suppossed to see it.
+
+## Logout
+
+To log out we just need to delete the cookie and redirect the user to the home page. We don't even neede a .svelte file in the logout folder.
+
+```ts header="src/routes/logout/index.server.ts"
+import { deleteSession } from '$lib/server/sesstionStore';
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from '../$types';
+
+export const load = (({ cookies }) => {
+	const sid = cookies.get('sid');
+	if (sid) {
+		cookies.delete('sid');
+		deleteSession(sid);
+	}
+
+	throw redirect(303, '/');
+}) satisfies PageServerLoad;
+```
+
+We can link to this page from our header. Note that I added the `data-sveltekit-preload-data` and `data-sveltekit-reload` attributes to the link.
+
+The first tells SvelteKit to not preload the data for this link. This can improve loading times for data rich pages but would result in a logout if the user hovers over the button for the logout page.
+
+The second tells SvelteKit to reload the page after the link is clicked. This is needed because svelte won't do the redirect when the user is alredy on the home page, but we want to refresh the header to again show the login button.
+
+```svelte header="src/routes/+layout.svelte"
+{#if data?.username}
+	<a
+		href="/logout"
+		class="button is-primary"
+		data-sveltekit-preload-data="off"
+		data-sveltekit-reload>Hello {data.username}, Log out</a
+	>
+{:else}
+	<a href="/login" class="button is-primary">Log in</a>
+{/if}
+```
+
+## Also persist session in the database
+
+Unfortunately the only in-memory solution of the session store can cause some trouble while developing the app. The server seems to restart every now and then and the session store is lost you will be logged out.
+
+This was frustrating me a lot so I additionally store the session data in a database table. This way the session is persisted and the user will stay logged in even if the server restarts.
+
+This is the table:
+
+```sql
+CREATE TABLE
+  sessions (
+    ses_id text primary key,
+    ses_created integer not null default (strftime('%s', 'now') * 1000),
+    ses_expires integer not null,
+    ses_data text not null
+  ) strict
+```
+
+We need to add following database functions:
+
+```ts header="src/lib/server/db/index.ts"
+export function deleteExpiredDbSessions(now: number) {
+  const sql = `
+	delete from sessions
+	 where ses_expires < $now
+`;
+
+  const stmnt = db.prepare(sql);
+  stmnt.run({ now });
+}
+
+export function insertDbSession(
+  sid: string,
+  sessionInfo: SessionInfo,
+  expiresAt: number
+) {
+  const sql = `
+	insert into sessions (ses_id, ses_expires, ses_data)
+	values ($sid, $expires, $data)
+`;
+
+  const stmnt = db.prepare(sql);
+  stmnt.run({ sid, expires: expiresAt, data: JSON.stringify(sessionInfo) });
+}
+
+export function deleteDbSession(sid: string) {
+  const sql = `
+	delete from sessions
+	 where ses_id = $sid
+`;
+  const stmnt = db.prepare(sql);
+  stmnt.run({ sid });
+}
+
+export function getDbSession(sid: string): SessionInfoCache | undefined {
+  const sql = `
+	select ses_data as data
+	     , ses_expires as expires
+	  from sessions
+	 where ses_id = $sid
+`;
+
+  const stmnt = db.prepare(sql);
+  const row = stmnt.get({ sid }) as { data: string; expires: number };
+  if (row) {
+    const data = JSON.parse(row.data);
+    data.expires = row.expires;
+    return data as SessionInfoCache;
+  }
+  return undefined;
+}
+```
+
+We also need to add these types:
+
+```ts header="src/lib/server/db/types.ts"
+export type SessionInfo = {
+  username: string;
+  roles: string[];
+};
+
+export type SessionInfoCache = SessionInfo & {
+  invalidAt: number;
+};
+```
+
+And at last we always need to handle the DB next to our in-memory session store:
+
+```ts header="src/lib/server/sessionStore.ts"
+import { randomBytes } from 'node:crypto';
+import {
+  deleteDbSession,
+  deleteExpiredDbSessions,
+  getDbSession,
+  getUserRoles,
+  insertDbSession,
+} from '../db';
+import type { SessionInfo, SessionInfoCache } from '../db/types';
+
+type Sid = string;
+
+const sessionStore = new Map<Sid, SessionInfoCache>();
+let nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
+
+function clean() {
+  const now = Date.now();
+  for (const [sid, session] of sessionStore) {
+    if (session.invalidAt < now) {
+      sessionStore.delete(sid);
+    }
+  }
+  deleteExpiredDbSessions(now);
+  nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
+}
+
+function getSid(): Sid {
+  return randomBytes(32).toString('hex');
+}
+
+export function createSession(username: string, maxAge: number): string {
+  let sid: Sid = '';
+
+  do {
+    sid = getSid();
+  } while (sessionStore.has(sid));
+
+  const roles = getUserRoles(username);
+
+  const expiresAt = Date.now() + maxAge * 1000;
+
+  const data: SessionInfo = {
+    username,
+    roles,
+  };
+  insertDbSession(sid, data, expiresAt);
+
+  sessionStore.set(sid, {
+    ...data,
+    invalidAt: expiresAt,
+  });
+
+  if (Date.now() > nextClean) {
+    setTimeout(() => {
+      clean();
+    }, 5000);
+  }
+
+  return sid;
+}
+
+export function getSession(sid: Sid): SessionInfo | undefined {
+  if (sessionStore.has(sid)) {
+    return sessionStore.get(sid);
+  } else {
+    const session = getDbSession(sid);
+    if (session) {
+      sessionStore.set(sid, session);
+      return session;
+    }
+  }
+
+  console.log('session not found', sid);
+  return undefined;
+}
+
+export function deleteSession(sid: string): void {
+  sessionStore.delete(sid);
+  deleteDbSession(sid);
+}
+```
+
+With that we are done and implemented a simple login system from scratch (except the hashing). You can check the full code in the [GitHub repo](https://github.com/phartenfeller/sveltekit-1.0-sqlite-demo-app/tree/tut-2-authorization-authentication).
+
+I hope you liked this tutorial and learned something new. If you have any questions or suggestions, please leave a comment below.

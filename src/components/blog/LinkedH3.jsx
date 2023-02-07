@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import escapeAnchorId from '../../util/escapeAnchorId';
 
 const LinkedH3 = ({ children }) => {
   let titleText = '';
@@ -19,12 +20,7 @@ const LinkedH3 = ({ children }) => {
     throw new Error(`Unknown Type of LinkedH3 props:`, children);
   }
 
-  const id = titleText
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/'/g, '')
-    .replace(/"/g, '')
-    .replace(/:/g, '');
+  const id = escapeAnchorId(titleText);
 
   return (
     <a
