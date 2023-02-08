@@ -1,10 +1,10 @@
 ---
 title: >
   DIY Authentication and Authorization in SvelteKit 1 with SQLite
-date: 2023-01-30
-description: SvelteKit and SQLite are a great combo as they are both lightweight and easy to use, making it simple to build high-performance, data-driven web applications.
-slug: sveltekit-with-sqlite
-titleImage: ./thumb-sveltekit-sqlite.jpg
+date: 2023-02-08
+description: In this post, we look into how we can build our own Authentication and Authorization solution for SvelteKit. We will store and hash user credentials, create sessions with Cookies, and make the session info available to the app through hooks and locals.
+slug: sveltekit-1-diy-authentication-authorization
+titleImage: ./thumbnail-sveltekit-auth.jpg
 titleImageAlt: ''
 titleImageSource: { text: null, href: null }
 tags: ['SvelteKit', 'SQLite', 'Web-Development']
@@ -104,6 +104,8 @@ I created a new page that allows both registration and login. I started with two
   </form>
 </div>
 ```
+
+<BlogImg filename="sveltekit-auth-login-page.png" alt="Login form page" />
 
 We also need to implement the `register` action in the backend. We will use the `createUser` method we created earlier.
 
@@ -479,6 +481,11 @@ The second tells SvelteKit to reload the page after the link is clicked. This is
   <a href="/login" class="button is-primary">Log in</a>
 {/if}
 ```
+
+<BlogImg
+  filename="sveltekit-auth-logout-header.png"
+  alt="App header with a button saying 'Hello philipp, log out'"
+/>
 
 ## Also persist session in the database
 
