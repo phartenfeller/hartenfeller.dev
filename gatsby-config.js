@@ -85,6 +85,7 @@ module.exports = {
                 SSL: `Secure Sockets Layer`,
                 CRUD: `Create, Read, Update, Delete`,
                 DB: `Database`,
+                BLOB: `Binary Large Object`,
               },
             },
           },

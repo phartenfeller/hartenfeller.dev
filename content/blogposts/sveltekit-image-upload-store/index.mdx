@@ -1,0 +1,272 @@
+---
+title: >
+  SvelteKit with SQLite: Uploading, Storing and Retrieving Images
+date: 2023-03-03
+description: In this post, we will learn how to upload, store and retrieve images in a SvelteKit application with SQLite.
+slug: sveltekit-image-upload-store
+titleImage: ./sveltekit-image-hero.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['SvelteKit', 'SQLite', 'Web-Development']
+ghCommentsIssueId: 84
+---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/OLg6RwESnSo">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
+
+## My setup
+
+I use SvelteKit with TypeScript and highly recommend you do this as well. We can type our data shapes in the backend and later reuse them in the frontend to safely access the data in the UI and make our lives easier in case of type changes.
+
+I combined SvelteKit with SQLite as a database, as it is lightweight and easy to maintain and fast. You can read more about SvelteKit + SQLite in my <Link to="/blog/sveltekit-with-sqlite">previous post</Link>. As a node SQLite driver, I use [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) as I like its synchronous API.
+
+In this tutorial, we will store the images inside the SQLite database itself. This is totally fine for small or medium-sized apps, but not recommended for large apps. For large apps, you can use specific file storage services. For example, [Motimize](https://github.com/motivast/motimize) is an Open-Source image server that can compress and resize images and can be self-hosted.
+
+The app I am working with has music data like artists, tracks, and albums. We will do a file upload for the album title image. You can check out the whole process of building this app in my [YouTube playlist](https://www.youtube.com/playlist?list=PLIyDDWd5rhaYwAiXQyonufcZgc_xOMtId).
+
+## Upload Image Form
+
+To allow users to upload an image, we create a form with a file input. We set the form `enctype` attribute to `multipart/form-data` to allow the browser to send the image as a binary file. Per default, only the filename would be transferred to the server handler. We also set the `accept` attribute to `image/*` to only allow images to be uploaded.
+
+We add a change handler to the file input and call the function `handleImageUpload`. This function will get the image file from the event and create a temporary URL for it in the variable `uploadedImage`. We can use this URL as `src` attribute value for an `img` element to show the image to the user after he selected it.
+
+Additionally, we can disable the form submit button until the user selected an image.
+
+```svelte header=+page.svelte
+<script lang="ts">
+  import type { PageData } from './$types';
+  export let data: PageData;
+
+  let uploadedImage: string;
+
+  function handleImageUpload(e: Event) {
+    const image = (e.target as HTMLInputElement)?.files?.[0];
+    if (!image) return;
+    // URL.createObjectURL() creates a temporary URL for the image we can use as src for an img tag
+    uploadedImage = URL.createObjectURL(image);
+  }
+</script>
+
+<form method="post" enctype="multipart/form-data">
+  <input type="hidden" name="albumId" value={data.album.albumId} />
+  <input type="file" name="albumImage" accept="image/*" on:change={handleImageUpload} />
+
+  {#if uploadedImage}
+    <div class="mt-4">
+      <img src={uploadedImage} style="max-width: 50ch;" alt="" />
+    </div>
+  {/if}
+
+  <div class="mt-4 mb-6">
+    <button
+      class="button is-primary is-disabled"
+      type="submit"
+      formaction="?/updateAlbumImage"
+      disabled={!uploadedImage ?? null}
+      >Upload Image
+    </button>
+  </div>
+</form>
+```
+
+The result looks like this:
+
+<BlogImg
+  filename="sveltekit-image-upload-form.png"
+  alt="A form with a file input to upload an image and a preview of an album cover showing a cannon on an orange background. Below is a green button with the text 'Upload Image'."
+  maxWidthPx="350"
+/>
+
+## Store Image in SQLite Database
+
+To process the form submit, we can create a handler in the `+page.server.ts` file. We can access the image from the `formData` object with the type `File`. This object stores metadata about the image like the filename, the mime type, the file size and the last modified date. We can also access the file contents as an `ArrayBuffer`.
+
+```typescript header=+page.server.ts
+export const actions: Actions = {
+  updateAlbumImage: async ({ request, locals }) => {
+    const data = await request.formData();
+
+    const albumIdStr = data.get('albumId')?.toString();
+    const albumId = albumIdStr ? parseInt(albumIdStr) : null;
+
+    if (!albumId) {
+      throw error(400, 'AlbumId missing');
+    }
+
+    const albumImage = data.get('albumImage')?.valueOf() as File;
+
+    console.log(
+      albumImage?.name, // filename
+      albumImage?.type, // mime type
+      albumImage?.size, // file size in bytes
+      albumImage?.lastModified // last modified date
+      // albumImage?.arrayBuffer() // ArrayBuffer with the file contents
+    );
+
+    // TODO: save image to database function
+    mergeAlbumImage(albumId, albumImage);
+  },
+};
+```
+
+To store the image, we first need to create a table in the database. The file itself will be stored in a BLOB column, and we add columns for each metadata value. This results in the following SQL statement:
+
+```sql
+create table album_images (
+    img_album_id      integer primary key
+  , img_name          text not null
+  , img_mime_type     text not null
+  , img_last_modified integer not null default (strftime( '%s', 'now' ) * 1000)
+  , img_size          integer not null
+  , img_data          blob not null
+  , constraint img_album_id_fk foreign key (img_album_id) references albums (AlbumId)
+) strict;
+```
+
+Now we can create the function that saves the image in our database. First we convert the image to a buffer with the `Buffer.from()` function as we can store it in the BLOB column in this form. The SQL statement either inserts a new row, or updates an existing one, depending on if there is already an image for the album. We do that by using the `on conflict` clause.
+
+```typescript header=database.ts
+export async function mergeAlbumImage(albumId: number, image: File) {
+  const arrayBuffer = await image.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const sql = `
+  insert into album_images (
+    img_album_id
+  , img_name
+  , img_mime_type
+  , img_last_modified
+  , img_size
+  , img_data
+  )
+  values (
+    $albumId
+  , $filename
+  , $mimeType
+  , $lastModified
+  , $size
+  , $data
+  )
+  on conflict (img_album_id) do
+  update
+     set img_name = excluded.img_name
+       , img_mime_type = excluded.img_mime_type
+       , img_last_modified = excluded.img_last_modified
+       , img_size = excluded.img_size
+       , img_data = excluded.img_data 
+   where img_album_id = excluded.img_album_id
+  `;
+  const stmnt = db.prepare(sql);
+  stmnt.run({
+    albumId,
+    filename: image.name,
+    mimeType: image.type,
+    lastModified: image.lastModified,
+    size: image.size,
+    data: buffer,
+  });
+}
+```
+
+## Retrieve and Display Image
+
+To retrieve the image from the database, we create a new API endpoint. Aside from the `albumId` we pass the filename as a parameter. Theoretically, we can serve the image under any name, as we can find only with the `albumId`. I believe we should only serve it under its original name, so we will check that later in the database function.
+
+It is important to set response headers so that the browser can show the image correctly. We set the `Content-Type` header to the mime type of the image, `Content-Length` to the file size, and `Last-Modified` to our saved last change date. In the end, we return the image as a `Blob` object.
+
+```typescript header=src/routes/api/album/[albumId]/image/[imageName]/+server.ts
+import { getAlbumImage } from '$lib/server/db';
+import { error } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
+export const GET = (async ({ params, setHeaders }) => {
+  if (!params.albumId) {
+    throw error(404, {
+      message: 'Album not found'
+    });
+  }
+
+  const albumId = parseInt(params.albumId);
+  console.log('albumId', albumId);
+  if (!albumId) {
+    throw error(404, {
+      message: 'Album not found'
+    });
+  }
+
+  // TODO: greate getAlbumImage function
+  const img = getAlbumImage(albumId, params.imageName);
+
+  if (!img || !img.data) {
+    throw error(404, 'Image not found');
+  }
+
+  // set response headers for image
+  setHeaders({
+    'Content-Type': img.mimeType,
+    'Content-Length': img.size.toString(),
+    'Last-Modified': new Date(img.lastModified).toUTCString(),
+    'Cache-Control': 'public, max-age=600'
+  });
+
+  return new Response(img.data);
+}) satisfies RequestHandler;
+```
+
+Now we need to create the `getAlbumImage` function in the `database.ts` file. The query is basic as we just select all columns from the database. We just make sure the requested filename is the right one, so we only serve it under its original name. Afterward, we convert the image data to a `Blob` object that we can return as the response.
+
+```typescript header=database.ts
+export type AlbumImage = {
+  filename: string;
+  mimeType: string;
+  lastModified: number;
+  size: number;
+  data: Blob;
+};
+
+export function getAlbumImage(albumId: number, filename: string): AlbumImage {
+  const sql = `
+  select img_name as filename
+  , img_mime_type as mimeType
+  , img_last_modified as lastModified
+  , img_size as size
+  , img_data as data
+  from album_images
+  where img_album_id = $albumId and img_name = $filename
+  `;
+
+  const stmnt = db.prepare(sql);
+  const row = stmnt.get({ albumId, filename });
+
+  const img: AlbumImage = {
+    filename: row.filename,
+    mimeType: row.mimeType,
+    lastModified: row.lastModified,
+    size: row.size,
+    data: new Blob([row.data], { type: row.mimeType }),
+  };
+
+  return img;
+}
+```
+
+To load the image, we only need to add another image element to the album page. I extended the load function to also return the image filename. With that, can just call our new API endpoint to request the image.
+
+```svelte header=+page.svelte
+<!-- ... -->
+{#if data.album.imgName}
+  <img
+    src={`/api/album/${data.album.albumId}/image/${data.album.imgName}`}
+    alt=""
+    class="mt-4 image"
+    style="max-width: 250px;"
+  />
+<!-- ... -->
+{/if}
+```
