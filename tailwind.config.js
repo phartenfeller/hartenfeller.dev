@@ -37,6 +37,5 @@ module.exports = {
 
       addUtilities(customClasses, ['motion-reduce']);
     }),
-    require('@tailwindcss/line-clamp'),
   ],
 };

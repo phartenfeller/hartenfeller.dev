@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 const useImagePreview = create((set, get) => ({
   isOpen: false,

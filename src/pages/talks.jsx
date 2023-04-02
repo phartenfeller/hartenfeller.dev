@@ -6,6 +6,14 @@ import SEO from '../components/seo';
 
 const talks = [
   {
+    year: 2023,
+    conference: 'APEX World 2023',
+    place: 'Zeist, NL',
+    title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
+    language: '🇬🇧',
+    slides: '/slides/apex-world-2023-apex-offline-hartenfeller.pdf',
+  },
+  {
     year: 2022,
     conference: 'DOAG 2022',
     place: 'Nürnberg',
@@ -162,7 +170,7 @@ const pubData = publications.map((p) => ({
   linkComp: (
     <a
       href={p.link}
-      className="px-2 py-1 rounded text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
+      className="rounded px-2 py-1 text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
     >
       Link
     </a>
@@ -176,7 +184,7 @@ const otherData = other.map((o) => ({
   linkComp: (
     <a
       href={o.link}
-      className="px-2 py-1 rounded text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
+      className="rounded px-2 py-1 text-red-700 hover:text-red-500 focus:outline-none focus:ring focus:ring-red-300"
     >
       Link
     </a>
@@ -184,23 +192,23 @@ const otherData = other.map((o) => ({
 }));
 
 const PubList = ({ data }) => (
-  <div className="shadow overflow-hidden border-b border-zinc-200 sm:rounded-lg">
+  <div className="overflow-hidden border-b border-zinc-200 shadow sm:rounded-lg">
     <ul className="min-w-full divide-y divide-zinc-200">
       {data.map((d, i) => (
         <li
           key={`${d.year}-${d.title}`}
-          className={`text-zinc-500 text-md grid grid-cols-1 md:grid-cols-3 xl:grid-cols-8 ${
+          className={`text-md grid grid-cols-1 text-zinc-500 md:grid-cols-3 xl:grid-cols-8 ${
             i % 2 === 0 ? 'bg-white' : 'bg-zinc-50'
           }`}
         >
-          <span className="px-6 py-4 hidden xl:block">{d.year}</span>
+          <span className="hidden px-6 py-4 xl:block">{d.year}</span>
 
           <span className="px-6 py-4 xl:col-span-2" title="conference/medium">
             {d.medium}
           </span>
 
           <span
-            className="font-medium text-zinc-700 px-6 py-4 xl:col-span-3"
+            className="px-6 py-4 font-medium text-zinc-700 xl:col-span-3"
             title="title"
           >
             {d.title}
@@ -232,27 +240,27 @@ const Talks = () => (
       title="Talks and Publications"
       description="List of conference talks and publications"
     />
-    <div className="relative pt-16 px-4 sm:px-6 lg:px-8 bg-white/50">
-      <div className="relative max-w-7xl mx-auto">
-        <div className="text-center mb-24">
-          <h1 className="text-3xl leading-9 brown-header-text font-extrabold sm:text-4xl lg:text-5xl sm:leading-10">
+    <div className="relative bg-white/50 px-4 pt-16 sm:px-6 lg:px-8">
+      <div className="relative mx-auto max-w-7xl">
+        <div className="mb-24 text-center">
+          <h1 className="brown-header-text text-3xl font-extrabold leading-9 sm:text-4xl sm:leading-10 lg:text-5xl">
             List of conference talks and publications
           </h1>
         </div>
         <div className="mb-24">
-          <h2 className="text-3xl brown-header-text font-extrabold mb-8">
+          <h2 className="brown-header-text mb-8 text-3xl font-extrabold">
             Conference Talks
           </h2>
           <PubList data={talkData} />
         </div>
         <div className="pb-32">
-          <h2 className="text-3xl brown-header-text font-extrabold mb-8">
+          <h2 className="brown-header-text mb-8 text-3xl font-extrabold">
             Publications
           </h2>
           <PubList data={pubData} />
         </div>
         <div className="pb-32">
-          <h2 className="text-3xl brown-header-text font-extrabold mb-8">
+          <h2 className="brown-header-text mb-8 text-3xl font-extrabold">
             Other
           </h2>
           <PubList data={otherData} />

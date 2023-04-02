@@ -39,7 +39,8 @@ const BlogImageGetter = ({ filename, classes, alt, maxWidthPx }) => {
       `}
       render={(data) => (
         <button
-          className="block m-auto w-full h-auto my-12 mx-auto xxl:w-3/4 cursor-zoom-in"
+          type="button"
+          className="m-auto my-12 mx-auto block h-auto w-full cursor-zoom-in xxl:w-3/4"
           style={{
             maxWidth: maxWidthPx
               ? `${maxWidthPx}px`
@@ -73,7 +74,7 @@ BlogImageGetter.propTypes = {
   filename: PropTypes.string.isRequired,
   classes: PropTypes.string.isRequired,
   alt: PropTypes.string.isRequired,
-  maxWidthPx: PropTypes.number,
+  maxWidthPx: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 export default BlogImageGetter;
