@@ -7,13 +7,20 @@ import useImagePreview from '../../state/useImagePreview';
 const BlogImageGetter = ({ filename, classes, alt, maxWidthPx }) => {
   const { open } = useImagePreview();
 
-  const filterImage = (images) =>
-    images.allImageSharp.edges.find(
+  const filterImage = (images) => {
+    const res = images.allImageSharp.edges.find(
       (element) =>
         // Match string after final slash
         element.node.gatsbyImageData.images.fallback.src.split('/').pop() ===
         filename
     );
+
+    if (!res) {
+      throw new Error(`Could not find image ${filename}`);
+    }
+
+    return res;
+  };
 
   return (
     <StaticQuery
@@ -40,7 +47,7 @@ const BlogImageGetter = ({ filename, classes, alt, maxWidthPx }) => {
       render={(data) => (
         <button
           type="button"
-          className="m-auto my-12 mx-auto block h-auto w-full cursor-zoom-in xxl:w-3/4"
+          className="m-auto mx-auto my-12 block h-auto w-full cursor-zoom-in xxl:w-3/4"
           style={{
             maxWidth: maxWidthPx
               ? `${maxWidthPx}px`

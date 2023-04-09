@@ -1,0 +1,320 @@
+---
+title: >
+  Creating an Offline-Ready SvelteKit Application Using SQLite (Part 1): Setting up the Database
+date: 2023-04-09
+description: In this series, we develop an offline-capable SvelteKit application utilizing SQLite as a client-side storage solution. In this part, we explore how to set up the database effectively.
+slug: sveltekit-offline-sqlite-1
+titleImage: ./thumb-sveltekit-offline-blog-p1.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['SvelteKit', 'SQLite', 'Web-Development']
+ghCommentsIssueId: 86
+---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/OLg6RwESnSo">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
+
+## Web is the most accessible platform
+
+The web has been around for some time. It has evolved from a simple document sharing platform to a dynamic environment for building complex applications. Over the years, many use cases that were once reserved for native applications have migrated to the web. A considerable number of “native” apps on my laptop nowadays are powered by web technologies, such as [VS Code](https://code.visualstudio.com/), the code editor I'm using to write this post.
+
+Although this transition has come at the cost of reduced efficiency, it offers numerous benefits. For me, the most crucial aspect is accessibility. It's a significant technological achievement that almost anyone in the world can create some HTML (with or without CSS and JS) and share it with the world. The web is no exclusive club, almost any internet-connected device can visit websites. The web can be accessed through watches, fridges, and even cars, which is truly remarkable.
+
+## The Need for Offline Apps
+
+Data-driven web applications are increasingly popular today. However, when there's no internet connection, accessing your data becomes impossible, causing problems in various situations. For instance, in Germany, where mobile data is expensive and rural reception is poor, this can be particularly troublesome.
+
+With the introduction of [Progressive Web Apps](https://web.dev/progressive-web-apps/) (PWA) we now have features that enable us to develop web apps with a native-like feel. One such advancement includes building apps that operate seamlessly even without an active internet connection.
+
+## Where to Store the Data
+
+We will explore storing the HTML, JS, and CSS files in one of the upcoming parts of this blog series. The more challenging aspect is storing the user-data, which is the central part of a data-driven app.
+
+The browser offers two built-in solutions for this scenario:
+
+- [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+- [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
+
+LocalStorage is not ideal for this use case, as it's not designed for huge amounts of data. [It has size limitations and is not that fast](https://gomakethings.com/how-fast-is-vanilla-js-localstorage).
+
+IndexedDB is the browser's intended way to store large amounts of data. It is transactional, object-oriented, key-indexed, and allows schema definition. [The API is a bit complex](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB?retiredLocale=de#adding_retrieving_and_removing_data) (at least for me as an SQL enthusiast) but there are libraries (like [Dexie](https://github.com/dexie/Dexie.js)), that make it easier to use.
+
+IndexedDB has some pain points, such as past Safari bugs and its lack of ACID compliance. Paulus Esterhazy summarized the downsides of IndexedDB [in a great Gist](https://gist.github.com/pesterhazy/4de96193af89a6dd5ce682ce2adff49a).
+
+If I hadn't found [this tweet](https://twitter.com/ChromiumDev/status/1565105522092695553?s=20), I would have happily used IndexedDB for client-side storage:
+
+<BlogImg
+  filename="sqlite-chrome-devs-tweet.png"
+  alt="Tweet text: Yes, the plan is to eventually remove Web SQL, but & our intention is to empower developers to create their own solutions for structured storage, and we're therefore working with the #SQLite team to create a SQLite implementation over Wasm. This solution will replace Web SQL!"
+/>
+
+## Why SQLite is Amazing
+
+SQLite is my favorite database due to its simplicity, power, and speed. I don't want to go into details, but here are some reasons why this software is so remarkable:
+
+- Most used database, top 5 most deployed software ever (estimated one trillion active DBs)
+- Full-featured SQL
+- ACID compliant
+- Transactional
+- Public Domain
+- Serverless (not cloud buzzword, just no server needed as it is a library you can use in your app)
+- Stores data in a single file
+- Recommended Storage Format by the US Library of Congress
+
+Read more about SQLite [on their site](https://www.sqlite.org/about.html).
+
+## SQLite in the Browser
+
+As the Tweet shows, SQLite is now available in the browser thanks to [WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly) (short WASM). This is a low-level, portable, binary code format that can be a compilation target for a wide variety of languages.
+
+Another factor is the [Origin Private File System](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API#origin_private_file_system) (short OPFS) which adds a private file system for web apps. This feature can be used to store the SQLite database file.
+
+## Integrating SQLite WASM into SvelteKit
+
+### Download
+
+The first step is to download the SQLite WASM library. You can find it on [the SQLite site](https://www.sqlite.org/download.html). Under the section “WebAssembly & JavaScript” you can get a zip with all the files you need.
+
+### Prepare your SvelteKit project
+
+Before integrating SQLite into your project, you need to install the following dependencies:
+
+```bash
+yarn add -D vite-plugin-cross-origin-isolation vite-plugin-mkcert
+```
+
+The first dependency, `vite-plugin-cross-origin-isolation`, modifies the default Vite configuration to enable the [Cross-Origin Isolation](https://web.dev/coop-coep/) (COOP/COEP) headers. This is required to use the OPFS because it relies on SharedArrayBuffers. The second dependency, `vite-plugin-mkcert`, generates a local certificate, allowing you to run the local development server with HTTPS enabled.
+
+You then need to load the Vite plugins in your config:
+
+```ts head="vite.config.ts"
+import { sveltekit } from '@sveltejs/kit/vite';
+import { defineConfig } from 'vite';
+import mkcert from 'vite-plugin-mkcert';
+import crossOriginIsolation from 'vite-plugin-cross-origin-isolation';
+
+export default defineConfig({
+  server: {
+    https: true,
+    proxy: {},
+  },
+
+  plugins: [sveltekit(), mkcert(), crossOriginIsolation()],
+});
+```
+
+After installing the dependencies, copy the `jswasm` folder from the downloaded zip file into the `lib/sqlite` directory. This folder contains the WASM file and the JavaScript glue code had to run SQLite in your project.
+
+### Set up a Web Worker
+
+To avoid blocking the main thread, it's necessary to run SQLite in a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers). This is a general best practice, as it allows background execution of CPU-intensive tasks.
+
+We need to add some overhead for the WebWorker initialization and communication. As I use TypeScript, I set up some type definitions:
+
+```ts head="src/lib/sqlite/types.ts"
+export enum WorkerMessageTypes {
+  INIT_DB,
+  INIT_DB_RESPONSE,
+}
+
+export type WorkerMessage = {
+  type: WorkerMessageTypes;
+};
+```
+
+Now we can start creating our Web Worker. We just start with a simple message event listener:
+
+```ts head="src/lib/sqlite/worker.ts"
+/* eslint-disable no-case-declarations */
+import { WorkerMessageTypes, type WorkerMessage } from '../types';
+
+console.log('worker loaded');
+
+// event listener for messages from the main thread
+(async function () {
+  addEventListener(
+    'message',
+    async function ({ data }: { data: WorkerMessage }) {
+      console.log('worker received message:', data.type);
+
+      let res: WorkerMessage;
+
+      switch (data.type) {
+        case WorkerMessageTypes.INIT_DB:
+          console.log('todo: init sqlite');
+
+          break;
+
+        default:
+          throw new Error(`Unknown message type: ${data.type}`);
+      }
+    }
+  );
+})();
+```
+
+We can now import this worker into our main app and send a message of the type `INIT_DB`:
+
+```ts head="src/lib/sqlite/loadWorker.ts"
+import { WorkerMessageTypes, type WorkerMessage } from './types';
+
+// import the worker script
+const workerImp = await import('./worker/worker.ts?worker');
+
+export default function initWorker() {
+  // initialize the worker
+  const worker = new workerImp.default();
+
+  const msg: WorkerMessage = { type: WorkerMessageTypes.INIT_DB };
+  console.log(`Sending message to worker:`, msg);
+  // we can send messages to the worker with postMessage
+  worker.postMessage(msg);
+
+  // add a message listener to the worker to get the responses
+  worker.addEventListener(
+    'message',
+    async ({ data }: { data: WorkerMessage }) => {
+      console.log('Received message from worker:', data.type);
+    }
+  );
+}
+```
+
+### Initialize SQLite
+
+We still need to add the logic that actually initializes SQLite. For that, create the following file:
+
+```ts head="src/lib/sqlite/initDb.ts"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { DB } from 'sqlite3oo1';
+
+const DB_NAME = 'file:///offline-db.sqlite';
+export let db: DB;
+
+declare global {
+  function sqlite3InitModule(options: {
+    print: object;
+    printErr: object;
+  }): Promise<void>;
+}
+
+type InitDbReturn = {
+  ok: boolean;
+  error?: string;
+};
+
+export async function initDb(): Promise<InitDbReturn> {
+  return new Promise((resolve) => {
+    try {
+      self
+        .sqlite3InitModule({ print: console.log, printErr: console.error })
+        .then((sqlite3: any) => {
+          try {
+            console.log('Initialized sqlite3 module.', sqlite3);
+
+            // use the object oriented API: https://sqlite.org/wasm/doc/trunk/api-oo1.md
+            const oo = sqlite3?.oo1 as any;
+            const capi = sqlite3.capi as any;
+            const opfsFound = capi.sqlite3_vfs_find('opfs');
+            console.log(
+              'sqlite3 version',
+              capi.sqlite3_libversion(),
+              capi.sqlite3_sourceid(),
+              `OPFS? ==> ${opfsFound}`
+            );
+            if (opfsFound) {
+              db = new oo.OpfsDb(DB_NAME) as DB;
+              console.log('The OPFS is available.');
+            } else {
+              // fallback to non-persistent opfs storage
+              // you migh not want to do this and instead show a message to the user that the app is not available offline
+              db = new oo.DB(DB_NAME, 'ct') as DB;
+              console.log('The OPFS is not available.');
+            }
+            console.log('transient db =', (db as any).filename);
+
+            // optimize for speed (with safety): https://cj.rs/blog/sqlite-pragma-cheatsheet-for-performance-and-consistency/
+            db.exec([
+              'PRAGMA journal_mode = wal;',
+              'PRAGMA synchronous = normal;',
+            ]);
+
+            resolve({ ok: true });
+          } catch (e: any) {
+            console.error(`Could not initialize database: ${e.message}`);
+            resolve({ ok: false, error: e.message });
+          }
+        });
+    } catch (e: any) {
+      console.error(`Could not initialize database: ${e.message}`);
+      resolve({ ok: false, error: e.message });
+    }
+  });
+}
+```
+
+You can get my type definitions (for the `sqlite3oo1` module) from [GitHub](https://github.com/phartenfeller/sveltekit-sqlite-offline-app/blob/82e1b106c2de5c6c2e76e1c0fe766f99ca3a5e69/src/lib/sqlite/worker/sqlite3oo1.d.ts). These are incomplete, but should be enough for a basic app.
+
+We still need to call this function from our worker. So add the following code to the `switch` statement in `src/lib/sqlite/worker.ts`:
+
+```ts head="src/lib/sqlite/worker.ts"
+// ...
+import { initDb } from './initDb';
+
+// ...
+
+switch (data.type) {
+  case WorkerMessageTypes.INIT_DB:
+    // load the sqlite3 module
+    await import('../jswasm/sqlite3.mjs');
+
+    // call our init db function
+    const initRes = await initDb();
+    console.log('worker initDb result:', initRes);
+    res = { type: WorkerMessageTypes.INIT_DB_RESPONSE };
+    console.log('worker sending message back to main:', res);
+    this.postMessage(res);
+    break;
+
+  default:
+    throw new Error(`Unknown message type: ${data.type}`);
+}
+```
+
+### Load the Web Worker
+
+To load the Web Worker in the Svelte app, add a global `+layout.svelte` file, which executes the code on every page.
+
+```html head="src/routes/+layout.svelte"
+<script>
+  import initWorker from '$lib/sqlite/loadWorker';
+  import { onMount } from 'svelte';
+
+  onMount(() => {
+    initWorker();
+  });
+</script>
+```
+
+### Implement a Database File Utility
+
+Since SQLite is a file-based database, we can create a small utility to enable users to download or delete the database file, which is useful for development and debugging purposes.
+
+<BlogImg
+  filename="opfs-explorer-modal.png"
+  alt="Table with a heading OPFS Explorer. The Table has one row with the file 'offline-db.sqlite' with a size of 0 bytes. There are buttons to delete or download that file."
+/>
+
+I created a [small component that you can find on GitHub](https://github.com/phartenfeller/sveltekit-sqlite-offline-app/blob/82e1b106c2de5c6c2e76e1c0fe766f99ca3a5e69/src/lib/components/opfs-explorer.svelte). It is based on [Thomas Steiner's](https://twitter.com/tomayac) [opfs-explorer browser add-on](https://github.com/tomayac/opfs-explorer). I implemented the component in a modal dialog.
+
+## Conclusion
+
+We now have set up SQLite on the client as a storage solution. In the next part of this series, we will explore how to use this database to store data for our app. Currently, the database is initialized but empty.
+
+You can find the [code for this part of the series on GitHub](https://github.com/phartenfeller/sveltekit-sqlite-offline-app).
