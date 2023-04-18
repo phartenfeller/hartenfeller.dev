@@ -17,6 +17,17 @@
       url('/fonts/raleway-v22-latin-600.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
+/* raleway-800 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/fonts/raleway-v28-latin-800.woff2') format('woff2'),
+    /* Chrome 36+, Opera 23+, Firefox 39+ */
+      url('/fonts/raleway-v28-latin-800.woff') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
 .font-raleway {
   font-family: 'Raleway', serif;
 }
@@ -61,12 +72,12 @@
 }
 
 .blog-body strong {
-  @apply font-extrabold tracking-wider text-black;
+  @apply font-extrabold text-black;
 }
 
 .blog-body .footnotes::before {
   content: 'Footnotes';
-  @apply mt-12 mb-3 block font-merriweather text-2xl font-bold text-title-brown;
+  @apply mb-3 mt-12 block font-merriweather text-2xl font-bold text-title-brown;
 }
 
 .blog-body .footnotes hr {
