@@ -93,7 +93,7 @@ The first dependency, `vite-plugin-cross-origin-isolation`, modifies the default
 
 You then need to load the Vite plugins in your config:
 
-```ts head="vite.config.ts"
+```ts header=vite.config.ts
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import mkcert from 'vite-plugin-mkcert';
@@ -117,7 +117,7 @@ To avoid blocking the main thread, it's necessary to run SQLite in a [Web Worker
 
 We need to add some overhead for the WebWorker initialization and communication. As I use TypeScript, I set up some type definitions:
 
-```ts head="src/lib/sqlite/types.ts"
+```ts header=src/lib/sqlite/types.ts
 export enum WorkerMessageTypes {
   INIT_DB,
   INIT_DB_RESPONSE,
@@ -130,7 +130,7 @@ export type WorkerMessage = {
 
 Now we can start creating our Web Worker. We just start with a simple message event listener:
 
-```ts head="src/lib/sqlite/worker.ts"
+```ts header=src/lib/sqlite/worker.ts
 /* eslint-disable no-case-declarations */
 import { WorkerMessageTypes, type WorkerMessage } from '../types';
 
@@ -161,7 +161,7 @@ console.log('worker loaded');
 
 We can now import this worker into our main app and send a message of the type `INIT_DB`:
 
-```ts head="src/lib/sqlite/loadWorker.ts"
+```ts header=src/lib/sqlite/loadWorker.ts
 import { WorkerMessageTypes, type WorkerMessage } from './types';
 
 // import the worker script
@@ -190,7 +190,7 @@ export default function initWorker() {
 
 We still need to add the logic that actually initializes SQLite. For that, create the following file:
 
-```ts head="src/lib/sqlite/initDb.ts"
+```ts header=src/lib/sqlite/initDb.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { DB } from 'sqlite3oo1';
 
@@ -263,7 +263,7 @@ You can get my type definitions (for the `sqlite3oo1` module) from [GitHub](http
 
 We still need to call this function from our worker. So add the following code to the `switch` statement in `src/lib/sqlite/worker.ts`:
 
-```ts head="src/lib/sqlite/worker.ts"
+```ts header=src/lib/sqlite/worker.ts
 // ...
 import { initDb } from './initDb';
 
@@ -291,7 +291,7 @@ switch (data.type) {
 
 To load the Web Worker in the Svelte app, add a global `+layout.svelte` file, which executes the code on every page.
 
-```html head="src/routes/+layout.svelte"
+```html header=src/routes/+layout.svelte
 <script>
   import initWorker from '$lib/sqlite/loadWorker';
   import { onMount } from 'svelte';

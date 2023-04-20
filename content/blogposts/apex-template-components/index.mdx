@@ -87,7 +87,7 @@ Next up, you can define the Partial template. This is the template that will be 
 
 I just pasted the HTML from above into the else part. Then I changed all the hard-coded values to placeholders (wrapped in `#`). I added a placeholder for the label and the percentage. I also added a placeholder for the color of the progress bar. It expects a number between 1 and 45 (the Universal Theme colors) and will use the corresponding color CSS variable. I also implemented a fallback when no color is provided (see the `{if COLOR_INDEX%assigned/}` part):
 
-```html head="Partial"
+```html header=Partial
 {if APEX$IS_LAZY_LOADING/}
 <p>loading...</p>
 {else/}
@@ -106,13 +106,13 @@ I just pasted the HTML from above into the else part. Then I changed all the har
 
 In the next code input, you can define the wrapper HTML structure. I changed it from an `ul` to a `div` with a class:
 
-```html head="Report Body"
+```html header=Report Body
 <div class="progress-list">#APEX$ROWS#</div>
 ```
 
 The third code input is the Report Row template. It is the template that will be used to render a single row of the query. I changed the `li` to a `div` and added a style attributes:
 
-```html head="Report Row"
+```html header=Report Row
 <div #APEX$ROW_IDENTIFICATION# style="margin-top: 1lh;">#APEX$PARTIAL#</div>
 ```
 
@@ -138,7 +138,7 @@ When we then save the Plug-In, APEX will automatically extract all the placehold
 
 We can now go ahead on any page, create a region and select the `Progress Bars` template component. After adding a query, we can assign the columns to the placeholders.
 
-```sql head="Query"
+```sql header=Query
 SELECT 'JavaScript' as title
      , 90 as skill
      , 1 as i
@@ -178,7 +178,7 @@ As we checked both boxes in the display as section of the Plug-In, we can also u
 
 In the partial template, we saw that there is a placeholder for lazy loading. We can use this to show a loading indicator that looks like an empty state progress bar. I removed any colors and changed the placeholder values to dots:
 
-```html head="Partial"
+```html header=Partial
 {if APEX$IS_LAZY_LOADING/}
 <div class="mb-1 flex justify-between">
   <span class="text-base font-medium">..............</span>
@@ -236,7 +236,7 @@ Before you can actually use the actions, you have to define them in the Plug-In.
 
 You can first start by creating an Action Template. You can give a name and then choose between the types `Menu` and `Button`. I chose `Menu` and changed the default template to make it look like a default APEX button:
 
-```html head="Action Template"
+```html header=Action Template
 <button class="t-Button" {if IS_DISABLED/}disabled{endif/} type="button" data-menu="#MENU_ID#">
   #LABEL#
 </button> #MENU#
@@ -246,7 +246,7 @@ Now we can create an Action Position where we can again give a name and an ID. T
 
 We can now use the Action Position in our template. We can reference it via the ID we defined. I added the following to the partial template at the desired position:
 
-```html head="Action Position"
+```html header=Action Position
 <!-- ... -->
 <div>{if APEX$HAS_ACTION_BUTTONS/} #ACTIONS# {endif/}</div>
 <!-- ... -->
