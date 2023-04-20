@@ -1,0 +1,404 @@
+---
+title: >
+  Creating an Offline-Ready SvelteKit Application Using SQLite (Part 2): Messaging and Client Tables
+date: 2023-04-20
+description: In this series, we develop an offline-capable SvelteKit application utilizing SQLite as a client-side storage solution. In this part, we optimize the communication between the main thread and the Web Worker and create the client data tables.
+slug: sveltekit-offline-sqlite-2
+titleImage: ./thumb-sveltekit-offline-blog-p2.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['SvelteKit', 'SQLite', 'Web-Development']
+ghCommentsIssueId: 89
+---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/dgojvNpk__c">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
+
+## Optimize the Messaging System
+
+### Problems with the current message system
+
+In the [previous instalment](/blog/sveltekit-offline-sqlite-1) of our blog series, we created a Web Worker that manages the SQLite database. The main thread communicates with the Worker through messages. This is an efficient and straightforward method for communication between threads.
+
+When we send a message to the worker we wait for a response that contains the result of the operation. This is implemented with an event listener:
+
+```ts
+const msg: WorkerMessage = { type: WorkerMessageTypes.INIT_DB };
+console.log(`Sending message to worker:`, msg);
+worker.postMessage(msg);
+
+worker.addEventListener(
+  'message',
+  async ({ data }: { data: WorkerMessage }) => {
+    console.log('Received message from worker:', data.type);
+  }
+);
+```
+
+This approach works effectively when operations run sequentially. But as we enhance the capabilities of the Worker we will introduce multiple concurrent reads, writes, and checks. Then we have the problem of not knowing which response belongs to which request.
+
+Another thing we can do better is to offer an async API for the worker. By doing so, we can just `await` requests to our worker, resulting in cleaner and more comprehensible code:
+
+```ts
+const msg: WorkerMessage = {
+  type: WorkerMessageTypes.QUERY_DATA,
+  storage: 'clients',
+};
+const data = await sendMsgToWorke(msg);
+```
+
+### MessageBus implementation
+
+I call this new system the MessageBus. It is a simple wrapper for both the `postMessage` and `addEventListener` functions, while also providing an asynchronous API for messaging the worker.
+
+We create the function `sendMsgToWorker` that returns a promise. Now we have the ability to `await` the response from the worker. Each request is assigned a unique `messageId`, which we use alongside a compact callback function to `resolve` once the worker sends a response. To ensure easy access to this callback function, we store it in a `Map` using the messageId as the key.
+
+```ts header=src/lib/sqlite/messageBus.ts
+let worker: Worker;
+
+export type WorkerMsgCb = (data: WorkerMessage<unknown>) => unknown;
+// Map that stores the resolve callback for each messageId
+const cbMap = new Map<string, WorkerMsgCb>();
+
+export function sendMsgToWorker({
+  storageId,
+  type,
+  data,
+}): Promise<WorkerMessage<unknown>> {
+  // return a promise that resolves when the worker sends a message with the same messageId
+  return new Promise((resolve, reject) => {
+    // generate a unique message id for this request
+    const messageId = `${storageId}-${randomId()}`;
+
+    // create callback function and store in Map
+    const cb = (data: WorkerMessage<unknown>) => {
+      resolve(data);
+    };
+    cbMap.set(messageId, cb);
+
+    const msgData = <WorkerMessage<unknown>>{ messageId, storageId, type };
+    if (typeof data == 'object') {
+      msgData.data = data;
+    }
+
+    // send message to worker
+    worker.postMessage(msgData);
+  });
+}
+```
+
+Within the same file, we have the one and only event listener for the worker. As the worker sends a message, it must return the accompanying `messageId` from the request. We then retrieve the callback corresponding to that that `messageId` from the Map. By calling this callback and passing the worker's data, we successfully resolve the promise initially created in the `sendMsgToWorker` function.
+
+```ts header=src/lib/sqlite/messageBus.ts
+export function initMsgBus(_worker: Worker) {
+  worker = _worker;
+
+  worker.addEventListener(
+    'message',
+    ({ data }: { data: WorkerMessage<unknown> }) => {
+      console.log(
+        `Message received from Worker: ${data.messageId} - ${data.type}`,
+        data.data
+      );
+
+      if (cbMap.has(data.messageId)) {
+        const cb = cbMap.get(data.messageId) as WorkerMsgCb;
+        cbMap.delete(data.messageId);
+        cb(data);
+      } else {
+        console.error(
+          `Could not find callback for message: ${data.messageId} - ${data.type}`
+        );
+      }
+    }
+  );
+}
+```
+
+You can find the [full implementation of the MessageBus on GitHub](https://github.com/phartenfeller/sveltekit-sqlite-offline-app/blob/part2/src/lib/sqlite/messageBus.ts).
+
+### Update the Worker
+
+In the Worker we need to make sure that we send the `messageId` back to the main thread.
+
+```ts header=src/lib/sqlite/worker/worker.ts
+case WorkerMessageTypes.INIT_DB:
+	await import('../jswasm/sqlite3.mjs');
+
+	const initRes = await initDb();
+
+  // send back messageId
+	const initResult: WorkerMessage<undefined> = {
+		type: WorkerMessageTypes.INIT_DB_RESPONSE,
+		messageId: data.messageId,
+		storageId: data.storageId,
+		data: undefined
+	};
+	this.postMessage(initResult);
+
+	break;
+```
+
+## Creating the Client Data Tables
+
+### We need sample data
+
+To enable offline data accessibility, we first require a data source. For this purpose, we'll utilize the Northwind dataset, which encompasses structures such as customers, orders, and products. Our initial focus will be on making the customers table available for offline use.
+
+As for the backend, I am also using SQLite. While this choice isn't dictated by the client database being SQLite, it allows us to avoid managing a seperate database server and still fully meets our requirements. Feel free to use any other data storage system that suits your preferences.
+
+You can download the [SQLite Northwind database from this GitHub repo](https://github.com/jpwhite3/northwind-SQLite3).
+
+### Schema API
+
+To maintain loosely coupled code, we aim to avoid having the backend send a create table statement to the client directly. Instead, we'll transmit a generic JSON containing column information, enabling the client to generate the create table statement.
+
+To achieve this, we'll establish an API endpoint by creating the file `src/routes/api/data/customers_v1/structure/+server.ts`. Notice the storage is labeled as `customers_v1`, which anticipates potential future structural changes. Should that occur, we can simply create a new storage called `customers_v2` and retain the old one for compatibility or until all clients have synchronized their data modifications.
+
+```ts header=src/routes/api/data/customers_v1/structure/+server.ts
+import { json, type RequestHandler } from '@sveltejs/kit';
+import type { TableStructure } from '../../types';
+
+export const GET = (() => {
+  // https://localhost:5173/api/data/customers_v1/structure
+
+  const data: TableStructure = {
+    columns: [
+      { name: 'id', type: 'string' },
+      { name: 'company', type: 'string' },
+      { name: 'contact', type: 'string' },
+      { name: 'contactTitle', type: 'string' },
+      { name: 'address', type: 'string' },
+      { name: 'city', type: 'string' },
+      { name: 'region', type: 'string' },
+      { name: 'postalCode', type: 'string' },
+      { name: 'country', type: 'string' },
+      { name: 'phone', type: 'string' },
+      { name: 'fax', type: 'string' },
+    ],
+    pkColumn: 'id',
+  };
+  return json(data);
+}) satisfies RequestHandler;
+```
+
+### Checking if the SQLite client table already exists
+
+After initializing the database we need to setup all our storages. The first step is to create the client table if it does not exist yet:
+
+```ts header=src/lib/sqlite/initStorages.ts
+const storages = ['customers_v1'];
+
+export default async function initStorages() {
+  for (const storageId of storages) {
+    const res = (await sendMsgToWorker({
+      storageId,
+      type: WorkerMessageTypes.TABLE_EXISTS,
+      expectedType: WorkerMessageTypes.TABLE_EXISTS_RESPONSE,
+      data: undefined,
+    })) as WorkerMessage<TableExistsResponseData>;
+
+    if (res.data.errorMsg) throw new Error(res.data.errorMsg);
+
+    if (res.data.tableExists) {
+      console.log(`Table ${storageId} exists. Has data?: ${res.data.hasData}`);
+    } else {
+      console.log(`Table ${storageId} does not exist.`);
+    }
+  }
+}
+```
+
+Too answer this request we need to extend the worker. In there we create two utility functions that check if a table exists and if it has data:
+
+```ts header=src/lib/sqlite/worker/util
+export function tableExists(table: string) {
+  const sql = `
+    SELECT count(*) as "cnt" 
+      FROM sqlite_master
+     WHERE type='table' 
+       AND name= $table`;
+
+  const res = db.selectObject(sql, {
+    $table: table,
+  }) as { cnt: number };
+
+  return res.cnt > 0;
+}
+
+export function tableHasData(table: string) {
+  const sql = `SELECT count(*) as "cnt" FROM ${table}`;
+
+  const res = db.selectObject(sql) as { cnt: number };
+
+  return res.cnt > 0;
+}
+```
+
+We can use these to answer the `TABLE_EXISTS` request:
+
+```ts
+export function handleTableExists(
+  data: WorkerMessage<unknown>
+): TableExistsResponseData {
+  try {
+    const { storageId } = data;
+
+    const resData = <TableExistsResponseData>{};
+    resData.tableExists = tableExists(storageId);
+
+    if (resData.tableExists) {
+      resData.hasData = tableHasData(storageId);
+    } else {
+      resData.hasData = false;
+    }
+
+    return resData;
+  } catch (err) {
+    const msg = `Error checking if table exists: ${err}`;
+    console.error(msg);
+
+    return {
+      tableExists: false,
+      hasData: false,
+      errorMsg: msg,
+    };
+  }
+}
+```
+
+The request is initially handled in the `switch` statement in `worker.ts`:
+
+```ts header=src/lib/sqlite/worker/worker.ts
+case WorkerMessageTypes.TABLE_EXISTS:
+	const tableExistData = handleTableExists(data);
+
+	const tableExistsResult: WorkerMessage<TableExistsResponseData> = {
+		type: WorkerMessageTypes.TABLE_EXISTS_RESPONSE,
+		messageId: data.messageId,
+		storageId: data.storageId,
+		data: tableExistData
+	};
+	sendMsgToMain(tableExistsResult);
+	break;
+```
+
+### Creating the Table
+
+In case the table has not been created, we must establish it by obtaining the structure from the backend. This can be accomplished through a `fetch` call to our API, followed by requesting the Worker to create the table:
+
+```ts header=src/lib/sqlite/initStorages.ts
+async function getStructure(storage: string): Promise<TableStructure> {
+  const res = await fetch(`/api/data/${storage}/structure`);
+  const data = (await res.json()) as TableStructure;
+  return data;
+}
+
+async function createStorage(storage: string, structure: TableStructure) {
+  const res = (await sendMsgToWorker({
+    storageId: storage,
+    type: WorkerMessageTypes.CREATE_TABLE,
+    expectedType: WorkerMessageTypes.CREATE_TABLE_RESPONSE,
+    data: { structure } as CreateTableRequestData,
+  })) as WorkerMessage<TableExistsResponseData>;
+
+  if (res.data.errorMsg) throw new Error(res.data.errorMsg);
+}
+
+export default async function initStorages() {
+  for (const storageId of storages) {
+    const res = (await sendMsgToWorker({
+      storageId,
+      type: WorkerMessageTypes.TABLE_EXISTS,
+      expectedType: WorkerMessageTypes.TABLE_EXISTS_RESPONSE,
+      data: undefined,
+    })) as WorkerMessage<TableExistsResponseData>;
+
+    if (res.data.errorMsg) throw new Error(res.data.errorMsg);
+
+    if (res.data.tableExists) {
+      console.log(`Table ${storageId} exists. Has data: ${res.data.hasData}`);
+    } else {
+      // get structure from API
+      const structure = await getStructure(storageId);
+      console.log(`Table ${storageId} does not exist. Creating...`, structure);
+      await createStorage(storageId, structure);
+    }
+  }
+}
+```
+
+To convert the structure into table source SQL, we can employ the following utility function. It utilizes the `storageId` as the table name, the `pkColumn` as the primary key and the `columns` to generate the column definitions:
+
+```ts header=src/lib/sqlite/worker/util
+import type {
+  ColType,
+  TableStructure,
+} from '../../../../routes/api/data/types';
+
+function getDataType(coltype: ColType): string {
+  switch (coltype) {
+    case 'string':
+      return 'text';
+    case 'number':
+      return 'real';
+    default:
+      throw new Error(`Unknown column type: ${coltype}`);
+  }
+}
+
+export default function genTabSrc(
+  storageId: string,
+  structure: TableStructure
+) {
+  let statement = `Create Table ${storageId} (`;
+
+  const atomics: string[] = [];
+
+  for (const col of structure.columns) {
+    atomics.push(`${col.name} ${getDataType(col.type)}`);
+  }
+
+  atomics.push(`PRIMARY KEY (${structure.pkColumn})`);
+
+  statement += `   ${atomics.join(', ')}    ) strict;`;
+
+  return statement;
+}
+```
+
+We can just use that and call `db.exec`:
+
+```ts header=src/lib/sqlite/worker/storageHandlers.ts
+export function handleCreateTable(
+  msg: WorkerMessage<CreateTableRequestData>
+): CreateTableResponseData {
+  try {
+    const src = genTabSrc(msg.storageId, msg.data.structure);
+    console.log('Creating table:', src);
+
+    db.exec(src);
+
+    return {};
+  } catch (err) {
+    const msg = `Error creating table: ${err}`;
+    console.error(msg);
+
+    return {
+      errorMsg: msg,
+    };
+  }
+}
+```
+
+## Conclusion
+
+We now we have set up a table in the database and can insert data into it in the next part.
+
+You can find the [code for this part of the series on GitHub](https://github.com/phartenfeller/sveltekit-sqlite-offline-app).
