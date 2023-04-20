@@ -106,13 +106,13 @@ I just pasted the HTML from above into the else part. Then I changed all the har
 
 In the next code input, you can define the wrapper HTML structure. I changed it from an `ul` to a `div` with a class:
 
-```html header=Report Body
+```html header=Report#Body
 <div class="progress-list">#APEX$ROWS#</div>
 ```
 
 The third code input is the Report Row template. It is the template that will be used to render a single row of the query. I changed the `li` to a `div` and added a style attributes:
 
-```html header=Report Row
+```html header=Report#Row
 <div #APEX$ROW_IDENTIFICATION# style="margin-top: 1lh;">#APEX$PARTIAL#</div>
 ```
 
@@ -236,7 +236,7 @@ Before you can actually use the actions, you have to define them in the Plug-In.
 
 You can first start by creating an Action Template. You can give a name and then choose between the types `Menu` and `Button`. I chose `Menu` and changed the default template to make it look like a default APEX button:
 
-```html header=Action Template
+```html header=Action#Template
 <button class="t-Button" {if IS_DISABLED/}disabled{endif/} type="button" data-menu="#MENU_ID#">
   #LABEL#
 </button> #MENU#
@@ -246,7 +246,7 @@ Now we can create an Action Position where we can again give a name and an ID. T
 
 We can now use the Action Position in our template. We can reference it via the ID we defined. I added the following to the partial template at the desired position:
 
-```html header=Action Position
+```html header=Action#Position
 <!-- ... -->
 <div>{if APEX$HAS_ACTION_BUTTONS/} #ACTIONS# {endif/}</div>
 <!-- ... -->

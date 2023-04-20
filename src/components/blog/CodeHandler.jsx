@@ -9,7 +9,7 @@ const CodeHandler = ({ className, children, header }) => {
   switch (language) {
     case 'gist':
       return (
-        <div className="my-12 mx-auto xxl:w-3/4">
+        <div className="mx-auto my-12 xxl:w-3/4">
           <Gist id={children} />
         </div>
       );
@@ -36,8 +36,8 @@ const CodeHandler = ({ className, children, header }) => {
       return (
         <figure className="mx-auto my-8 ">
           {header && (
-            <figcaption className="font-mono px-2 py-1 lg:py-2 text-sm lg:text-md bg-zinc-900 text-zinc-200 font-semibold tracking-tight selection:bg-zinc-700 selection:text-zinc-100">
-              {header}
+            <figcaption className="lg:text-md bg-zinc-900 px-2 py-1 font-mono text-sm font-semibold tracking-tight text-zinc-200 selection:bg-zinc-700 selection:text-zinc-100 lg:py-2">
+              {header.replaceAll('#', ' ')}
             </figcaption>
           )}
           <div className="font-normal">
