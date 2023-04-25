@@ -1,0 +1,91 @@
+---
+title: >
+  Oracle APEX AG-Grid Plug-In 0.3 (beta)
+date: 2023-04-25
+description: I released the third beta release of the AG-Grid plug-in for Oracle APEX. Find out what's new and how to get it.
+slug: apex-ag-grid-plugin-v0.3
+titleImage: ../_common_imgs/kelly-sikkema-7alo7OJVNVw-unsplash.jpg
+titleImageAlt: A plug in front of a wall with a socket
+titleImageSource:
+  {
+    text: 'Title photo by Kelly Sikkema on Unsplash',
+    href: 'https://unsplash.com/photos/7alo7OJVNVw',
+  }
+tags: ['APEX', 'Plug-In']
+ghCommentsIssueId: 90
+---
+
+## Spreadsheet like data editing
+
+The [AG-Grid](https://www.ag-grid.com/) component provides a spreadsheet-like data editing experience, making it a viable alternative to the Interactive Grid. I am currently developing an Oracle APEX plug-in that facilitates seamless integration with your applications. I'm excited to announce the third beta release of this plug-in.
+
+Explore the [demo app](https://apex.oracle.com/pls/apex/r/hartenfeller_dev/ag-grid-plugin-demo) to see the plug-in in action. The source code is accessible on [GitHub](https://github.com/phartenfeller/apex-ag-grid-plugin). You are welcome to open issues and contribute.
+
+The plug-in requires a **minimum APEX version of 22.1** and is available for free under the MIT license.
+
+How to use it:
+
+- Download the latest release from [GitHub](https://github.com/phartenfeller/apex-ag-grid-plugin/releases)
+- Install the package
+- Install the plug-ins
+- Create a new region of the `AG-Grid` type
+- Create Dynamic Action and add the action `SAVE-AG-GRID-DA`
+  - Set "Affected Region" to the region you created
+  - Enter DML code (click help in the input for an example)
+
+To upgrade, simply reinstall the updated package and plug-ins.
+
+## New Features
+
+The following features have been added since the v0.2:
+
+### APEX native look and feel
+
+Since a few versions, APEX uses CSS variables for the universal theme. Plug-Ins or other custom components can then reference these to make things look native, even through different theme styles. I took the effort to apply these variables to the AG-Grid theme.
+
+<BlogImg filename="ag-grid-theme-collage.jpg" alt="" />
+
+### Copy and paste
+
+You can now utilize Ctrl + C and Ctrl + V for copying and pasting. Visual indicators are provided, and it's possible to paste a value into multiple rows using Ctrl + Shift + V.
+
+<BlogVideo
+  filename="ag-grid-copy.webm"
+  frame="ag-grid-copy-thumb.jpg"
+  width="1052"
+  title="Copy and Paste in AG-Grid 0.3"
+/>
+
+### Dynamically computed column
+
+A new column type enables the dynamic computation of cell values (essentially immediately after a change). To accomplish this, you need to supply a JavaScript function.
+
+<BlogGif filename="ag-grid-comp-col.gif" alt="" />
+
+You can find the JS-Functions used [in the demo app](https://apex.oracle.com/pls/apex/r/hartenfeller_dev/ag-grid-plugin-demo/dynamic-computed).
+
+### Chicken or the egg?
+
+Previously, you faced a challenge if your grid was empty, as you needed to right-click on an existing row to add a new one. Now, if the grid is empty, you will see a message allowing you to add a new row.
+
+<BlogImg filename="ag-grid-add-first-row.png" alt="" maxWidthPx={600} />
+
+You can also add a row using JavaScript:
+
+```js
+apex.region('your-region-id').addRow();
+```
+
+### Minor changes
+
+#### Client-Side model
+
+I have transitioned from the Infinite-Scrolling-Model to a client-side model, which simplifies various tasks. For instance, new rows are now added beneath the current row, significantly improving the user experience. Additionally, rows continue to be lazily loaded as you scroll down.
+
+#### How many rows
+
+You now can specify the number of rows per page. If you prefer to avoid lazy loading, you can set a higher number.
+
+#### Replacing eval
+
+Instead of using `eval` to execute the JS-Functions, I now render these functions using a script tag. This approach is consistent with how APEX handles similar cases in the Interactive Grid. Special thanks to [John Snyders for bringing this to my attention](https://universeodon.com/@J_Snyders/109389720710503001).

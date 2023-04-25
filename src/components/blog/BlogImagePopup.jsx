@@ -12,12 +12,12 @@ export default function BlogImagePopup() {
       <Dialog
         as="div"
         static
-        className="fixed z-10 inset-0 overflow-y-auto"
+        className="fixed inset-0 z-50 overflow-y-auto"
         open={isOpen}
         onClose={close}
       >
         <div
-          className="min-h-screen pt-4 px-4 pb-20 text-center"
+          className="min-h-screen px-4 pb-20 pt-4 text-center"
           style={{ maxHeight: '100vh' }}
         >
           <Transition.Child
@@ -30,12 +30,12 @@ export default function BlogImagePopup() {
             leaveTo="opacity-0"
             afterLeave={() => clear()}
           >
-            <Dialog.Overlay className="fixed inset-0 backdrop-filter backdrop-blur-lg transition-opacity overflow-hidden" />
+            <Dialog.Overlay className="fixed inset-0 overflow-hidden backdrop-blur-sm backdrop-filter transition-opacity" />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
           <span
-            className="hidden sm:inline-block sm:align-middle sm:h-screen"
+            className="hidden sm:inline-block sm:h-screen sm:align-middle"
             aria-hidden="true"
           >
             &#8203;
@@ -49,15 +49,15 @@ export default function BlogImagePopup() {
             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
-            <div className="rounded-lg inline-block z-50 overflow-hidden transform transition-all select-none bg-white shadow-lg mt-8">
-              <div className="text-right m-2">
+            <div className="z-50 mt-8 inline-block transform select-none overflow-hidden rounded-lg bg-white shadow-lg transition-all">
+              <div className="m-2 text-right">
                 <button
                   type="button"
-                  className="p-1 rounded text-zinc-500 hover:text-zinc-900 focus:outline-none ring-inset focus:ring-2 focus:ring-red-300"
+                  className="rounded p-1 text-zinc-500 ring-inset hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-red-300"
                   onClick={close}
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="h-6 w-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

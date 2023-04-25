@@ -150,7 +150,8 @@ module.exports = {
                 enclosure: {
                   url:
                     site.siteMetadata.siteUrl +
-                    edge.node.frontmatter.titleImage.childImageSharp.fixed.src,
+                    edge.node.frontmatter.fixedTitleImage.childImageSharp
+                      .gatsbyImageData.images.fallback.src,
                   type: 'image/jpeg',
                   length: null,
                 },
@@ -164,11 +165,9 @@ module.exports = {
                         title
                         description
                         date
-                        titleImage {
+                        fixedTitleImage: titleImage {
                           childImageSharp {
-                            fixed(toFormat: JPG, jpegQuality: 50) {
-                              src
-                            }
+                            gatsbyImageData(layout: FIXED)
                           }
                         }
                       }

@@ -12,6 +12,7 @@ import LinkedH2 from './LinkedH2';
 import YouTubeEmbed from './YouTubeEmbed';
 import classNames from '../../util/classNames';
 import SeriesTeaser from './SeriesTeaser';
+import LinkedH4 from './LinkedH4';
 
 const components = {
   code: CodeHandler,
@@ -19,6 +20,7 @@ const components = {
   pre: ({ children }) => children, // handled by codeh
   h2: LinkedH2,
   h3: LinkedH3,
+  h4: LinkedH4,
   Gist,
   // eslint-disable-next-line react/prop-types
   BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (
