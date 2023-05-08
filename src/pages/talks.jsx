@@ -7,6 +7,14 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2023,
+    conference: 'APEX Connect 2023',
+    place: 'Berlin',
+    title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
+    language: '🇬🇧',
+    slides: '/slides/APEX-Connect-2023-apex-offline-sqlite-hartenfeller.pdf',
+  },
+  {
+    year: 2023,
     conference: 'APEX World 2023',
     place: 'Zeist, NL',
     title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
