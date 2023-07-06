@@ -1,6 +1,6 @@
 ---
 title: >
-  Reusable, and Translatable: APEX Text Messages
+  Reusable, and Translatable: Oracle APEX Text Messages
 date: 2023-07-06
 description: APEX Text Messages is a powerful feature to organize reusable and translatable text fragments. You can use them in PL/SQL, JavaScript, and Substitution Strings.
 slug: oracle-apex-text-messages
@@ -12,12 +12,12 @@ titleImageSource:
     href: 'https://unsplash.com/photos/7PYqjNzvrc4',
   }
 tags: ['APEX']
-ghCommentsIssueId: 88
+ghCommentsIssueId: 91
 ---
 
 Text messages are a feature that I should utilize more in Oracle APEX. They are easy to understand and implement, but I have to remind myself that they exist, so I am writing this blog post.
 
-They are basically translatable text fragments that you can reference almost anywhere. My rule of thumb is that if you need a specific text in multiple languages or multiple times, you should create a text message. You could, of course, also write your own logic with a separate table.
+They are basically translatable text fragments that you can reference almost anywhere. My rule of thumb is that if you need a specific text in multiple languages or places, you should create a text message.
 
 Here are some scenarios where I use them:
 
@@ -28,7 +28,7 @@ Here are some scenarios where I use them:
 
 ## How to Create a Text Message
 
-When you go to shared components, you can navigate to text messages in the bottom-right section. You can see and edit existing ones, or create new ones.
+When you visit the shared components, you can navigate to text messages in the bottom-right section. You can see and edit existing ones, or create new ones.
 
 <BlogImg
   filename="apex-create-text-message.png"
@@ -54,13 +54,16 @@ You can use substitution strings in almost any place in your APEX app. They will
   alt="Shows the use of the substitustion string in the inline help of a page item. On the right side you see the result in the app with the replaced text."
 />
 
-You may have seen this already if you let APEX create a form page for you. It will use the substitution `&APP_TEXT$DELETE_MSG!RAW.` for the delete confirm message. You can create this text message and change the text to change the warning. Note that it uses the `!RAW` suffix. Without it, the text will be escaped. I am not sure why the auto-generated message uses it, as it does not include any HTML.
+You may have seen this already if you let APEX create a form page for you. It will by default use the substitution `&APP_TEXT$DELETE_MSG!RAW.` for the delete confirm message. You can create this text message and change the text to change the warning text on any page.
+
+Note that the reference uses the `!RAW` suffix. Without it, the text will be escaped. I am not sure why the auto-generated form page uses it, as the message does not include any HTML.
 
 ### PL/SQL
 
-You can use text messages in PL/SQL. The `APEX_LANG` package has the function `message` for this purpose:
+You can also use text messages in PL/SQL. The `APEX_LANG` package has the function `message` for this purpose:
 
 ```sql
+-- case insensitive, greeting would also work
 apex_lang.message(p_name => 'GREETING')
 ```
 
@@ -89,9 +92,9 @@ apex_lang.message(
 
 I never had a use case where I needed the text messages in a JavaScript context. But you can still use them, and this is really nice!
 
-It would be inefficient when all text messages would be loaded on every page load, even when you don't use them. That's why we need to explicitly load them before usage. You can do this with the `apex.lang.loadMessages` function. It takes an array of message IDs and returns a promise. When the promise is fulfilled, you can use the messages.
+It would be inefficient when all text messages would be loaded on every page load, even when you don't use them. That's why we need to explicitly load them before usage. You can do this with the `apex.lang.loadMessages` function. It takes an array of message IDs and returns a promise. When the promise is fulfilled, you can use the messages. Remember that you need to **check the "Use with JavaScript" checkbox** when you create the text message.
 
-Strangely, the API to access the messages is different. You have to use the `apex.lang.getMessage` function to get a message and additionally `apex.lang.formatMessage` to format one with parameters. You can't pass the parameters as an object with named parameters; instead, you have to pass them as separate arguments one after another.
+Strangely, the API to access the messages is different. You can use the `apex.lang.getMessage` function to get a message and additionally `apex.lang.formatMessage` to format one with parameters. I am not sure why there are separate functions and why you can't pass the parameters as an object with named parameters, like it works with the PL/SQL function. Instead, you have to pass the parameters as separate arguments, one after another.
 
 There are additional functions like `hasMessage`, `loadMessagesIfNeeded`, and `formatMessageNoEscape`. You can go to [apex.oracle.com/jsapi](https://apex.oracle.com/jsapi) and choose `apex.lang` to find out more about them.
 
@@ -112,9 +115,9 @@ There are additional functions like `hasMessage`, `loadMessagesIfNeeded`, and `f
 <InfoBox>
   <p>About the JS:</p>
 
-As `loadMessages` calls the database and this is asynchronous, the function returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). From the context of the browser, the database is an entirely different system. We send a message to it and hope that after some time it fulfills our request and returns something (the messages).
+As `loadMessages` calls the database and this is asynchronous, the function returns a [promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). From the perspective of the browser, the database is an entirely different system that it has no control over. We send a message to it and hope that after some time it fulfills our request and returns something (the messages). This is different from synchronous code, where the browser has full control over the execution and the tasks are completed line by line.
 
-The `await` keyword is a way to wait for the promise to resolve. It is only allowed in async functions. You may have seen another syntax where you use `then` to handle the result of the promise. This is the old way to do it; I like the `await` syntax more.
+The `await` keyword is a way to wait for the promise to resolve (anything to come back from the DB). It is only allowed in async functions. You may have seen another syntax where you use `.then(...)` to handle the result of the promise. This is the old way to do it; I like the newer `await` syntax more.
 
 To be able to use `await` we have to put our code into a function and label it as asynchronous by writing `async` before it. We could have wrapped the code into a named function and immediately called it like `async function run() { ... } run();`. I like to use [IIFEs](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) (Immediately Invoked Function Expression) where you don't give a name to the function and call it directly by putting these strange sets of "()" in there.
 
@@ -139,7 +142,7 @@ In the shared components under "Other Components" there are also shortcuts. The 
 
 <BlogImg filename="apex_messages_shortcuts.png" alt="" />
 
-They work similarly, as they also allow you to store text, and you reference them with some kind of substitution syntax. You need to wrap the name in parentheses, like `"MY_SHORTCUT"`. They do not allow translations or parameters and don't have a nice API like text messages do.
+They work similarly, as they also allow you to store text, and you reference them with some kind of substitution syntax. You need to wrap the name in parentheses, like `"MY_SHORTCUT"`. They do not allow translations or parameters, and they don't have a nice API like text messages do.
 
 They allow for dynamic content, as you can call a PL/SQL function that returns a string. There is even a type for images, but I have no clue how or when to use it.
 
