@@ -74,7 +74,7 @@ module.exports = {
             resolve: `gatsby-remark-acronyms`,
             options: {
               acronyms: {
-                APEX: `Application Express`,
+                APEX: `(Oracle) Application Express`,
                 JS: `JavaScript`,
                 CSS: `Cascading Style Sheets`,
                 HTML: `Hypertext Markup Language`,
