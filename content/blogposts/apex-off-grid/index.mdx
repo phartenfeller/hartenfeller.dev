@@ -1,0 +1,43 @@
+---
+title: >
+  APEX Offline for everyone: APEX Off Grid
+date: 2023-04-25
+description: I released the third beta release of the AG-Grid plug-in for Oracle APEX. Find out what's new and how to get it.
+slug: apex-ag-grid-plugin-v0.3
+titleImage: ../_common_imgs/kelly-sikkema-7alo7OJVNVw-unsplash.jpg
+titleImageAlt: A plug in front of a wall with a socket
+titleImageSource:
+  {
+    text: 'Title photo by Kelly Sikkema on Unsplash',
+    href: 'https://unsplash.com/photos/7alo7OJVNVw',
+  }
+tags: ['APEX', 'Plug-In']
+ghCommentsIssueId: 90
+---
+
+## APEX Offline for everyone
+
+A long time goal of Oracle APEX is to become more ubiquitious, basically be a good fit for any use case. Big steps towards this goal were the introduction of the Universal Theme that made APEX responsive so apps are usable on any screen size. Another milestone is the introduction of [Progressive Web App](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps) (short PWA) features. That name bundles a set of browser features that try to close the gap between web and native app capabilities. Good examples are installability, push notifications, and many APIs that allow hardware access like storage, camera, microphone, geolocation or bluetooth.
+
+Many of this stuff is already available in APEX or realtively easy to implement with a bit of JavaScript. But there is one thing that is still missing: offline support. This is a big deal for many use cases as you can't always rely on a stable internet connection. But without one out of the box APEX apps are simply unusable.
+
+The big challenge to solve this is that **Oracle** APEX is heavily linked to the Database, actually APEX is a feature of the Database. APEX apps are stored in the database, the APEX engine is just PL/SQL and most components are designed in a way that they need a database connection. So I guess you can imagine that it's not that easy to make APEX apps work without that database connection.
+
+Well good news: it is possible to achieve this but quite complex. Many people already achieved this years ago, Vincent Morneau already wrote about this in **2018** in his [blog series about PWAs in APEX](https://vmorneau.me/apex-pwa-part5/).
+
+Because technical advancements and one pain point still left I tried work an an Offline APEX solution for myself. The pain point was, that I wanted a Low Code solution that is easy to use for everyone. In APEX we can do almost everything with just a few clicks, so I wanted to strive for the same for offline support. Additionally thanks to browser advancements the most used Database in the world now runs in the browser. I wanted to play around with this and now I ended up with a hand full of APEX Plug-Ins, a few conference talks about this topics and alot of pain **and** fun.
+
+## How to use it
+
+Refer to video
+
+## Design decisions
+
+- Offline-first
+- No wrangling with existing components
+- How to do synchronization
+- SQLite
+
+## Caution
+
+## Next Steps

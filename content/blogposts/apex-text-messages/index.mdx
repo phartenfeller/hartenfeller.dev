@@ -1,0 +1,151 @@
+---
+title: >
+  Reusable, and Translatable: APEX Text Messages
+date: 2023-07-06
+description: APEX Text Messages is a powerful feature to organize reusable and translatable text fragments. You can use them in PL/SQL, JavaScript, and Substitution Strings.
+slug: oracle-apex-text-messages
+titleImage: ./brett-jordan-7PYqjNzvrc4-unsplash.jpg
+titleImageAlt: ''
+titleImageSource:
+  {
+    text: 'Photo by Brett Jordan on Unsplash',
+    href: 'https://unsplash.com/photos/7PYqjNzvrc4',
+  }
+tags: ['APEX']
+ghCommentsIssueId: 88
+---
+
+Text messages are a feature that I utilise not enough in APEX. They are easy to understand and implement, but I have to remind myself that they exist, so I am writing this blog post.
+
+They are basically translatable text fragments that you can reference almost anywhere. My rule of thumb is if you either need a specific text in multiple languages or multiple times you should create a text message if you don't want your own logic with a separate table.
+
+Here are some scenarios where I use them:
+
+- Help text (e. g. for a page item)
+- Error messages
+- Success messages
+- Confirm Dialogs ("do you really want to delete this record?")
+
+## How to Create a Text Message
+
+When you go to shared components you can navigate to text messages on the bottom right section. You see and edit existing ones or create new ones.
+
+<BlogImg
+  filename="apex-create-text-message.png"
+  alt="Screenshot of the dialog to create a new text message. It has the input fields for the name, the text, wether it can be used with JavaScript, and the language."
+/>
+
+The name field is the identifier for the text message. If you want to use the message in JavaScript you have to explicitly check the "Use with JavaScript" checkbox. The language field is only relevant if your app supports multiple languages.
+
+## How to use them
+
+When you created a text message you can use it in your app in different ways.
+
+### Substitution String
+
+You can use Substitution strings in almost any place in your APEX app. They will automatically be replaced with the text message. You wrap the message ID in `&.` and put the prefix `APP_TEXT$` in front of it:
+
+```txt
+&APP_TEXT$GREETING.
+```
+
+<BlogImg
+  filename="apex-text-message-inline-help.png"
+  alt="Shows the use of the substitustion string in the inline help of a page item. On the right side you see the result in the app with the replaced text."
+/>
+
+You may have seen this already if you let APEX create a form page for you. It will use the substitution `&APP_TEXT$DELETE_MSG!RAW.` for the delete confirm message. You can create this text message and change the text to change the warning. Note that it uses the `!RAW` suffix. Without it the text will be escaped, I am not sure why the auto generated message uses it, as it does not include any HTML.
+
+### PL/SQL
+
+You can use text messages from PL/SQL. The `APEX_LANG` package has the function `message` for this purpose:
+
+```sql
+apex_lang.message(p_name => 'GREETING')
+```
+
+You can additional parameters that will be replaced in the text message. The text message can include placeholders `%0` to `%9` which will be replaced by the corresponding parameter:
+
+```sql
+-- Text message: "His name is %0 %1"
+apex_lang.message(p_name => 'HIS_NAME', p0 => 'Robert', p1 => 'Paulson')
+-- Result: "His name is Robert Paulson"
+```
+
+Additionally we could pass a language and reference messages from another app in the same workspace:
+
+```sql
+apex_lang.message(
+  p_name           => 'HIS_NAME'
+, p0               => 'Robert'
+, p1               => 'Paulson'
+, p_lang           => 'it'
+, p_application_id => :APP_ID
+)
+-- Result: "Il suo nome è Robert Paulson"
+```
+
+### JavaScript
+
+I never had a use case where I needed the text messages in a JavaScript context. But you can still use them and this is really nice!
+
+It would be inefficient when all text messages would be loaded on every page load even when you don't use them. Thats why we need to explicitly load them before usage. You can do this with the `apex.lang.loadMessages` function. It takes an array of message IDs and returns a promise. When the promise resolves you can use the messages.
+
+Strangely, the API to access the messaages is different. You have to use the `apex.lang.getMessage` function to get a message and additionally `apex.lang.formatMessage` to format ones with parameters. You can't pass the parameters as an object with named parameters, instead you have to pass them as separate arguments one after another.
+
+There are additional functions like `hasMessage`, `loadMessagesIfNeeded` and `formatMessageNoEscape`. You can go to [apex.oracle.com/jsapi](https://apex.oracle.com/jsapi) and choose `apex.lang` to find out more about them.
+
+```js
+(async () => {
+  try {
+    await apex.lang.loadMessages(['GREETING', 'HIS_NAME']);
+    let result = apex.lang.getMessage('GREETING');
+    result += ' ';
+    result += apex.lang.formatMessage('HIS_NAME', 'Robert', 'Paulson');
+    apex.items.P20_FROM_JS.setValue(result);
+  } catch (err) {
+    apex.debug.error('Could not load messages', err);
+  }
+})();
+```
+
+<InfoBox>
+  <p>About the JS:</p>
+
+As `loadMessages` calls the database and this is asynchronous, the function returns a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise). From the context of the browser the database is a completely different system. We send a message to it and hope that after some time it fulfills our request and returns something (the messages).
+
+The `await` keyword is a way to wait for the promise to resolve. It is only allowed in async functions. You may have seen another syntax where you use `then` to handle the result of the promise. This is the old way to do it, I like the `await` syntax more.
+
+To be able to use `await` we have to put our code into a function and label it as asynchronous by writing `async` before it. We could have wrapped the code into a named function and immediatly called it like `async function run() { ... } run();`. I like to use [IIFEs](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) (Immediately Invoked Function Expression) where you don't give a name to the function and call it directly by putting these strange sets of "()" in there.
+
+</InfoBox>
+
+## Auto use of translated text messages
+
+If you have a multi language app you can translate your text messages. If you start creating a new translation your existing text messages will be copied and you can translate the text. If you add a new text message you have to manually create another one for the other language.
+
+If you use the substitution strings in your app, APEX will automatically use the text message of the users languages if it exists. This is really convinient.
+
+I haven't worked a lot with translated apps but [FlowsForAPEX](https://flowsforapex.org/) builds on it. You can check out their builder app to see it in action. Here is one example for the message "APP_VIEW"
+
+<BlogImg
+  filename="apex_message_flows4apex.png"
+  alt="Shows the use of the substitustion string in the inline help of a page item. On the right side you see the result in the app with the replaced text."
+/>
+
+## Difference to shortcuts
+
+In the shared components under "Other Components" there are also shortcuts. The help text says: "Use Shortcuts to write frequently used code once and then reference it in many places within your application. Shortcuts also allow for dynamic generation of code in places that typically only support static text."
+
+<BlogImg filename="apex_messages_shortcuts.png" alt="" />
+
+They work in a similar fashion as they also allow to store text and you reference them with some kind of substitution syntax. You need to wrape the name in paranthesis like `"MY_SHORTCUT"`. They do not allow translations or parameters and don't have a nice API like the text messages have.
+
+They allow for dyanmic content as you can call a PL/SQL function that returns a string. There is even a type form images but I have no clue how and when to use it:
+
+<BlogImg
+  filename="apex-text-create-shortcut.png"
+  alt="When you create a shortcut you have many different types. Function body, html, image, text and message with some escaped variants. You can also define an error text next to the source / your static string."
+/>
+
+My take is that they are more focused on HTML content rather than basic text content. I have not yet found a use case for them in practice, if you have please share it in the comments.
