@@ -73,7 +73,10 @@ PostDisplay.defaultProps = {
 const OtherPosts = ({ postId }) => {
   const data = useStaticQuery(graphql`
     {
-      allPosts: allMdx(sort: { fields: frontmatter___date }) {
+      allPosts: allMdx(
+        sort: { fields: frontmatter___date }
+        filter: { frontmatter: { published: { ne: false } } }
+      ) {
         nodes {
           id
           frontmatter {

@@ -41,7 +41,7 @@ PostPreview.propTypes = {
 };
 
 const MoreLink = ({ target, text }) => (
-  <div className="mt-8 mb-3 text-center">
+  <div className="mb-3 mt-8 text-center">
     <Link
       to={target}
       className="transform select-none rounded-md border border-zinc-200 bg-white px-12 py-2 text-lg font-semibold text-zinc-700 duration-150 ease-in-out hover:scale-105 hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-red-300 motion-reduce:transition-none motion-reduce:translate-z-0"
@@ -63,6 +63,7 @@ const LatestBlogposts = () => {
     {
       latest: allMdx(
         sort: { fields: frontmatter___date, order: DESC }
+        filter: { frontmatter: { published: { ne: false } } }
         limit: 6
       ) {
         nodes {
@@ -80,7 +81,9 @@ const LatestBlogposts = () => {
       apex: allMdx(
         sort: { fields: frontmatter___date, order: DESC }
         limit: 6
-        filter: { frontmatter: { tags: { in: "APEX" } } }
+        filter: {
+          frontmatter: { tags: { in: "APEX" }, published: { ne: false } }
+        }
       ) {
         nodes {
           frontmatter {
@@ -97,7 +100,9 @@ const LatestBlogposts = () => {
       oracle: allMdx(
         sort: { fields: frontmatter___date, order: DESC }
         limit: 6
-        filter: { frontmatter: { tags: { in: "Oracle" } } }
+        filter: {
+          frontmatter: { tags: { in: "Oracle" }, published: { ne: false } }
+        }
       ) {
         nodes {
           frontmatter {
@@ -114,7 +119,12 @@ const LatestBlogposts = () => {
       webDev: allMdx(
         sort: { fields: frontmatter___date, order: DESC }
         limit: 6
-        filter: { frontmatter: { tags: { in: "Web-Development" } } }
+        filter: {
+          frontmatter: {
+            tags: { in: "Web-Development" }
+            published: { ne: false }
+          }
+        }
       ) {
         nodes {
           frontmatter {
@@ -137,7 +147,7 @@ const LatestBlogposts = () => {
   const webDevPosts = data.webDev.nodes;
 
   return (
-    <div className="my-12 mx-auto lg:my-32 xxl:w-2/3">
+    <div className="mx-auto my-12 lg:my-32 xxl:w-2/3">
       <Link
         to="/blog"
         className="grid hover:opacity-60 focus:outline-none focus:ring-2 focus:ring-red-400"
@@ -162,7 +172,7 @@ const LatestBlogposts = () => {
                   <Tab
                     key={tab}
                     className={({ selected }) =>
-                      `border-b-2 px-4 py-1 text-left transition-colors duration-150 ease-in-out hover:bg-gray-100 md:border-l-4 md:border-b-0 md:px-2 md:py-4 ${
+                      `border-b-2 px-4 py-1 text-left transition-colors duration-150 ease-in-out hover:bg-gray-100 md:border-b-0 md:border-l-4 md:px-2 md:py-4 ${
                         selected
                           ? `border-red-500 font-bold`
                           : 'border-transparent'

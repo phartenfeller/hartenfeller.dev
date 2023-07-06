@@ -158,7 +158,11 @@ module.exports = {
               })),
             query: `
               {
-                allMdx(sort: {fields: frontmatter___date, order: DESC}, limit: 20) {
+                allMdx(
+                  sort: {fields: frontmatter___date, order: DESC}  
+                  filter: { frontmatter: { published: { ne: false } } } 
+                  limit: 20
+                ) {
                   edges {
                     node {
                       frontmatter {

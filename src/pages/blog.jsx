@@ -7,7 +7,10 @@ import SEO from '../components/seo';
 
 export const query = graphql`
   {
-    posts: allMdx(sort: { fields: frontmatter___date, order: DESC }) {
+    posts: allMdx(
+      sort: { fields: frontmatter___date, order: DESC }
+      filter: { frontmatter: { published: { ne: false } } }
+    ) {
       nodes {
         frontmatter {
           title

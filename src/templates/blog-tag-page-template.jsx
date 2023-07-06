@@ -9,7 +9,7 @@ export const query = graphql`
   query ($tag: String!) {
     posts: allMdx(
       sort: { fields: frontmatter___date, order: DESC }
-      filter: { frontmatter: { tags: { eq: $tag } } }
+      filter: { frontmatter: { tags: { eq: $tag }, published: { ne: false } } }
     ) {
       nodes {
         frontmatter {
@@ -46,7 +46,7 @@ const BlogTagTemplate = ({ data, pageContext }) => {
         title={`Blog | ${tag}`}
         description={`Blogposts tagged with: ${tag}`}
       />
-      <div className="relative px-4 pt-16 pb-20 sm:px-6 lg:px-8 lg:pb-28">
+      <div className="relative px-4 pb-20 pt-16 sm:px-6 lg:px-8 lg:pb-28">
         <div className="relative mx-auto max-w-7xl">
           <div className="mb-24 text-center">
             <h1 className="brown-header-text text-3xl font-extrabold leading-9 sm:text-4xl sm:leading-10">

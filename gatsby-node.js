@@ -3,7 +3,7 @@ exports.createPages = async ({ actions, graphql }) => {
 
   const blogposts = await graphql(`
     {
-      posts: allMdx {
+      posts: allMdx(filter: { frontmatter: { published: { ne: false } } }) {
         nodes {
           frontmatter {
             slug
