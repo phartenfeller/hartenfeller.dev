@@ -178,7 +178,7 @@ const BlogPageTemplate = ({ data }) => {
                     </a>
                   </div>
                 ) : null}
-                <div className="font-raleway mt-12 mb-16 text-base leading-8 text-stone-600 md:text-lg lg:text-xl">
+                <div className="font-raleway mb-16 mt-12 text-base leading-8 text-stone-600 md:text-lg lg:text-xl">
                   {description}
                 </div>
               </header>
@@ -187,7 +187,7 @@ const BlogPageTemplate = ({ data }) => {
                   <MDXRenderer>{body}</MDXRenderer>
                 </MDXProvider>
               </main>
-              {titleImageSource.text && titleImageSource.href ? (
+              {titleImageSource?.text && titleImageSource.href ? (
                 <div>
                   <a
                     href={titleImageSource.href}
@@ -203,7 +203,7 @@ const BlogPageTemplate = ({ data }) => {
               </div>
 
               <div className="my-12">
-                <div className="pt-4 pb-16 text-center">
+                <div className="pb-16 pt-4 text-center">
                   <LinkButton
                     type="twitter"
                     link={`https://twitter.com/intent/tweet?text=https://hartenfeller.dev/blog/${slug}`}
