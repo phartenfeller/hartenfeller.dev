@@ -1,0 +1,223 @@
+---
+title: Step by step guide to Web Components
+date: 2023-08-08
+description: HTML 5 added a set of new HTML tags known as "semantic" tags to better structure websites. You should use them to avoid sinking in chaos with many levels of nested divs. They also have the benefit to make your website more accessible.
+slug: web-components-step-by-step
+titleImage: ./semantic-html-hartenfeller.jpeg
+titleImageAlt: semantic html
+titleImageSource: { text: null, href: null }
+tags: ['HTML', 'Web-Development']
+ghCommentsIssueId: 23
+published: false
+---
+
+## Why do they exist?
+
+Web Components are W3C's answer the rise of fronted JavaScript frameworks where apps are divided into components that are composed together to form the UI. As frameworks like React and Angular require a big JavaScript runtime that every user has to download and execute, there was a need to make this development style natively usable. This is why Web Components exit.
+
+## How do they work? - Step by step
+
+We are developing a website for a pool repair company. On lots of pages we need the dimension of the customers pool to calculate how much materials we need and how much water we have to pump out. To not reinvent the wheel every time we need this functionality, we design a small HTML layout that we can reuse on every page:
+
+```html
+<style>
+  .dimension-inputs {
+    display: grid;
+    grid-template-columns: 15ch 10ch;
+    row-gap: 0.4rem;
+  }
+  /* ... */
+</style>
+<div class="input-section">
+  <div class="dimension-inputs">
+    <label for="length">Length (meters)</label>
+    <input id="length" type="number" min="0" />
+    <label for="width">Width (meters)</label>
+    <input id="width" type="number" min="0" />
+    <label for="depth">Depth (meters)</label>
+    <input id="depth" type="number" min="0" />
+  </div>
+  <button id="calculate">Calculate</button>
+</div>
+<div class="output-section">
+  <label>Water Capacity (cubic liters): </label>
+  <span id="capacity"></span>
+  <br />
+  <label>Surface Area (square meters): </label>
+  <span id="area"></span>
+</div>
+```
+
+### HTML Templates: Reausability
+
+But still copy and pasting this everywhere is not ideal. When we want to change anything we would need to go through every page and change it there. Luckily we have the [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template) where we can store this layout and implement it everywhere we need it. We can store it directly in the HTML file or in JavaScript. But we have to clone it in JavaScript to use it:
+
+```js
+const template = document.createElement('template');
+template.id = 'pool-calculator-template';
+template.innerHTML = `
+<style>
+/* ... */
+</style>
+<div class="input-section">
+  <!-- ... -->
+</div>
+`;
+
+// get the div with the id app and append the template to it
+const appEl = document.querySelector('#app');
+const templateClone = template.content.cloneNode(true);
+appEl.appendChild(templateClone);
+```
+
+The HTML structure now includes a 1:1 clone of the template:
+
+<BlogImg
+  filename="html-vanilla-only-template.png"
+  alt="Screenshot of Chrome DevTools showing the HTML structure of the page with the template"
+/>
+
+### Custom elements: nice API
+
+Always running the cloneNode code works fine but we can actually make this even better. We can create our own HTML element that includes the template and the cloneNode code. This way we can use it like any other HTML element in HTML:
+
+```html
+<body>
+  <div id="app">
+    <pool-dimensions></pool-dimensions>
+  </div>
+</body>
+```
+
+To make this work we create a class that extends `HTMLElement`. In the constructor after calling `super()` we clone the template and append it to the current element (`this`). Finally we define the element with `customElements.define()` and pass the desired name:
+
+```js
+class PoolDimensions extends HTMLElement {
+  constructor() {
+    // always call super() first in the constructor
+    // runs constructor of parent class
+    super();
+    const templateClone = template.content.cloneNode(true);
+    this.appendChild(templateClone);
+  }
+}
+
+customElements.define('pool-dimensions', PoolDimensions);
+```
+
+In the loaded page we can see that the template is now the child content of the custom element.
+
+<BlogImg filename="html-vanilla-template-and-cust-ele.png" alt="" />
+
+### Shadow DOM: Encapsulation
+
+We defined styles and IDs in the template. There are two scenarios where this can be a problem:
+
+- Somewhere else on a page the same ID or styles for the same class are used
+- With multiple instances of the custom element on the same page the IDs are duplicated and thus not unique anymore
+
+You could argue that you can make sure to use unique classes and IDs but Web Components are supposed to be reusable and sharable. You can't control how other developers use your components.
+
+To solve this problem we can use the [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM). It is a separate DOM tree that is attached to the custom element. To use it we have to attach it to the custom element in the constructor:
+
+```js
+constructor() {
+  super();
+  // attach the shadow DOM to the custom element
+  this.attachShadow({ mode: "open" });
+
+  const templateClone = template.content.cloneNode(true);
+  // append template to the shadow DOM instead of "this"
+  this.shadowRoot.appendChild(templateClone);
+}
+```
+
+The difference between the open and closed mode is that in the open mode we can access the shadow DOM from outside the custom element. In the closed mode we can't.
+
+In the browser dev tools we can see that the template is now a child of the shadow root.
+
+<BlogImg filename="html-vanilla-shadow-dom.png" alt="" />
+
+If now add CSS to the parent page like `input { color: lawngreen; }` we find that the styles are not applied to anything inside the Shadow DOM.
+
+If want to access anything inside the Shadow DOM we have to first select the `shadowRoot` of our custom element and then search inside it. Again this only works when the Shadow DOM is in open mode:
+
+```js
+document.querySelectorAll('input');
+// -> []
+
+document.querySelector('pool-dimensions').shadowRoot.querySelectorAll('input');
+// -> [input#length, input#width, input#depth]
+```
+
+### Interactivity and Lifecycle
+
+Until now we haven't really looked into how we can add logic to our custom element. It makes sense to also store this aspect inside the Web Component. As we are already in the JavaScript world we can just add code to the class.
+
+We want our calculate button to actually do something. We can add an event listener to it in the constructor:
+
+```js
+class PoolDimensions extends HTMLElement {
+  constructor() {
+    // ...
+
+    this.shadowRoot
+      .querySelector('#calculate')
+      .addEventListener('click', this.logClick);
+  }
+
+  logClick(e) {
+    console.log('clicked', e.target.textContent);
+  }
+}
+```
+
+Like in real life we unfortunately need to clean up after ourselves. When the component is removed from the page we should also remove the event listener. Web components have [lifecycle callbacks](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#using_the_lifecycle_callbacks) that automatically run at certain points in the lifecycle. We can use the `disconnectedCallback()` that is called when the element is removed from the page:
+
+```js
+class PoolDimensions extends HTMLElement {
+  constructor() {
+    // ...
+
+    this.button = this.shadowRoot.querySelector('#calculate');
+    this.button.addEventListener('click', this.logClick);
+  }
+
+  // runs when the element is removed from the page
+  disconnectedCallback() {
+    this.button.removeEventListener('click', this.logClick);
+  }
+
+  logClick(e) {
+    console.log('clicked', e.target.textContent);
+  }
+}
+```
+
+There are unfortunately some quirks with this approach. The constructor is called exactly once when the element is created. But the `disconnectedCallback()` is called when we e.g. move the element as it gets recreated. When that happens we lose the event listener marking the button unusable. We can fix this by adding the event listener in another lifecycle method, the `connectedCallback()`. That is called every time the element is added to the page, so unlike the constructor also when it is moved:
+
+```js
+class PoolDimensions extends HTMLElement {
+  constructor() {
+    // ...
+
+    this.button = this.shadowRoot.querySelector('#calculate');
+  }
+
+  // runs when the element is added to the page
+  connectedCallback() {
+    this.button.addEventListener('click', this.logClick);
+  }
+
+  // runs when the element is removed from the page
+  disconnectedCallback() {
+    this.button.removeEventListener('click', this.logClick);
+  }
+
+  logClick(e) {
+    console.log('clicked', e.target.textContent);
+  }
+}
+```
+
+My personal rule of thumb is to define variables in the constructor and run logic in the `connectedCallback()`. A more detailed explanation on what to care about can be found in [this StackOverflow question](https://stackoverflow.com/questions/59970043/custom-element-setup-constructor-vs-connectedcallback).
