@@ -40,7 +40,7 @@ We are developing a website for a pool repair company. On lots of pages we need 
   <button id="calculate">Calculate</button>
 </div>
 <div class="output-section">
-  <label>Water Capacity (cubic liters): </label>
+  <label>Water Capacity (liters): </label>
   <span id="capacity"></span>
   <br />
   <label>Surface Area (square meters): </label>
@@ -154,6 +154,8 @@ document.querySelector('pool-dimensions').shadowRoot.querySelectorAll('input');
 
 Until now we haven't really looked into how we can add logic to our custom element. It makes sense to also store this aspect inside the Web Component. As we are already in the JavaScript world we can just add code to the class.
 
+#### Event listener in constructor
+
 We want our calculate button to actually do something. We can add an event listener to it in the constructor:
 
 ```js
@@ -171,6 +173,8 @@ class PoolDimensions extends HTMLElement {
   }
 }
 ```
+
+#### Clean up event listener with lifecycle callback
 
 Like in real life we unfortunately need to clean up after ourselves. When the component is removed from the page we should also remove the event listener. Web components have [lifecycle callbacks](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#using_the_lifecycle_callbacks) that automatically run at certain points in the lifecycle. We can use the `disconnectedCallback()` that is called when the element is removed from the page:
 
@@ -194,13 +198,14 @@ class PoolDimensions extends HTMLElement {
 }
 ```
 
+#### Better add event listener in connectedCallback
+
 There are unfortunately some quirks with this approach. The constructor is called exactly once when the element is created. But the `disconnectedCallback()` is called when we e.g. move the element as it gets recreated. When that happens we lose the event listener marking the button unusable. We can fix this by adding the event listener in another lifecycle method, the `connectedCallback()`. That is called every time the element is added to the page, so unlike the constructor also when it is moved:
 
 ```js
 class PoolDimensions extends HTMLElement {
   constructor() {
-    // ...
-
+    // it is still safe to define dom references in the constructor
     this.button = this.shadowRoot.querySelector('#calculate');
   }
 
@@ -221,3 +226,205 @@ class PoolDimensions extends HTMLElement {
 ```
 
 My personal rule of thumb is to define variables in the constructor and run logic in the `connectedCallback()`. A more detailed explanation on what to care about can be found in [this StackOverflow question](https://stackoverflow.com/questions/59970043/custom-element-setup-constructor-vs-connectedcallback).
+
+#### Calculation
+
+Now we only need to add the code to calculate the pool dimensions.
+
+```js
+constructor() {
+  // ...
+
+  // define dom references
+  this.calcBtn = this.shadowRoot.querySelector("#calculate");
+  this.lengthInput = this.shadowRoot.querySelector("#length");
+  this.widthInput = this.shadowRoot.querySelector("#width");
+  this.depthInput = this.shadowRoot.querySelector("#depth");
+  this.capacityOutput = this.shadowRoot.querySelector("#capacity");
+  this.areaOutput = this.shadowRoot.querySelector("#area");
+
+  // bind the calculate method to the class
+  this.calculate = this.calculate.bind(this);
+}
+
+connectedCallback() {
+  this.calcBtn.addEventListener("click", this.calculate);
+}
+
+disconnectedCallback() {
+  this.calcBtn.removeEventListener("click", this.calculate);
+}
+
+calculate() {
+  const length = this.lengthInput.valueAsNumber;
+  const width = this.widthInput.valueAsNumber;
+  const depth = this.depthInput.valueAsNumber;
+
+  const capacity = length * width * depth;
+  const area = 2 * (width * depth + length * depth) + length * width; // walls + floor
+
+  this.capacityOutput.textContent = capacity;
+  this.areaOutput.textContent = area;
+}
+```
+
+Notice how we redifine the `calculate()` method in the constructor. JavaScript and the `this` keyword is a total mess. Basically what happens is that when we pass the method to the event listner, [this will get overwritten to the triggering element](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#the_value_of_this_within_the_handler) by the `addEventListener` function. This results in us not being able to access the class properties anymore. To fix this we have to bind the method to the class in the constructor. This will make sure that the `this` keyword will always refer to the class.
+
+<BlogGif filename="html-vanilla-calc.gif" alt="" />
+
+### Component Attributes
+
+```html
+<input id="xyz" class="money" type="number" min="0" max="10" required />
+```
+
+The powerful thing about HTML is that we can easily add many attributes to elements. Some are great for referencability (id), some for styling (class, style), some for validation (required) and some for configuration (type, min, max).
+
+We can also add custom attributes to our custom elements. Thats great because we have some international customers that for some use their feet to measure the pool dimensions instead of a measuring tape?! We can add a `units` attribute to so we can switch between feet and meters. The component will then look like this:
+
+```html
+<pool-dimensions units="metric"></pool-dimensions>
+<pool-dimensions units="imperial"></pool-dimensions>
+```
+
+#### Modify Template
+
+To achieve that we first have to change our template a little bit so we can change the units in the lables:
+
+```html
+<!-- ... -->
+<label for="length">Length (<span class="length-unit">meters</span>)</label>
+<!-- ... -->
+<label for="width">Width (<span class="length-unit">meters</span>)</label>
+<!-- ... -->
+<label for="depth">Depth (<span class="length-unit">meters</span>)</label>
+<!-- ... -->
+<label>Water Capacity (<span class="capacity-unit">liters</span>):</label>
+<!-- ... -->
+<label>Surface Area (<span class="area-unit">square meters</span>): </label>
+<!-- ... -->
+```
+
+#### Calculation
+
+We then can create references to the labels in the constructor. We will also call a new method `setUnits()` in the connected callback.
+
+```js
+constructor() {
+  // ...
+  this.lengthTexts = this.shadowRoot.querySelectorAll('.length-unit');
+  this.capacityText = this.shadowRoot.querySelector('.capacity-unit');
+  this.areaText = this.shadowRoot.querySelector('.area-unit');
+}
+
+connectedCallback() {
+  // ...
+  this.setUnits();
+}
+```
+
+This new method will check the `units` attribute and set the labels accordingly. We access the attribute value with the `getAttribute` function.
+
+```js
+setUnits() {
+  const units = this.getAttribute("units") ?? "metric";
+
+  switch (units) {
+    case "metric":
+      this.isMetric = true;
+      break;
+    case "imperial":
+      this.isMetric = false;
+      break;
+    default:
+      console.warn(
+        `[${this.getAttribute("id")}] Invalid units attribute:`,
+        units
+      );
+      this.isMetric = true;
+  }
+
+  this.lengthTexts.forEach(
+    (el) => (el.textContent = this.isMetric ? "meters" : "feet")
+  );
+  this.capacityText.textContent = this.isMetric ? "liters" : "gallons";
+  this.areaText.textContent = this.isMetric ? "square meters" : "square feet";
+
+  // recalc
+  this.calculate();
+}
+```
+
+Additionally we need to modify the water capacity calculation, as these feet people again use some random unit instead the one where 1000 of the unit eqal one cubic meter and the mass one of the units worth of water is weights exactly 1 kilogram. Fortunately the area calculation is the same for both units as it is just square-unit in both cases.
+
+```js
+calculate() {
+    // ...
+
+    if (isNaN(capacity) || isNaN(area)) {
+      return;
+    }
+
+    if (!this.isMetric) {
+      // Convert cubic meters to gallons
+      this.capacityOutput.textContent = (capacity * 0.2642).toFixed(1);
+    } else {
+      this.capacityOutput.textContent = capacity;
+    }
+    this.areaOutput.textContent = area;
+  }
+```
+
+<BlogImg
+  filename="html-vanilla-both-units.png"
+  alt="Screenshot of two versions of the component. First one has length, width and depth in meters and the second one in feet. Water capacity is in liters / gallons and surface area in square meters / square feet."
+/>
+
+#### Reactivity
+
+Currently the units are defined on component creation and can not be changed afterwards. As our users are very indecisive we need to allow them to switch their prefered units at any time. Luckily this is no problem for Web Components.
+
+We first need to define which attributes should be observed for changes. We can just define a static getter `observedAttributes` that returns an array of attribute names:
+
+```js
+class PoolDimensions extends HTMLElement {
+  static get observedAttributes() {
+    return ['units'];
+  }
+
+  // ...
+}
+```
+
+Then we can use another lifecycle method called `attributeChangedCallback`. It receives the name of the changed attribute, the old value and the new value. We can just call our `setUnits()`. We don't need to pass anything as the `setUnits()` method will just read the attribute value again:
+
+```js
+attributeChangedCallback(name, oldValue, newValue) {
+  switch (name) {
+    case "units":
+      this.setUnits();
+      break;
+    default:
+      console.warn(
+        `[${this.getAttribute("id")}] Unhandled attribute change:`,
+        name
+      );
+  }
+}
+```
+
+Now when we change the attribute value the `setUnits()` method will be called and the labels will be updated and a recalculation triggered.
+
+<BlogGif filename="html-vanilla-reactive-units.gif" alt="" />
+
+#### Changing attributes from JavaScript
+
+We can also change the attribute value dynamically from JavaScript. We need to query our custom element and then use the `setAttribute()` method:
+
+```js
+const el = document.querySelector('pool-dimensions');
+el.setAttribute('units', 'metric');
+el.getAttribute('units'); // 'metric'
+```
+
+### Properties
