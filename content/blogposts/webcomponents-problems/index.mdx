@@ -1,0 +1,66 @@
+---
+title: 'Mastering Web Components: A Comprehensive Step-by-Step Guide'
+date: 2023-08-10
+description: Learn step-by-step how Web Components work and how to use them. Including HTML templates, custom elements, shadow DOM, attributes, properties, and slots.
+slug: web-components-step-by-step
+titleImage: ./sigmund-4CNNH2KEjhc-unsplash.jpg
+titleImageAlt: semantic html
+titleImageSource:
+  {
+    text: 'Photo by Sigmund on Unsplash',
+    href: 'https://unsplash.com/photos/4CNNH2KEjhc',
+  }
+tags: ['HTML', 'Web-Development']
+ghCommentsIssueId: 23
+published: false
+---
+
+## Things I don't like about Web Components
+
+### Attributes and Properties
+
+I totally see the point of the need of passing values that should not be reflected in the DOM. But the implementation is quite confusing I think.
+
+For one you use getters and setters and for the other you have `this.getAttribute()` and a lifecycle method (I like the later one more). I also think that attributes should always be reactive. You can still decide to do nothing in the `attributeChangedCallback` but you should not have to define the attributes you want to observe.
+
+I (**maybe naively**) think both concepts should be merged. Users should be able to use both `setAttribute` and the property setter to set values and both are synced. Inside the component you can return an array that defines wether a property should be reflected in the DOM or not:
+
+```js
+static get reflectedAttributes() {
+  return ['units'];
+}
+```
+
+For a `data` attribute (not in the array) you could use `setAttribute` which will still write it to the DOM. But when you use the property it will not be reflected in the DOM. Where as setting the `units` property then would automatically update the `units` attribute int the DOM.
+
+Then you could tell everybody just use properties all the time and everything will be fine.
+
+One problem would still be automatic type conversions for DOM but you could maybe define types for attribute to tell the browser how to convert them. And if something fails throw an error.
+
+### JavaScript and this
+
+I am really not an object-oriented guy. 99 % of my time I write functional and/or procedural code. So I may be a little bit opiniated.
+
+But you can't tell me that needing to bind a function to `this` so `this` inside the function is not overwritten by another `this` from the evnet listner?! And as you don't have to do this binding with every function you just know that one day you will forget it and then you will have a hard time debugging it.
+
+### Shadow DOM and Styling
+
+The Shadow DOM is a great concept for encapsulation. But I think it is too opiniated and should allow configuration of how it should handle styles. Remember that Web Components should be ubiquitous and fit into any context.
+
+If you develop a Web Component to extend and fit into an existing website you might want to reuse existing classes (like TailwindCSS or Oracle APEX). But the Shadow DOM will simply not allow you to do this. The decision that CSS variables are allowed to be used in the Shadow DOM is a confusing to me? Why this one and not the other?
+
+So you have the option to copy 300 lines of CSS with CSS variables for every state (hover, active, etc.) to reuse styles instead of your button class. Or you not use the Shadow DOM and loose all the advantages of encapsulation.
+
+And the [::part()](https://developer.mozilla.org/en-US/docs/Web/CSS/::part) CSS selector also does not solve this as you need to copy all the styles of the existing class again for all states (if you don't want to wrangle around in the CSS of your framework). The [@apply spec](https://tabatkins.github.io/specs/css-apply-rule/) could have fixed this, but it got abondoned.
+
+But as the [container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_container_queries) spec got right, components should care about fitting into the page. Not the other way around.
+
+My prefered solution would be to allow the Shadow DOM to be configured to allow classes to be used inside the Shadow DOM. This would allow you to use existing classes and styles and still encapsulate your component.
+
+### Too much code needed
+
+Coming from React and Svelte I dislike how much code you need to write to get anything done. Not only that but you can also shoot yourself in the foot quite easily. Like when forgetting to clean up event listeners where modern frameworks completely abstract event listeners away from you. Also conditions and loops are not easy doable and need JavaScript to work. Every modern framework has a way to do this in the template.
+
+I see that vanilla needs to be granular so that you can build easier to use frameworks on top of it. But I also think that we should als transfer learnings from these frameworks back to vanilla.
+
+Next to a better developer experience this would also lead to a reduced code size which translates to faster and better user experience (less network time and compilation).

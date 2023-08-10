@@ -21,6 +21,11 @@ const components = {
   h2: LinkedH2,
   h3: LinkedH3,
   h4: LinkedH4,
+  ul: ({ children }) => (
+    <div className="ml-5">
+      <ul>{children}</ul>
+    </div>
+  ),
   Gist,
   // eslint-disable-next-line react/prop-types
   BlogImg: ({ filename, alt, noShadow = false, maxWidthPx }) => (

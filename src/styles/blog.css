@@ -49,7 +49,15 @@
 }
 
 .blog-body ul {
-  @apply mb-6 ml-2 list-outside list-disc;
+  @apply mb-6 list-outside list-disc;
+}
+
+.blog-body li {
+  @apply my-3;
+}
+
+.blog-body li::marker {
+  @apply ml-3;
 }
 
 .blog-body .video-wrapper {

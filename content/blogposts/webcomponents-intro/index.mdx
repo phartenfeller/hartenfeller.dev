@@ -1,6 +1,6 @@
 ---
 title: 'Mastering Web Components: A Comprehensive Step-by-Step Guide'
-date: 2023-08-08
+date: 2023-08-10
 description: Learn step-by-step how Web Components work and how to use them. Including HTML templates, custom elements, shadow DOM, attributes, properties, and slots.
 slug: web-components-step-by-step
 titleImage: ./sigmund-4CNNH2KEjhc-unsplash.jpg
@@ -11,15 +11,25 @@ titleImageSource:
     href: 'https://unsplash.com/photos/4CNNH2KEjhc',
   }
 tags: ['HTML', 'Web-Development']
-ghCommentsIssueId: 23
+ghCommentsIssueId: 92
 published: true
 ---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/7De3z1ZgAgs">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
 
 ## Why do they exist?
 
 Web Components are the W3C's answer to the rise of fronted JavaScript frameworks, where apps are divided into components that are composed together to form the UI. The classic way of developing vanilla HTML is to think in documents, so in the big picture of whole pages.
 
-As frameworks like React and Angular require big JavaScript runtimes that every user has to download and execute, there was a need to make this development style natively usable. This is why Web Components exit.
+As frameworks like React and Angular require big JavaScript runtimes that every user has to download and execute, there was a need to make this component-based development style natively usable. This is why Web Components exit.
+I like to use them to extend existing web pages with small pieces of functionality. Oracle APEX, for example, allows you to develop plug-ins that integrate into the page. It does not force you to use Web Components, but I like to think about the components separately from the integration layer.
 
 ## How do they work? - Step by step
 
@@ -58,9 +68,9 @@ How can we bundle this layout and the functionality behind it into a reusable co
 
 ### HTML Templates: Reausability
 
-Copying and pasting this HTML layout everywhere is not ideal. When we want to change anything, we need to go through every page and change it there.
+Copying and pasting this HTML layout everywhere is not ideal. When we want to change anything, we need to go through every page and do it there manually.
 
-Luckily, we have the [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template) where we can store this layout and implement it anywhere we need it. We can store it directly in the HTML file or in JavaScript. But we have to clone it in JavaScript to use it:
+Luckily, we have the [`<template>` tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template) where we can store this layout and implement it anywhere we need it. We can store it directly in the HTML file or in JavaScript. We can clone it with JavaScript to use the template:
 
 ```js
 const template = document.createElement('template');
@@ -210,7 +220,7 @@ class PoolDimensions extends HTMLElement {
 
 #### Better add event listener in connectedCallback
 
-Unfortunately, there are some quirks with this approach. The **constructor is called exactly once** when the element is created. But when we, e.g., move an element, it actually gets destroyed and recreated. Then the `disconnectedCallback` runs, removing the event listener, but the constructor doesn't run again. Now the button is not usable anymore.
+Unfortunately, there are some quirks with this approach. The **constructor is called exactly once** when the element is created. But when we, e.g., move an element, it actually gets disconnected and connected again. Then the `disconnectedCallback` runs, removing the event listener, but the constructor doesn't run again. Now the button is not usable anymore.
 
 We can fix this by adding the event listener in another lifecycle method instead of the constructor. The `connectedCallback()` is called every time the element is added to the page, unlike the constructor:
 
@@ -409,7 +419,7 @@ class PoolDimensions extends HTMLElement {
 }
 ```
 
-Then we can use another lifecycle method called `attributeChangedCallback`. It receives the name of the changed attribute, the old value, and the new value. We can just call `setUnits()` in when the unit is changed. We don't need to pass anything, as the `setUnits()` method will just read the attribute value again:
+Then we can use another lifecycle method called `attributeChangedCallback`. It receives the name of the changed attribute, the old value, and the new value. We can just call `setUnits()` when the unit is changed. We don't need to pass anything, as the method will just read the attribute value again:
 
 ```js source=https://github.com/phartenfeller/web-component-blogpost-demos/tree/main/tests/vanilla-attribute
 attributeChangedCallback(name, oldValue, newValue) {
@@ -442,13 +452,15 @@ el.getAttribute('units'); // 'metric'
 
 ### Properties
 
-This is again a little bit confusing. Next to attributes there is another way to pass data to a component called properties.
+This part is unfortunately a bit confusing. Next to attributes, there is another way to pass data to a component. This method is called properties.
 
 #### Properties vs Attributes
 
-Property values are not reflected in the DOM / HTML. You can only set them via JavaScript. You can also easily pass objects and arrays as properties. With attributes this is only possible if you convert them to strings first and then parse them in the component. But but it is not ideal to pass a huge string with an attribute.
+Property values are not reflected in the DOM / HTML. You can only set them via JavaScript. Attributes only allow you to pass strings. The benefit of properties is that you can pass any JavaScript value to the component. This is useful for objects or arrays.
 
-The JavaScript API is fairly simple. You can access the properties literally via properties (`.` operator) of the element:
+You could theoretically convert an object to a string, pass it as an attribute, and parse it back again in the component. But this approach is not ideal and looks horrible in the DOM.
+
+The JavaScript API is fairly simple. You can access the properties literally via JavaScript properties (`.` operator) of the element:
 
 ```js
 const el = document.querySelector('pool-dimensions');
@@ -462,7 +474,7 @@ console.log(el.data.length); // 2
 
 #### Accessing porperties inside the component
 
-Accessing the passed value is fairly simple as the values are literally just a property on `this`:
+Accessing the passed value is fairly simple, as the values are literally just properties on `this`:
 
 ```js
 connectedCallback() {
@@ -477,7 +489,7 @@ connectedCallback() {
 }
 ```
 
-You might also want to retrieve the current value of the inputs from the outside after the user made changes. For that occasion we can define a getter that returns the current values. We just have to define a function called `get {propertyName}()`:
+You might also want to retrieve the current value of the inputs from outside after the user changes the inputs. We just have to define a getter function called `get {propertyName}()` that returns the current values:
 
 ```js
 get data() {
@@ -489,9 +501,9 @@ get data() {
 }
 ```
 
-We can also achieve reactivitiy by defining a setter:
+We can also achieve reactivity by defining a setter:
 
-```js
+```js source=https://github.com/phartenfeller/web-component-blogpost-demos/blob/main/tests/vanilla-prop/main.js
 set data({ length, width, depth }) {
   this.lengthInput.value = length;
   this.widthInput.value = width;
@@ -502,7 +514,7 @@ set data({ length, width, depth }) {
 
 #### Syncing properties and attributes
 
-If we for example forget that `units` is an attribute instead of a property we can easily get confused as the same key can have different values.
+If we somehow forget that `units` is an attribute instead of a property, we can easily get confused, as the same key can have different values:
 
 ```js
 const el = document.querySelector('pool-dimensions');
@@ -512,9 +524,9 @@ el.units; // 'imperial'
 el.getAttribute('units'); // 'metric'
 ```
 
-We can keep both in sync by defining getters and setters to an attribute:
+We can keep both in sync by defining getters and setters for an attribute:
 
-```js
+```js source=https://github.com/phartenfeller/web-component-blogpost-demos/blob/main/tests/vanilla-attr-prop-sync/main.js
 set units(value) {
   // if observed this will call attributeChangedCallback
   this.setAttribute("units", value);
@@ -525,11 +537,13 @@ get units() {
 }
 ```
 
-But I like doing better documentation of my component to make clear which values are attributes and which are properties than to add a hack.
+But I prefer to do better documentation of my component to make it clear which values are attributes and which are properties than to add a hack.
 
 ### Slots: passing child elements to a component
 
-If you want a modal dialog UI component you don't care about the content of the modal. You just want to pass a title and some content to it. This is where [slots](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot) come in handy which allow to pass child elements to a component. You can define a slot in your template:
+(From this point I won't use the pool example anymore as it's not fitting for the topic)
+
+If you want to build a modal dialog UI component, you don't care about the content of the modal. You just want to give it a title and some content. This is where [slots](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot) are practical, which allow you to pass child elements to a component. You can define a slot in your template:
 
 ```html
 <dialog open>
@@ -543,7 +557,7 @@ If you want a modal dialog UI component you don't care about the content of the 
 </dialog>
 ```
 
-And afterwards you can pass content to your custom-component:
+And now, you can pass content to your custom component:
 
 ```html
 <my-dialog>
@@ -559,7 +573,7 @@ And afterwards you can pass content to your custom-component:
 
 You can also dynamically pass content with JavaScript:
 
-```js
+```js source=https://github.com/phartenfeller/web-component-blogpost-demos/blob/main/tests/vanilla-slot-and-fc/main.js
 const dialogContent = document.createElement('div');
 dialogContent.textContent = 'Some content';
 dialogContent.setAttribute('slot', 'content');
@@ -568,85 +582,55 @@ const dialogEl = document.querySelector('my-dialog');
 dialogEl.appendChild(modalContent);
 ```
 
+As you can name slots you are even able to define multiple slots in your component.
+
 ### Private and public methods
 
-We still need a way to open the dialog from outside the component, to bind the modal to a button for example. Any methods defined inside the component are public by default:
+We want to open the dialog from outside the component, as we would like to bind the modal to a button. We could update the attribute on the component, but we can even call the open function from the outside. Any methods defined inside the component are public by default:
 
 ```js
 // inside the component
+////////////////////////
 open() {
   this.dialogEl.setAttribute("open", "");
 }
+////////////////////////
+
+
 
 // outside the component / main page
+////////////////////////
 const dialog = document.querySelector('my-dialog');
 
 btn.addEventListener('click', () => {
   dialog.open();
 });
+////////////////////////
 ```
 
 We can make methods private by prefixing them with a `#`:
 
-```js
+```js source=https://github.com/phartenfeller/web-component-blogpost-demos/blob/main/tests/vanilla-slot-and-fc/main.js
 // inside the component
+////////////////////////
 #privateMethod() {
   console.log("private method");
 }
+////////////////////////
+
+
 
 // outside the component / main page
+////////////////////////
 const dialog = document.querySelector('my-dialog');
 dialog.#privateMethod();
 // error:
 // Uncaught SyntaxError: Private field '#privateMethod' must be declared in an enclosing class
+////////////////////////
 ```
 
-## Things I don't like about Web Components
+## Conclusion
 
-### Attributes and Properties
+I think Web Components are really useful and a great innovation in vanilla web development. But I still have some things that I don't like about them. I will write about them in a future blog post and also show how development can be easier with some frameworks.
 
-I totally see the point of the need of passing values that should not be reflected in the DOM. But the implementation is quite confusing I think.
-
-For one you use getters and setters and for the other you have `this.getAttribute()` and a lifecycle method (I like the later one more). I also think that attributes should always be reactive. You can still decide to do nothing in the `attributeChangedCallback` but you should not have to define the attributes you want to observe.
-
-I (**maybe naively**) think both concepts should be merged. Users should be able to use both `setAttribute` and the property setter to set values and both are synced. Inside the component you can return an array that defines wether a property should be reflected in the DOM or not:
-
-```js
-static get reflectedAttributes() {
-  return ['units'];
-}
-```
-
-For a `data` attribute (not in the array) you could use `setAttribute` which will still write it to the DOM. But when you use the property it will not be reflected in the DOM. Where as setting the `units` property then would automatically update the `units` attribute int the DOM.
-
-Then you could tell everybody just use properties all the time and everything will be fine.
-
-One problem would still be automatic type conversions for DOM but you could maybe define types for attribute to tell the browser how to convert them. And if something fails throw an error.
-
-### JavaScript and this
-
-I am really not an object-oriented guy. 99 % of my time I write functional and/or procedural code. So I may be a little bit opiniated.
-
-But you can't tell me that needing to bind a function to `this` so `this` inside the function is not overwritten by another `this` from the evnet listner?! And as you don't have to do this binding with every function you just know that one day you will forget it and then you will have a hard time debugging it.
-
-### Shadow DOM and Styling
-
-The Shadow DOM is a great concept for encapsulation. But I think it is too opiniated and should allow configuration of how it should handle styles. Remember that Web Components should be ubiquitous and fit into any context.
-
-If you develop a Web Component to extend and fit into an existing website you might want to reuse existing classes (like TailwindCSS or Oracle APEX). But the Shadow DOM will simply not allow you to do this. The decision that CSS variables are allowed to be used in the Shadow DOM is a confusing to me? Why this one and not the other?
-
-So you have the option to copy 300 lines of CSS with CSS variables for every state (hover, active, etc.) to reuse styles instead of your button class. Or you not use the Shadow DOM and loose all the advantages of encapsulation.
-
-And the [::part()](https://developer.mozilla.org/en-US/docs/Web/CSS/::part) CSS selector also does not solve this as you need to copy all the styles of the existing class again for all states (if you don't want to wrangle around in the CSS of your framework). The [@apply spec](https://tabatkins.github.io/specs/css-apply-rule/) could have fixed this, but it got abondoned.
-
-But as the [container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_container_queries) spec got right, components should care about fitting into the page. Not the other way around.
-
-My prefered solution would be to allow the Shadow DOM to be configured to allow classes to be used inside the Shadow DOM. This would allow you to use existing classes and styles and still encapsulate your component.
-
-### Too much code needed
-
-Coming from React and Svelte I dislike how much code you need to write to get anything done. Not only that but you can also shoot yourself in the foot quite easily. Like when forgetting to clean up event listeners where modern frameworks completely abstract event listeners away from you. Also conditions and loops are not easy doable and need JavaScript to work. Every modern framework has a way to do this in the template.
-
-I see that vanilla needs to be granular so that you can build easier to use frameworks on top of it. But I also think that we should als transfer learnings from these frameworks back to vanilla.
-
-Next to a better developer experience this would also lead to a reduced code size which translates to faster and better user experience (less network time and compilation).
+You can find all the demos on [GitHub](https://github.com/phartenfeller/web-component-blogpost-demos).
