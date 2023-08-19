@@ -62,6 +62,12 @@ const Layout = ({ children, header = false, toc }) => (
           >
             Blog
           </Link>
+          <Link
+            to="/links"
+            className="rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:text-xl"
+          >
+            Links
+          </Link>
         </div>
         <div>
           {toc && toc.items ? (
@@ -85,7 +91,7 @@ const Layout = ({ children, header = false, toc }) => (
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items
-                      className={`absolute right-0 z-50 mt-8 ml-2 origin-top-right overflow-hidden
+                      className={`absolute right-0 z-50 ml-2 mt-8 origin-top-right overflow-hidden
               overflow-y-scroll rounded-md bg-white py-4 text-base text-zinc-600 shadow-md ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm`}
                       style={{ maxHeight: '50vh' }}
                     >
@@ -123,7 +129,7 @@ const Layout = ({ children, header = false, toc }) => (
       </header>
     ) : null}
     <main className="flex-grow">{children}</main>
-    <footer className="md:text-md grid grid-cols-2 bg-title-brown-light py-4 px-8 text-sm text-white shadow-lg md:grid-cols-3 md:font-semibold lg:grid-cols-5">
+    <footer className="md:text-md grid grid-cols-2 bg-title-brown-light px-8 py-4 text-sm text-white shadow-lg md:grid-cols-3 md:font-semibold lg:grid-cols-5">
       <div className="my-4 lg:my-0">{`© ${new Date().getFullYear()} Philipp Hartenfeller`}</div>
       <div className="my-4 lg:my-0 lg:text-center">
         <Link className="py-2 pr-2 underline" to="/imprint">
@@ -140,12 +146,9 @@ const Layout = ({ children, header = false, toc }) => (
         </Link>
       </div>
       <div className="my-4 lg:my-0 lg:text-right">
-        <a
-          className="underline"
-          href="https://github.com/phartenfeller/hartenfeller.dev"
-        >
-          Check out the code on GitHub
-        </a>
+        <Link className="underline" to="/#contact">
+          Contact
+        </Link>
       </div>
     </footer>
   </div>

@@ -1,45 +1,24 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import svg from '../../images/svg';
+import links from '../../../content/links';
 
-const links = [
-  {
-    name: 'GitHub',
-    href: 'https://github.com/phartenfeller',
-    path: svg.github.path,
-  },
-  {
-    name: 'Twitter',
-    href: 'https://twitter.com/phartenfeller',
-    path: svg.twitter.path,
-  },
-  {
-    name: 'LinkedIn',
-    href: 'https://www.linkedin.com/in/phartenfeller/',
-    path: svg.linkedin.path,
-  },
-  {
-    name: 'YouTube',
-    href: 'https://www.youtube.com/channel/UCGVCQ939MmXPjyccfrrA-Yg',
-    path: svg.youtube.path,
-  },
-];
+const linksArr = [links.github, links.twitter, links.linkedin, links.youtube];
 
 const LinkCard = ({ link }) => (
   <a
     href={link.href}
-    className="items-center rounded-md shadow-lg shadow-red-200/30 py-10 px-10 bg-white/90 backdrop-blur-sm  transform transition-all duration-150 ease-in-out hover:scale-105 hover:opacity-[.8] hover:backdrop-blur-md focus:ring-4 focus:ring-red-200 focus:outline-none motion-reduce:translate-z-0"
+    className="transform items-center rounded-md bg-white/90 px-10 py-10 shadow-lg shadow-red-200/30  backdrop-blur-sm transition-all duration-150 ease-in-out hover:scale-105 hover:opacity-[.8] hover:backdrop-blur-md focus:outline-none focus:ring-4 focus:ring-red-200 motion-reduce:translate-z-0"
   >
     <div className="m-auto">
       <svg
-        className="text-[#544242] w-8 h8 md:w-12 md:h-12 lg:h-16 lg:w-16 m-auto"
+        className="h8 m-auto w-8 text-title-brown-light md:h-12 md:w-12 lg:h-16 lg:w-16"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
         fill="currentcolor"
       >
         <path d={link.path} />
       </svg>
-      <div className="text-center mt-4 text-xl md:text-2xl">{link.name}</div>
+      <div className="mt-4 text-center text-xl md:text-2xl">{link.name}</div>
     </div>
   </a>
 );
@@ -53,8 +32,8 @@ LinkCard.propTypes = {
 };
 
 const SocialLinks = () => (
-  <div className="-mt-64 md:-mt-32 lg:-mt-32 px-8 lg:px-48 grid gap-4 lg:gap-10 mx-auto grid-cols-2 xl:grid-cols-4 lg:max-w-none xxl:w-2/3">
-    {links.map((link) => (
+  <div className="mx-auto -mt-64 grid grid-cols-2 gap-4 px-8 md:-mt-32 lg:-mt-32 lg:max-w-none lg:gap-10 lg:px-48 xl:grid-cols-4 xxl:w-2/3">
+    {linksArr.map((link) => (
       <LinkCard link={link} key={link.name} />
     ))}
   </div>
