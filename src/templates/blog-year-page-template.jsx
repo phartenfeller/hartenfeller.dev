@@ -89,7 +89,7 @@ const BlogYearTemplate = ({ data, pageContext }) => {
 
             <button
               type="button"
-              className="mx-auto flex w-[20ch] items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm hover:bg-zinc-100 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-red-500 lg:hidden"
+              className="mx-auto mb-5 flex w-[20ch] items-center justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-800 shadow-sm hover:bg-zinc-100 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-red-500 lg:hidden"
               onClick={() => setSidebarOpen(true)}
             >
               <FilterIcon
