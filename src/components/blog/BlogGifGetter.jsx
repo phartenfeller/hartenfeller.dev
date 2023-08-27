@@ -27,6 +27,7 @@ const BlogGifGetter = ({ filename, classes, alt }) => {
           src={filterGif(data).node.publicURL}
           alt={alt}
           className={classes}
+          loading="lazy"
         />
       )}
     />
