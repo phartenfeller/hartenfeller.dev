@@ -2,8 +2,6 @@ require('dotenv').config({
   path: `.env`,
 });
 
-const siteUrl = `https://hartenfeller.dev`;
-
 module.exports = {
   siteMetadata: {
     title: `Philipp Hartenfeller`,
@@ -42,20 +40,7 @@ module.exports = {
       },
     },
     'gatsby-plugin-postcss',
-    {
-      resolve: 'gatsby-plugin-sitemap',
-      options: {
-        query: `
-        {
-          allSitePage {
-            nodes {
-              path
-            }
-          }
-        }`,
-        resolveSiteUrl: () => siteUrl,
-      },
-    },
+    'gatsby-plugin-sitemap',
     {
       resolve: `gatsby-plugin-mdx`,
       options: {
