@@ -30,9 +30,10 @@ const BlogImageGetter = ({ filename, classes, alt, maxWidthPx }) => {
             edges {
               node {
                 gatsbyImageData(
-                  layout: FULL_WIDTH
-                  placeholder: BLURRED
+                  layout: CONSTRAINED
+                  width: 760
                   formats: [AUTO, WEBP, AVIF]
+                  breakpoints: [500, 630, 760]
                 )
                 original {
                   height

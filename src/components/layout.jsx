@@ -34,40 +34,42 @@ const levelStyles = (level) => {
   }
 };
 
-const Layout = ({ children, header = false, toc }) => (
+const Layout = ({ children, header = false, toc, stickyHeader = false }) => (
   <div className="ite flex min-h-screen flex-col">
     {header ? (
       <header
         className={`flex select-none items-center justify-between bg-title-brown-light py-3 lg:px-4 ${
-          toc ? 'sticky top-0 z-40' : ''
+          toc || stickyHeader ? 'sticky top-0 z-40' : ''
         }`}
       >
         <div className="flex items-center">
           <Link
             tabIndex="-1"
             to="/"
-            className="mr-4 hidden rounded px-2 font-extrabold text-white hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 md:block lg:mr-12 lg:text-2xl"
+            className="mr-4 hidden rounded px-2 font-extrabold text-white hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 md:block lg:mr-8 lg:text-2xl"
           >
             hartenfeller.dev
           </Link>
-          <Link
-            to="/"
-            className="mr-2 rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:mr-5 lg:text-xl"
-          >
-            Home
-          </Link>
-          <Link
-            to="/blog"
-            className="rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:text-xl"
-          >
-            Blog
-          </Link>
-          <Link
-            to="/links"
-            className="rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:text-xl"
-          >
-            Links
-          </Link>
+          <div className="flex gap-x-2 md:gap-x-4">
+            <Link
+              to="/"
+              className="rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:text-xl"
+            >
+              Home
+            </Link>
+            <Link
+              to="/blog"
+              className="rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:text-xl"
+            >
+              Blog
+            </Link>
+            <Link
+              to="/links"
+              className="rounded px-2 text-red-100 hover:bg-cappuccino/50 focus:outline-none focus:ring-2 focus:ring-red-400 lg:text-xl"
+            >
+              Links
+            </Link>
+          </div>
         </div>
         <div>
           {toc && toc.items ? (
@@ -161,11 +163,13 @@ Layout.propTypes = {
     // eslint-disable-next-line react/forbid-prop-types
     items: PropTypes.arrayOf(PropTypes.object),
   }),
+  stickyHeader: PropTypes.bool,
 };
 
 Layout.defaultProps = {
   header: false,
   toc: null,
+  stickyHeader: false,
 };
 
 export default Layout;

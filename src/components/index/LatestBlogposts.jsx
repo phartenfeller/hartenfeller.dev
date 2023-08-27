@@ -155,7 +155,7 @@ const LatestBlogposts = () => {
         <SectionHeader section="My Blog" />
       </Link>
 
-      <div className="mx-auto max-w-6xl rounded-lg bg-white p-6 shadow-lg shadow-red-200/30">
+      <div className="mx-auto max-w-6xl rounded-lg bg-white p-3 shadow-lg shadow-red-200/30 md:p-6 xl:p-9">
         <Tab.Group
           as="div"
           vertical

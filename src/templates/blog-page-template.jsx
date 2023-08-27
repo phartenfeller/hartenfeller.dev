@@ -30,7 +30,12 @@ export const query = graphql`
         slug
         titleImage {
           childImageSharp {
-            gatsbyImageData(layout: FULL_WIDTH)
+            gatsbyImageData(
+              layout: CONSTRAINED
+              width: 1140
+              formats: [AUTO, WEBP, AVIF]
+              breakpoints: [500, 900, 1140]
+            )
           }
         }
         fixedTitleImage: titleImage {

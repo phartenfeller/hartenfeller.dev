@@ -1,27 +1,29 @@
 import { FilterIcon } from '@heroicons/react/solid';
-import { Link, graphql } from 'gatsby';
+import { graphql, Link } from 'gatsby';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import BlogPostList from '../components/blog/BlogPostList';
+import { tagInfo } from '../components/blog/_proptypes';
 import { postType } from '../components/blog/Blogpost';
+import BlogPostList from '../components/blog/BlogPostList';
 import FilterSlideover from '../components/blog/FilterSlideover';
 import TagOverview from '../components/blog/TagOverview';
-import { tagInfo } from '../components/blog/_proptypes';
 import Layout from '../components/layout';
 import SEO from '../components/seo';
 
 export const query = graphql`
-  {
+  query ($year: Int!) {
     posts: allMdx(
       sort: { fields: frontmatter___date, order: DESC }
-      filter: { frontmatter: { published: { ne: false } } }
+      filter: {
+        fields: { year: { eq: $year } }
+        frontmatter: { published: { ne: false } }
+      }
     ) {
       nodes {
         frontmatter {
           title
           date
           formattedDate: date(formatString: "MMMM DD, YYYY")
-          year: date(formatString: "YYYY")
           description
           slug
           titleImage {
@@ -35,6 +37,10 @@ export const query = graphql`
             }
           }
           titleImageAlt
+          titleImageSource {
+            text
+            href
+          }
           tags
         }
       }
@@ -54,22 +60,19 @@ export const query = graphql`
   }
 `;
 
-const Blog = ({ data }) => {
+const BlogYearTemplate = ({ data, pageContext }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const blogposts = data.posts.nodes;
-  const groupedByYear = blogposts.reduce((accumulator, currentValue) => {
-    const year = parseInt(currentValue.frontmatter.year, 10);
-    accumulator[year] = accumulator[year] || [];
-    accumulator[year].push(currentValue);
-    return accumulator;
-  }, {});
 
-  const years = Object.keys(groupedByYear).sort((a, b) => b - a);
+  const { year } = pageContext;
 
   return (
-    <Layout header stickyHeader>
-      <SEO title="Blog" description="Blog posts from Philipp Hartenfeller" />
+    <Layout header>
+      <SEO
+        title={`Blog | ${year}`}
+        description={`Blogposts from the year ${year}`}
+      />
       <div className="flex">
         <div className="m-4 hidden w-[26ch] lg:fixed lg:flex lg:flex-col">
           <TagOverview tags={data.tagInfo.nodes} years={data.yearInfo.nodes} />
@@ -78,7 +81,9 @@ const Blog = ({ data }) => {
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 text-center xl:mb-16">
               <h1 className="brown-header-text mt-6 text-xl font-extrabold leading-9 sm:text-4xl sm:leading-10 md:mt-10 md:text-3xl lg:mt-16">
-                Philipp Hartenfeller&apos;s Blog
+                <span>
+                  Blogposts from <span className="text-red-500">{year}</span>
+                </span>
               </h1>
             </div>
 
@@ -94,19 +99,7 @@ const Blog = ({ data }) => {
               Filters
             </button>
 
-            {years.map((year, i) => (
-              <BlogPostList
-                posts={groupedByYear[year]}
-                header={year}
-                headerCount={
-                  i < 2
-                    ? null
-                    : data.yearInfo.nodes.find((y) => y.name === year)
-                        .totalCount
-                }
-                closed={i >= 2}
-              />
-            ))}
+            <BlogPostList posts={blogposts} />
           </div>
 
           <button
@@ -120,10 +113,13 @@ const Blog = ({ data }) => {
             />
             Filters
           </button>
-
           <div className="text my-16 text-center text-xl">
             <Link to="/" className="text-zinc-600 hover:underline">
               Homepage
+            </Link>
+            <span className="mx-4 text-zinc-900">•</span>
+            <Link to="/blog/" className="text-zinc-600 hover:underline">
+              Other Blogposts
             </Link>
           </div>
         </div>
@@ -138,13 +134,13 @@ const Blog = ({ data }) => {
   );
 };
 
-Blog.propTypes = {
+BlogYearTemplate.propTypes = {
   data: PropTypes.shape({
     posts: PropTypes.shape({
       nodes: PropTypes.arrayOf(
         PropTypes.shape({
           frontmatter: postType,
-        }).isRequired
+        })
       ),
     }).isRequired,
     tagInfo: PropTypes.shape({
@@ -154,6 +150,9 @@ Blog.propTypes = {
       nodes: PropTypes.arrayOf(tagInfo.isRequired),
     }).isRequired,
   }).isRequired,
+  pageContext: PropTypes.shape({
+    year: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
-export default Blog;
+export default BlogYearTemplate;
