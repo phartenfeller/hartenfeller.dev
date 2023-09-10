@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { ClockIcon } from '@heroicons/react/outline';
 import AuthorShowcase from '../components/blog/AuthorShowcase';
-import components from '../components/blog/blogComponents';
+import getComponents from '../components/blog/blogComponents';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
 import Comments from '../components/blog/Comments';
 import OtherPosts from '../components/blog/OtherPosts';
@@ -18,7 +18,7 @@ import SEO from '../components/seo';
 import '../styles/blog.css';
 
 export const query = graphql`
-  query ($id: String!) {
+  query ($id: String!, $relativeDirectory: String!) {
     post: mdx(id: { eq: $id }) {
       frontmatter {
         title
@@ -56,6 +56,29 @@ export const query = graphql`
       fileAbsolutePath
       timeToRead
       tableOfContents
+    }
+    blogImages: allFile(
+      filter: {
+        extension: { regex: "/(jpg|jpeg|png)/" }
+        relativeDirectory: { eq: $relativeDirectory }
+        sourceInstanceName: { eq: "blogposts" }
+      }
+    ) {
+      nodes {
+        childImageSharp {
+          gatsbyImageData(
+            layout: CONSTRAINED
+            width: 760
+            formats: [AUTO, WEBP, AVIF]
+            breakpoints: [500, 630, 760]
+          )
+          original {
+            height
+            width
+            src
+          }
+        }
+      }
     }
   }
 `;
@@ -111,6 +134,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
 };
 
 const BlogPageTemplate = ({ data }) => {
+  const images = data.blogImages.nodes;
   const { post } = data;
   const {
     frontmatter,
@@ -148,6 +172,8 @@ const BlogPageTemplate = ({ data }) => {
     imgWidth: fixedTitleImage.childImageSharp.gatsbyImageData.width,
     imgHeight: fixedTitleImage.childImageSharp.gatsbyImageData.height,
   });
+
+  const components = getComponents(images);
 
   return (
     <Layout header toc={tableOfContents}>
@@ -284,6 +310,16 @@ BlogPageTemplate.propTypes = {
         // eslint-disable-next-line react/forbid-prop-types
         items: PropTypes.arrayOf(PropTypes.object),
       }).isRequired,
+    }).isRequired,
+    blogImages: PropTypes.shape({
+      nodes: PropTypes.arrayOf(
+        PropTypes.shape({
+          childImageSharp: PropTypes.shape({
+            // eslint-disable-next-line react/forbid-prop-types
+            gatsbyImageData: PropTypes.object.isRequired,
+          }).isRequired,
+        }).isRequired
+      ).isRequired,
     }).isRequired,
   }).isRequired,
 };

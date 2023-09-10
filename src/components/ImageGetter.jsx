@@ -5,20 +5,26 @@ import React from 'react';
 
 const ImageGetter = ({ filename, classes, alt }) => {
   const filterImage = (images) =>
-    images.allImageSharp.edges.find(
+    images.allFile.nodes.find(
       (element) =>
         // Match string after final slash
-        element.node.gatsbyImageData.images.fallback.src.split('/').pop() ===
-        filename
-    );
+        element.childImageSharp.gatsbyImageData.images.fallback.src
+          .split('/')
+          .pop() === filename
+    ).childImageSharp;
 
   return (
     <StaticQuery
       query={graphql`
         query {
-          allImageSharp {
-            edges {
-              node {
+          allFile(
+            filter: {
+              extension: { regex: "/(jpg|jpeg|png)/" }
+              sourceInstanceName: { ne: "blogposts" }
+            }
+          ) {
+            nodes {
+              childImageSharp {
                 gatsbyImageData(
                   layout: FULL_WIDTH
                   placeholder: BLURRED
@@ -31,7 +37,7 @@ const ImageGetter = ({ filename, classes, alt }) => {
       `}
       render={(data) => (
         <GatsbyImage
-          image={filterImage(data).node.gatsbyImageData}
+          image={filterImage(data).gatsbyImageData}
           className={classes}
           alt={alt}
         />

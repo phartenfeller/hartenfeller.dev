@@ -14,7 +14,7 @@ import classNames from '../../util/classNames';
 import SeriesTeaser from './SeriesTeaser';
 import LinkedH4 from './LinkedH4';
 
-const components = {
+const getComponents = (images) => ({
   code: CodeHandler,
   // eslint-disable-next-line react/prop-types
   pre: ({ children }) => children, // handled by codeh
@@ -34,6 +34,7 @@ const components = {
       classes={classNames('object-contain', noShadow ? null : 'shadow-md')}
       alt={alt}
       maxWidthPx={maxWidthPx}
+      images={images}
     />
   ),
   // eslint-disable-next-line react/prop-types
@@ -50,6 +51,6 @@ const components = {
   WarningBox,
   Link,
   SeriesTeaser,
-};
+});
 
-export default components;
+export default getComponents;
