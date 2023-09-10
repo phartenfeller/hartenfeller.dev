@@ -14,6 +14,12 @@ exports.createPages = async ({ actions, graphql }) => {
             year
           }
           id
+          parent {
+            ... on File {
+              relativeDirectory
+              sourceInstanceName
+            }
+          }
         }
       }
     }
@@ -30,6 +36,7 @@ exports.createPages = async ({ actions, graphql }) => {
       component: require.resolve('./src/templates/blog-page-template.jsx'),
       context: {
         id: page.id,
+        relativeDirectory: page.parent.relativeDirectory,
       },
     });
   });
