@@ -1,0 +1,245 @@
+---
+  title: >
+    View Transitions in Oracle APEX
+  date: 2023-09-02
+  description: View Transitions allow to animate page transitions. This makes the UI more polished and engaging.
+  slug: oracle-apex-view-transitions
+  titleImage: ./yunus-emre-u_INEYBdj6Y-unsplash.jpg
+  titleImageAlt: A theme park ride at night. The lights of the ride are blurred due to the long exposure.
+  titleImageSource:
+    {
+      text: 'Photo by Yunus Emre on Unsplash',
+      href: 'https://unsplash.com/photos/u_INEYBdj6Y',
+    }
+  tags: ['APEX', 'User-Interfaces']
+  ghCommentsIssueId: 9999999
+---
+
+## Web Animations
+
+### From Documents to Web Apps
+
+The web is maybe one of the greatest example of improve it instead of creating something new. It started with plain white documents and black text and a few blue anchors. Anchors may still be blue but the web is now a ubiquitous platform for almost anything.
+
+I remember visiting my favorite games website ~15 years ago and waiting almost a minute for anything to load while the modem was making acoustical R2D2 impressions. People around me also did not use ther german term for "loading" instead refering to "building up" the page. This was because you could follow the rendering from top to bottom.
+
+Nowadays good websites load instantly.
+
+### Animations make UIs polished
+
+While computing power increased developers started to add motion to UIs of native programs. This does not only look exciting and engaging but also can give the user important context. Like when you enter a wrong pin into your phone and the UI shakes. Or transitions can give us the feeling that the UI would be something physical where we move around.
+
+The [material design motion guidelines](https://m2.material.io/design/motion/the-motion-system.html) are a great resource to learn more about animations and their benefit. And they have a lot of pretty good examples:
+
+<BlogVideo
+  filename="md-motion-example.mp4"
+  frame="md-motion-example.jpg"
+  width="1280"
+  title="Material Design Motion example"
+/>
+
+### The web lacks behind
+
+As any phone app has nice animations and transitions nowadays I think the web may lack behind. For simple websites it is not a big deal but also polished web apps like YouTube, the Spotify Webpage or the Apple Store use animations scarcely.
+
+I think a lot of developers are not really aware of what is possible. Addintionally complex animations are quite hard to get to work. [The examples on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_animations/Using_CSS_animations#examples) even cause a horizontal scrollbar to appear.
+
+Next to a lot of CSS properties there are even full libraries. I remember checking out [react-spring](https://www.react-spring.dev/examples) but looking at the logic required to do this I quickly lost interest. Maybe it needs some opionated default styles that just work like `on-visible: slide-in right 0.5s;`.
+
+And another thing was not even possible until recently: transitioning from one page / view to another. This is what I want to show you today.
+
+### View Transitions API
+
+This API was introduced by Google in August 2021. Jake Archibald wrote a [great blog post](https://developer.chrome.com/docs/web-platform/view-transitions/) where he shows the capabilities and how to use it. Here is a video of the example he created:
+
+<BlogVideo
+  filename="http203-view-transitions.mp4"
+  frame="http203-view-transitions.jpg"
+  width="1280"
+  title="View Transitions API Demo"
+/>
+
+The API was [submitted as a draft](https://drafts.csswg.org/css-view-transitions-1/#intro) to W3C to be become a Web standard. It landed in Chromium Browser with version 111 but is missing in Webkit and Firefox. The good news is that we can use it today as unsupported browsers just ignore the statements. Let's hope that the other browsers will adapt this soon.
+
+The only problem is: **this API only works for single-page-applications**. This means only apps that use JavaScript to change the page content dynamically can ues this feature. APEX on the other hand loads a new document when you click on a link (multi-page-application / server-side-rendered). But luckily Google is currently experimenting with server-side-rendered page transitions.
+
+Since may 2023 they are [working a spec](https://github.com/WICG/view-transitions/blob/main/cross-doc-explainer.md) that describes the API for cross-document transitions. And with experimental flags for Chrome we can try this out for APEX apps.
+
+## View Transitions in APEX
+
+### Default page transitions
+
+To use the transitions we need to add a meta tag to the header of the HTML. We can add this to the HTML Header attribute of a page.
+
+<BlogImg filename="apex-transition-meta-http-header.png" alt="" />
+
+```html
+<meta name="view-transition" content="same-origin" />
+```
+
+The spec tells that in the long term a CSS property will be better suited. This allows for media queries to control behaviour and in my opinion is more handy as styles belong to CSS.
+
+```css
+@auto-view-transitions {
+  same-origin: enabled;
+}
+```
+
+The meta tag is also unhandy to add to every page. Another option would be to modify/create page templates. But I do not recommend doing this because they may be changed by Oracle in the future and then you are own your own to make sure that everything still works.
+
+After adding the tags we already get this nice transition when we navigate between pages with the meta tag:
+
+<BlogVideo
+  filename="page-transition-vanilla-demo.mp4"
+  frame="page-transition-vanilla-demo.jpg"
+  width="1280"
+  title="APEX Page Transition"
+/>
+
+### Modify the transition
+
+We can modify how the animation looks by defining CSS keyframes. As I have no clue how to make great animations I just copied one from the [Google blogpost](https://developer.chrome.com/docs/web-platform/view-transitions/#:~:text=Material%20Design%27s%20shared%20axis%20transition%3A) that is also copied from the material design guidelines. It lets the old page fade out to the left and the new one fades in from the right.
+
+<BlogVideo
+  filename="apex-cust-page-transition.mp4"
+  frame="apex-cust-page-transition.jpg"
+  width="1280"
+  title="View Transitions API Demo"
+/>
+
+The CSS is the following:
+
+```css
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-from-right {
+  from {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes slide-to-left {
+  to {
+    transform: translateX(-30px);
+  }
+}
+
+::view-transition-old(root) {
+  animation: 90ms cubic-bezier(0.4, 0, 1, 1) both fade-out, 300ms cubic-bezier(
+        0.4,
+        0,
+        0.2,
+        1
+      ) both slide-to-left;
+}
+
+::view-transition-new(root) {
+  animation: 210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in, 300ms
+      cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+```
+
+### Browser magic: transitioning specific elements
+
+We can assign add a CSS property to specific elements on both the source and destination and let the browser automatically create a transition from the first position to the second. The browser just compares the positions of the elements with the same transition name on both pages and animates the position change.
+
+Elements with this setting overwrite the default page transition. When we add this to the static header and navigatation bar which stay at the same position now only the body content is animated:
+
+<BlogVideo
+  filename="apex-cust-page-transition-only-body.mp4"
+  frame="apex-cust-page-transition-only-body.jpg"
+  width="1280"
+  title="APEX Page Body Transition"
+/>
+
+```css
+.t-Body-nav {
+  view-transition-name: navigation-menu;
+}
+
+.t-Header {
+  view-transition-name: app-header;
+}
+```
+
+We can also use this to animate text or media that is present on both pages:
+
+<BlogVideo
+  filename="apex-element-view-transitions.mp4"
+  frame="apex-element-view-transitions.jpg"
+  width="1280"
+  title="APEX Element Transition"
+/>
+
+The first example is quite simple. We just need to add `view-transition-name` properties to the card title and the page breadcrumb:
+
+```css
+/* card page */
+#p1-cards .t-Cards-item:first-child .t-Card-title {
+  view-transition-name: emp-header;
+}
+
+/* emp page */
+#p2-header .t-Breadcrumb-label {
+  view-transition-name: emp-header;
+}
+```
+
+On the second example we transition from any clicked employee to the detail page. In this case we can't just add the same transition name to each employee name. The browser does not compare the text and then determine we want to transition "Blake" to "Blake". Instead it just notices that there multiple elements with the same transition name and does nothing.
+
+But of course we can fix this by using unique transition names. In the EMPNAME column I used following HTML expression:
+
+```html
+<span style="view-transition-name: emp-name-#EMPNO#">#ENAME#</span>
+```
+
+On the target page we can just reference the page item with the ID in the page inline styles:
+
+```css
+#R15375539247587326948_heading {
+  view-transition-name: emp-name-&P3_EMPNO.;
+}
+</style>
+```
+
+The third example with the images looks the best in my opinion. It works exactly the same. It is quite tricky to get the transition name property into the card image. I copied the HTML structure and enabled "Advanced Formatting". This is quite a bad solution as this could break in the future.
+
+```html
+<div class="a-CardView-media a-CardView-media--body a-CardView-media--cover">
+  <img
+    class="a-CardView-mediaImg"
+    src="&P_IMAGE_URL."
+    alt=""
+    loading="lazy"
+    style="view-transition-name: image-&P_ID.;"
+  />
+</div>
+```
+
+## Bleeding Edge
+
+This is in an early stage and the API can and probably will change. It can take years till this is a standard and even longer till it is supported by all browsers.
+
+There are currently problems with the element transitions. They do not work consistently (at least at my machine). I had to heavily cut the video to show only the working examples. Also the text transitions look a little bit quirky.
+
+You also need to enable an experimental flags in Chrome to get this to work. Paste this into the **Chrome** URL bar, activate the flag and restart the browser:
+
+```
+chrome://flags#view-transition-on-navigation
+```
+
+Then you can check out my [demo app](https://apex.oracle.com/pls/apex/r/hartenfeller_dev/view-transitions/) for yourself.
+
+## This should be an APEX feature in the future
+
+When the spec is stable and maybe multiple browser fully support this I guess this should be a feature in APEX with a Low Code interface. I think this makes the UI more polished. But again that could take years.
