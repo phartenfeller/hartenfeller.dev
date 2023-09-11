@@ -5,9 +5,9 @@ import ImageGetter from '../ImageGetter';
 
 const AuthorShowcase = () => (
   <div>
-    <div className="text-center font-semibold mb-3">Author</div>
+    <div className="mb-3 text-center font-semibold">Author</div>
     <div className="grid grid-cols-5 items-center gap-3">
-      <div className="lg:m-2 col-span-2">
+      <div className="col-span-2 lg:m-2">
         <ImageGetter
           filename="profile-pic.jpg"
           alt="Philipp Hartenfeller portrait photo"
@@ -23,7 +23,7 @@ const AuthorShowcase = () => (
       <div className="flex space-x-3">
         <a
           href="https://twitter.com/phartenfeller"
-          className="text-stone-400 transition-colors duration-500 ease-in-out hover:text-[#1DA1F2] border border-white hover:border-red-200 p-2 rounded-lg"
+          className="rounded-lg border border-white p-2 text-stone-400 transition-colors duration-500 ease-in-out hover:border-red-200 hover:text-[#1DA1F2]"
           aria-label="Twitter"
           title="Twitter"
         >
@@ -38,7 +38,7 @@ const AuthorShowcase = () => (
         </a>
         <a
           href="https://www.linkedin.com/in/phartenfeller/"
-          className="text-stone-400 transition-colors duration-500 ease-in-out hover:text-[#0e76a8] border border-white hover:border-red-200 p-2 rounded-lg"
+          className="rounded-lg border border-white p-2 text-stone-400 transition-colors duration-500 ease-in-out hover:border-red-200 hover:text-[#0e76a8]"
           aria-label="LinkedIn"
           title="LinkedIn"
         >
@@ -53,7 +53,7 @@ const AuthorShowcase = () => (
         </a>
         <a
           href="https://www.youtube.com/channel/UCGVCQ939MmXPjyccfrrA-Yg"
-          className="text-stone-400 transition-colors duration-500 ease-in-out hover:text-[#FF0000] border border-white hover:border-red-200 p-2 rounded-lg"
+          className="rounded-lg border border-white p-2 text-stone-400 transition-colors duration-500 ease-in-out hover:border-red-200 hover:text-[#FF0000]"
           aria-label="YouTube"
           title="YouTube"
         >
@@ -68,7 +68,7 @@ const AuthorShowcase = () => (
         </a>
         <a
           href="https://github.com/phartenfeller"
-          className="text-stone-400 transition-colors duration-500 ease-in-out hover:text-[#333] border border-white hover:border-red-200 p-2 rounded-lg"
+          className="rounded-lg border border-white p-2 text-stone-400 transition-colors duration-500 ease-in-out hover:border-red-200 hover:text-[#333]"
           aria-label="GitHub"
           title="GitHub"
         >

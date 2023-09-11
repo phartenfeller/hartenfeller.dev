@@ -4,14 +4,21 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 const ImageGetter = ({ filename, classes, alt }) => {
-  const filterImage = (images) =>
-    images.allFile.nodes.find(
+  const filterImage = (images) => {
+    const img = images.allFile.nodes.find(
       (element) =>
         // Match string after final slash
         element.childImageSharp.gatsbyImageData.images.fallback.src
           .split('/')
           .pop() === filename
-    ).childImageSharp;
+    );
+
+    if (!img) {
+      throw new Error(`Image ${filename} not found`);
+    }
+
+    return img.childImageSharp;
+  };
 
   return (
     <StaticQuery

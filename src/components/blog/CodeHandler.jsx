@@ -4,7 +4,13 @@ import BlogGifGetter from './BlogGifGetter';
 import Gist from './Gist';
 import Codemirror from './Codemirror';
 
-const CodeHandler = ({ className, children, header, source, sourceText }) => {
+const CodeHandler = ({
+  className = 'sh',
+  children,
+  header,
+  source,
+  sourceText,
+}) => {
   const language = className.replace(/language-/, '');
   switch (language) {
     case 'gist':
@@ -53,7 +59,7 @@ const CodeHandler = ({ className, children, header, source, sourceText }) => {
   }
 };
 CodeHandler.propTypes = {
-  className: PropTypes.string.isRequired,
+  className: PropTypes.string,
   children: PropTypes.string.isRequired,
   header: PropTypes.string,
   source: PropTypes.string,
@@ -61,6 +67,7 @@ CodeHandler.propTypes = {
 };
 
 CodeHandler.defaultProps = {
+  className: 'sh',
   header: null,
   source: null,
   sourceText: null,

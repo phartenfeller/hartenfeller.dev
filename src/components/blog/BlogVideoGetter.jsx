@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/media-has-caption */
+import { PlayIcon } from '@heroicons/react/solid';
 import { graphql, StaticQuery } from 'gatsby';
 import PropTypes from 'prop-types';
 import React, { useRef } from 'react';
-import { PlayIcon } from '@heroicons/react/solid';
-import ImageGetter from '../ImageGetter';
+import gatsbyImage from '../../types/gatsbyImage';
+import BlogImageGetter from './BlogImageGetter';
 
 function getMime(extension) {
   switch (extension) {
@@ -20,7 +21,7 @@ function getMime(extension) {
   }
 }
 
-const BlogVideoGetter = ({ filename, width = 1280, title, frame }) => {
+const BlogVideoGetter = ({ filename, width = 1280, title, frame, images }) => {
   const extension = filename.split('.').pop();
   const mime = getMime(extension);
 
@@ -57,16 +58,16 @@ const BlogVideoGetter = ({ filename, width = 1280, title, frame }) => {
       render={(data) => {
         const { publicURL, prettySize } = filterVideo(data).node;
         return (
-          <div className="flex justify-center my-12">
+          <div className="my-12 flex justify-center">
             <div
-              style={{ width: `${width}px`, maxWidth: '90vw' }}
+              style={{ width: `${parseInt(width)}px`, maxWidth: '90vw' }}
               className="relative overflow-hidden"
             >
               <video
                 controls
                 width={width}
                 preload="none"
-                className="m-auto relative z-10"
+                className="relative z-10 m-auto"
                 ref={videoEl}
               >
                 <source src={publicURL} type={mime} />
@@ -74,25 +75,30 @@ const BlogVideoGetter = ({ filename, width = 1280, title, frame }) => {
               <div ref={videoOverlay}>
                 <button
                   type="button"
-                  className="absolute h-full w-full top-0 left-0 mx-auto z-40 text-violet-900 hover:text-violet-600/70 transition-colors duration-150 ease-in-out"
+                  className="absolute left-0 top-0 z-30 mx-auto h-full w-full text-red-400 transition-colors duration-150 ease-in-out hover:text-red-500"
                   onClick={handleClick}
                   aria-label={`Play video "${title}"`}
                 >
                   <div>
-                    <PlayIcon className="h-24 w-24 mx-auto" />
+                    <PlayIcon className="mx-auto h-24 w-24" />
                   </div>
                 </button>
-                <div className="absolute h-full w-full top-0 left-0 mx-auto z-30 text-center flex">
-                  <div className="pl-3 pb-2 text-2xl text-slate-100 self-end text-center z-30 font-sans font-medium">
+                <div className="absolute left-0 top-0 z-20 mx-auto flex h-full w-full text-center">
+                  <div className="z-30 self-end pb-2 pl-3 text-center font-sans text-2xl font-medium text-slate-100">
                     {title} ({prettySize})
                   </div>
                   <div
                     aria-hidden="true"
-                    className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black via-black/70 opacity-80 z-20"
+                    className="absolute inset-x-0 bottom-0 z-20 h-2/3 bg-gradient-to-t from-black via-black/70 opacity-80"
                   />
                 </div>
-                <div className="absolute h-full w-full top-0 left-0 mx-auto z-10 text-center">
-                  <ImageGetter filename={frame} />
+                <div className="absolute left-0 top-0 z-10 mx-auto h-full w-full text-center">
+                  <BlogImageGetter
+                    filename={frame}
+                    images={images}
+                    clickPreview={false}
+                    alt=""
+                  />
                 </div>
               </div>
             </div>
@@ -109,9 +115,10 @@ BlogVideoGetter.defaultProps = {
 
 BlogVideoGetter.propTypes = {
   filename: PropTypes.string.isRequired,
-  width: PropTypes.number,
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   title: PropTypes.string.isRequired,
   frame: PropTypes.string.isRequired,
+  images: PropTypes.arrayOf(gatsbyImage).isRequired,
 };
 
 export default BlogVideoGetter;

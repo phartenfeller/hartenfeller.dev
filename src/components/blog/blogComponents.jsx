@@ -45,7 +45,8 @@ const getComponents = (images) => ({
       classes="object-contain my-12 mx-auto shadow-md xxl:w-3/4"
     />
   ),
-  BlogVideo: BlogVideoGetter,
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  BlogVideo: (props) => <BlogVideoGetter {...props} images={images} />,
   YouTubeEmbed,
   InfoBox,
   WarningBox,
