@@ -1,0 +1,54 @@
+---
+  title: >
+    Change me
+  date: 2023-10-02
+  description: Change me
+  slug: guid-pseudorandom
+  titleImage: ./change-me.jpg
+  titleImageAlt: change me
+  titleImageSource:
+    {
+      text: 'change me',
+      href: 'https://unsplash.com/photos/change me',
+    }
+  tags: ['change', 'me']
+  ghCommentsIssueId: 9999999
+  published: false
+---
+
+I recently thought about about [the awesome blogpost by Oisín Moran on how he managed to create a self-referencing tweet](https://oisinmoran.com/quinetweet). He basicly looked into Tweet-ID generation and managed to predict the ID his tweet would get and placed a link to this tweet in the tweet itself.
+
+## Copypasta
+
+<BlogImg
+  filename="selfhosting-fonts-performance-before.png"
+  alt="waterfall diagram of all http connections with fonts hosted by google"
+/>
+<BlogGif filename="apex-ag-grid-html-col.gif" alt="" />
+
+<YouTubeEmbed videoID="XBVflz5M4ms" />
+
+<BlogVideo
+  filename="http203-view-transitions.mp4"
+  frame="http203-view-transitions.jpg"
+  width="1280"
+  title="View Transitions API Demo"
+/>
+
+ffmpeg -i http203-view-transitions.mp4 -vf "select=eq(n,0)" -q:v 3 output_image.jpg
+
+<InfoBox>
+  The "apex.items.#ITEM_NAME#" syntax exists since "21.2". In prior versions you
+  have to call it the following way: "apex.item('#ITEM_NAME#')".
+</InfoBox>
+
+## Another trivia with random URLs
+
+YouTube video URLs are also randomly generated. This will of course lead to funny coincidences like [this bike related video](https://www.youtube.com/watch?v=OrADb-DCMyg) starting with `OraDB` or this [awesome party with drummers recording](https://www.youtube.com/watch?v=QUerY-cn-iU) starting with `query`. The casing is different but still in the huge amount of videos Google indexed only one video starting with query in the ID.
+
+You can find them by using this Google query:
+
+````
+allinurl:v=query site:youtube.com/watch
+```
+````

@@ -1,0 +1,62 @@
+---
+title: >
+  SvelteKit Image Optimization: Compression, sizes and formats
+date: 2023-02-08
+description: How to easily optimize images in SvelteKit with vite-imagetools
+slug: sveltekit-diy-authentication-authorization
+titleImage: ./sveltekit-img-optim-sqoosh.png
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['SvelteKit', 'Web-Development']
+ghCommentsIssueId: 85
+published: false
+---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/XRa-b5E7x8w">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
+
+## Loading speed matters
+
+**People are impatient**. And this has real life consqeuences. [Google claims that users are 32 % more probable to cancel their request when the page load time jumps from 1 second to 3](https://www.thinkwithgoogle.com/marketing-resources/data-measurement/mobile-page-speed-new-industry-benchmarks/). They also have [a huge list of case studies](https://web.dev/tags/case-study/) that show the real life impact of loading speed on conversion rates. One study claims that [a 3 times reduction in page load speed resulted in 10 times more revenue per user](https://web.dev/tags/case-study/). Well this is remarkable.
+
+You might feel that your page is loading quite fast on your device. But you should test this with the worst conditions: slow internet and low-end device.
+
+The problem is that load speed optimization is like opening the box of pandora. There is no simple playbook, instead many methods, some more complex than others. I am still amazed that self-hosting fonts can have a noteworthy Google Fonts ([read my blog post about it here](https://hartenfeller.dev/blog/selfhosting-fonts-performance)).
+
+My strategy is to mostly go for the low hangig fruits. Strive for small pages and don't inject bloat (ad(spy)-ware, tracking, analytics, social media buttons, cookie bullshit, etc.). The next biggest impact have assets. Did you ever think about optimizing your images? If not, you should and this blog post is for you!
+
+## Image optimization
+
+I am no expert to this topic. But I know for certain that with these three rules you can achieve more than enough. We learn how to apply them with a vite plugin in SvelteKit in the next chapter.
+
+### Sizing
+
+Good cameras and image sharing sites take / offer pictures in a very high resolution. This is grat as it allows you to zoom in and get crisp details. But most websites don't even allow zooming in. So cramping a 4000x3000 pixel image down to a 600 pixel wide phone screen is just a waste of bandwidth.
+
+So think about the maximum dimensions of your image element and resize the image accordingly. Additionally it makes sense to offer the image in multiple sizes so that desktop users get a higher resolution image than mobile users.
+
+### Compression
+
+An image of a panda with lots of detailed hair sitting in a rainforest with much flora and fauna in the background is bigger than a same sized image of a blue cloudless sky. The sky has lots of blue in it and modern image formats can take advantage of this to lower the file size.
+
+We can apply these principles to our panda image. We can just say this grass green in the background looks very close to the bamboo green in the foreground. So we can just use the same color for both. So by reducing the number of colors we can reduce the file size. Interesting fact: I learned in university that it makes sense to reduce the number of greens as much as the human eye is most sensitive to green.
+
+There are many more mehods to compress an image I have no clue about how they work in detail [but you can read about them here](https://en.wikipedia.org/wiki/Image_compression). I think we all have seen the weird artifacts of pictures compressed quite often as they where shared multiple times.
+
+Keep in mind that these methods are lossy. That means that you permanantly lose details and by that quality of the image. This is not advisible for your private photo collection. But for your product pictures on your website this is totally fine.
+
+### Formats
+
+People get smarter about how to compress images rapidly. As some optimizations are tied to the image format we get new ones from time to time. I bet you heard about JPEG but WebP and AVIF are the new kids on the block. They offer a better quality at a lower file size so it is advisable to use them.
+
+I recommend checking out [squoosh.app](https://squoosh.app) which lets you compare different formats and compression methods. It shows the original image and the compressed one side by side and how much space you save.
+
+<BlogImg filename="sveltekit-img-optim-sqoosh.png" alt="" />
+
+The problem is that older browsers don't support them. So the best way is to serve the same image with different formats and let the browser choose the one it supports. We learn how to do this in the next chapter.
