@@ -10,7 +10,18 @@ module.exports = {
     siteUrl: `https://hartenfeller.dev`,
   },
   plugins: [
-    `gatsby-plugin-react-helmet`,
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `Philipp Hartenfeller's Blog`,
+        short_name: `hartenfeller.dev`,
+        start_url: `/blog`,
+        background_color: `#fff2f2`,
+        theme_color: `#544343`,
+        display: `standalone`,
+        icon: `src/images/gatsby-icon.png`,
+      },
+    },
     {
       resolve: `gatsby-source-filesystem`,
       options: {
@@ -27,18 +38,6 @@ module.exports = {
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
-    {
-      resolve: `gatsby-plugin-manifest`,
-      options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
-        start_url: `/`,
-        background_color: `#544242`,
-        theme_color: `#544242`,
-        display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
-      },
-    },
     'gatsby-plugin-postcss',
     'gatsby-plugin-sitemap',
     {
@@ -168,6 +167,75 @@ module.exports = {
             `,
             output: '/rss.xml',
             title: 'Philipp Hartenfeller Blog RSS Feed',
+          },
+        ],
+      },
+    },
+    {
+      resolve: `gatsby-plugin-feed`,
+      options: {
+        query: `
+          {
+            site {
+              siteMetadata {
+                title
+                description
+                siteUrl
+                site_url: siteUrl
+              }
+            }
+          }
+        `,
+        feeds: [
+          {
+            serialize: ({ query: { site, allMdx } }) =>
+              allMdx.edges.map((edge) => ({
+                title: edge.node.frontmatter.title,
+                description: `<p>${
+                  edge.node.frontmatter.description
+                }</p>${edge.node.html.replace(
+                  /(?<!\.dev)\/blog\//g,
+                  `${site.siteMetadata.siteUrl}/blog/`
+                )}`,
+                date: edge.node.frontmatter.date,
+                url: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
+                guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
+                enclosure: {
+                  url:
+                    site.siteMetadata.siteUrl +
+                    edge.node.frontmatter.fixedTitleImage.childImageSharp
+                      .gatsbyImageData.images.fallback.src,
+                  type: 'image/jpeg',
+                  length: null,
+                },
+              })),
+            query: `
+              {
+                allMdx(
+                  sort: {fields: frontmatter___date, order: DESC}  
+                  filter: {frontmatter: {published: {ne: false}, tags: {in: ["APEX", "Oracle"]}}}
+                ) {
+                  edges {
+                    node {
+                      html
+                      frontmatter {
+                        title
+                        description
+                        date
+                        fixedTitleImage: titleImage {
+                          childImageSharp {
+                            gatsbyImageData(layout: FIXED)
+                          }
+                        }
+                      }
+                      slug
+                    }
+                  }
+                }
+              }            
+            `,
+            output: '/orclapex-rss.xml',
+            title: 'Philipp Hartenfeller #orclapex blog feed',
           },
         ],
       },
