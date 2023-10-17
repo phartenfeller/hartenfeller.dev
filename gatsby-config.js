@@ -10,6 +10,7 @@ module.exports = {
     siteUrl: `https://hartenfeller.dev`,
   },
   plugins: [
+    `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
