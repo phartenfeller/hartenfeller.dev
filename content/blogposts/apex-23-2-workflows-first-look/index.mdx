@@ -1,0 +1,205 @@
+---
+  title: >
+    Oracle APEX 23.2 Workflows: A First Look
+  date: 2023-10-18
+  description: A preview version of Oracle APEX 23.2 just got released on apex.oracle.com. Let's take a look at the new workflow feature.
+  slug: apex-23-2-workflows-first-look
+  titleImage: ./apex-workflow-designer.png
+  titleImageAlt: A screenshot of the workflow designer in APEX 23.2
+  titleImageSource:
+    {
+      text: null,
+      href: null,
+    }
+  tags: ['APEX']
+  ghCommentsIssueId: 95
+---
+
+## The big question mark: Flows vs. Workflows
+
+I have used and learned to love the APEX extension, [Flows for APEX](https://flowsforapex.org/). It is a process modeling engine tightly integrated into APEX. You basically design a model in the BPMN notation, which is an international standard that is heavily used in almost any big company.
+
+In my experience, the modeling part is a great tool to improve the development phase of apps. It is a great way to visualize the business logic and discuss it with non-technical app stakeholders. The challenge of designing such a model also forces you to think about edge cases and make sure that the process is well-defined before anything is programmed out.
+
+APEX 23.2 has a new feature called "Workflows" that tries to achieve the same thing but in a different way. It has the advantage that it directly comes within APEX. It does not need to be installed and is more tightly integrated than Flows. On the other hand, it does not use BPMN but something different (I am not sure if it is a standard).
+
+Let's take a first look at it to find out how to work with it and whether it can be an alternative to Flows for APEX.
+
+## Example Workflow
+
+We are running a holiday agency, yay! Our lucky customers can book great trips on our page, and we take care of everything. We offer the following destinations in our database:
+
+```sql
+create table vac_destinations (
+  vd_name         varchar2(255 char),
+  vd_decr         varchar2(2000 char),
+  vd_base_price   number(10,2),
+  vd_rooms_left   number(10,0),
+  constraint vac_destinations_pk
+    primary key (vd_name)
+);
+
+INSERT INTO vac_destinations (vd_name, vd_decr, vd_base_price, vd_rooms_left) VALUES
+('Tropical Paradise', 'A sun-soaked island with white sandy beaches, crystal-clear waters and swaying palm trees. Perfect for relaxation.', 499.99, 2);
+
+INSERT INTO vac_destinations (vd_name, vd_decr, vd_base_price, vd_rooms_left) VALUES
+('Mountain Retreat', 'Nestled in the heart of the mountains, this retreat offers stunning views, hiking trails, and cozy cabins.', 399.99, 5);
+
+INSERT INTO vac_destinations (vd_name, vd_decr, vd_base_price, vd_rooms_left) VALUES
+('Urban Getaway', 'Experience the bustling city life with skyscrapers, gourmet dining, shopping and vibrant nightlife.', 299.99, 15);
+```
+
+Users can book trips which are stored in the following table:
+
+```sql
+create sequence vac_bookings_seq;
+
+create table vac_bookings (
+  vb_id              number default on null vac_bookings_seq.nextval,
+  vb_customer        varchar2(255 char),
+  vb_vd_name         varchar2(255 char),
+  vb_date            date default sysdate,
+  vb_adults          number(1,0),
+  vb_children        number(1,0),
+  vb_insurance       number(1,0),
+  vb_insurance_rate  number(4,2),
+  vb_total           number(10,2),
+  vb_status          varchar2(50 char) default 'PENDING',
+  constraint vac_bookings_pk
+    primary key (vb_id),
+  constraint vac_bookings_vd_fk
+    foreign key (vb_vd_name)
+    references vac_destinations (vd_name),
+  constraint vac_bookings_insurance_ck
+    check (vb_insurance in (1,0)),
+  constraint vac_bookings_status_ck
+    check (vb_status in ('PENDING','BOOKED', 'OVERBOOKED'))
+);
+```
+
+I then went ahead and created a simple form to book a trip.
+
+<BlogImg
+  filename="apex-workflows-book-trip-form.png"
+  alt="A default APEX form with the fields of the vac_bookings table."
+/>
+
+## Getting Started with Workflows
+
+Now we can head to the shared components of the application and click on "Workflows" in the section "Workflows and Automations". In there, we create a new one.
+
+We are greeted by a page that almost looks like the page designer. The left side shows the activities (or steps) of our workflow in a tree, and in the middle it is visualized. The right panel shows details about the currently selected activity.
+
+<BlogImg filename="apex-workflow-designer.png" alt="" />
+
+### Workflow version
+
+I went ahead and renamed the workflow to "VACATION_FLOW" and gave it the same title and static ID. The child tree entry represents the current version of the flow. This means that when we want to introduce changes to our workflow, we can create a new version and keep the old one so that existing instances are not affected.
+
+I renamed my version to `v1`. Additionally, we can "activate" it to move to production mode. I guess it works the same as Flows for APEX, where it prevents you from modifying the flow in production mode, whereas this is possible in development mode. I also entered a query into "Additional Data". This allows us to access the returned data in our workflow. We use the substitution string `APEX$WORKFLOW_DETAIL_PK` which will represent the primary key value of the workflow instance. We will later see how we can use this.
+
+<BlogImg filename="apex-workflow-v1.png" alt="" />
+
+### Creating variables
+
+When we want to use the values in the "Additional Data" section, we have to create variables first. The lowest child tree entry is in the "Variables" section. We can right-click it and create a new variable.
+
+To calculate the price of a vacation, we need the base price of the destination table and the number of adults and children. As I already queried all these values in the "Additional Data" section, I can just create variables with the same column names. Additionally, I want to store the result in a variable called `BASE_PRICE`. We set all the data types to "Number".
+
+<BlogImg filename="apex-workflow-variables.png" alt="" />
+
+### Creating activities
+
+There should already be an activity between the start and end nodes. We can modify it to do the calculation. I renamed it to "Calc Base Price" and made sure the type is set to "Execute Code". We can then pass the computation code. In our case, children pay 60% of the base price and adults pay 100%:
+
+```sql
+:BASE_PRICE := :VD_BASE_PRICE * :VB_ADULTS + :VD_BASE_PRICE * :VB_CHILDREN * 0.6;
+```
+
+<BlogImg filename="apex-workflows-compute-base-price.png" alt="" />
+
+### Create instances of the workflow
+
+When we head back to our form page that creates a new booking, we can add a new process after the form process. The type of the new process is "Workflow" and we can then choose our created workflow. Additionally, we pass the primary key page item in "Details Primary Key Item".
+
+<BlogImg filename="apex-workflows-create-instance.png" alt="" />
+
+If we then create a new booking, we can see that nothing happens. That's fine because everything is processed in the background. We can query the APEX metadata views to get some details on our workflow instance:
+
+```sql
+select * from apex_workflows order by start_time desc;
+
+/* result row 1: */
+-- WORKFLOW_ID: 398300790271509531
+-- WORKFLOW_DEF_NAME: VACATION_FLOW
+-- WORKFLOW_VERSION: v1
+-- DETAIL_PK: 5
+-- STATE_CODE: COMPLETED
+-- SART_TIME: 17-OCT-23 05.00.19.114532 PM +00:00
+-- END_TIME: 17-OCT-23 05.00.19.898534 PM +00:00
+-- and more...
+```
+
+To see if our computation succeeded, we can query the `APEX_WORKFLOW_VARIABLES` view:
+
+```sql
+select * from APEX_WORKFLOW_VARIABLES where workflow_id = 398300790271509531;
+
+/* one row for each variable; example for BASE_PRICE  */
+-- STATIC_ID: BASE_PRICE
+-- NUMBER_VALUE: 1599.968
+```
+
+### What happens when there are errors?
+
+I had some issues getting the first workflow running. When a worfklow fails the `STATE_CODE` in the `apex_workflows` view is set to `FAULTED`. We can then query the `APEX_WORKFLOW_ACTIVITIES` view to get more details:
+
+```sql
+select * from APEX_WORKFLOW_ACTIVITIES where workflow_id = 397126434167488074;
+
+/* result for each activity that was started
+   example for one that failed: */
+-- STATIC_ID: Start
+-- TYPE_CODE: NATIVE_WORKFLOW_START
+-- STATE: FAULTED
+-- ERROR_MESSAGE: ORA-00904: "VB_ID": invalid identifier
+-- and more...
+```
+
+## The Workflow Console
+
+When we create a page, we get a new "Workflow Console" template. This is great for monitoring and managing our workflows.
+
+<BlogImg filename="apex-workflow-console.png" alt="" />
+
+In the created page, I had to change the parameter `p_context` from `MY_WORKFLOWS` to `INITIATED_BY_ME` to see my created ones. I guess this has to do with assignments and permissions, which I have not looked into yet.
+
+```sql
+-- ...
+from table ( apex_workflow.get_workflows (
+            -- p_context => 'MY_WORKFLOWS'
+            p_context => 'INITIATED_BY_ME'
+            , p_application_id => :APP_ID
+            ) )
+```
+
+On the page, we see a list of each instance and can click into it to see details.
+
+<BlogImg filename="apex-workflow-console-overview.png" alt="" />
+
+<BlogImg filename="apex-worfklow-console-details.png" alt="" />
+
+## This is only the surface
+
+I only scratched the surface of what is possible with workflows. There are many more activities that we can use. For example, we can send emails, call REST services, have diversions, add waits and much more. I am looking forward to exploring more of it.
+
+I currently have these questions that I can't answer yet?
+
+- How do I visualize the current state of a workflow instance for the users? Flows has this and is extremely useful.
+- Is this only scoped for developers, or meant to be something you can discuss with and show to non-technical people?
+- How can we wait for user input? There are waiting activities, but I did not find a way to set variables for an existing workflow instance. There is an API for that, but it is only meant to be used by admins to resolve issues.
+- How does the integration with "Approval Tasks" work? Can I set a variable in the workflow instance from there?
+- In the "Participants" section, we can define roles, but only "Workflow Administrator" and "Workflow Owner" are available types. Can I fit roles like department X into this somehow?
+- What are the plans to reduce the visual complexity of huge workflows? BPMN has swimlanes and subflows to group and hide details. Are there plans to add this?
+
+I guess this is the next step in a long-term feature set that will have a big impact on how we can build apps with APEX. So I think the workflow feature is not final as it is but will get many upgrades over time. Approval components definitely make more sense to me as they integrate with workflows. I am looking forward to seeing how it evolves.
