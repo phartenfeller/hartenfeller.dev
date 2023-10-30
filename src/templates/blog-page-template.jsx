@@ -192,17 +192,15 @@ const BlogPageTemplate = ({ data }) => {
                 <h1 className="leading-12 brown-header-text pt-8 text-2xl font-extrabold md:text-3xl lg:text-4xl">
                   {title}
                 </h1>
-                <div className="mt-6 max-w-[90vw] text-sm font-medium leading-5 text-zinc-700">
+                <div className="mt-6 flex  justify-between text-sm font-medium leading-5 text-zinc-700">
                   <TagsDisplay tags={tags} />
-                  <time className="float-right" dateTime={date}>
-                    {formattedDate}
-                  </time>
+                  <time dateTime={date}>{formattedDate}</time>
                 </div>
                 {lastUpdate ? (
                   <div className="mb-5">
                     <a
                       href={gitHubUrl}
-                      className="float-right rounded text-sm font-medium leading-5 text-zinc-700 underline hover:text-zinc-400 focus:outline-none focus:ring focus:ring-red-300"
+                      className="float-right rounded text-sm font-light leading-5 text-zinc-600 underline hover:text-zinc-400 focus:outline-none focus:ring focus:ring-red-300"
                     >
                       <span>Last updated: </span>
                       <time dateTime={lastUpdate}>{lastUpdateFormatted}</time>

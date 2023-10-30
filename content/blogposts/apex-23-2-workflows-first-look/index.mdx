@@ -2,6 +2,7 @@
   title: >
     Oracle APEX 23.2 Workflows: A First Look
   date: 2023-10-18
+  lastUpdate: 2023-10-30
   description: A preview version of Oracle APEX 23.2 just got released on apex.oracle.com. Let's take a look at the new workflow feature.
   slug: apex-23-2-workflows-first-look
   titleImage: ./apex-workflow-designer.png
@@ -194,12 +195,34 @@ On the page, we see a list of each instance and can click into it to see details
 I only scratched the surface of what is possible with workflows. There are many more activities that we can use. For example, we can send emails, call REST services, have diversions, add waits and much more. I am looking forward to exploring more of it.
 
 I currently have these questions that I can't answer yet?
+_Update: [Ananya Chatterjee from the APEX team answered the questions in the comments](https://github.com/phartenfeller/hartenfeller.dev/issues/95#issuecomment-1769816103). I included the answers here._
 
-- How do I visualize the current state of a workflow instance for the users? Flows has this and is extremely useful.
-- Is this only scoped for developers, or meant to be something you can discuss with and show to non-technical people?
-- How can we wait for user input? There are waiting activities, but I did not find a way to set variables for an existing workflow instance. There is an API for that, but it is only meant to be used by admins to resolve issues.
-- How does the integration with "Approval Tasks" work? Can I set a variable in the workflow instance from there?
-- In the "Participants" section, we can define roles, but only "Workflow Administrator" and "Workflow Owner" are available types. Can I fit roles like department X into this somehow?
-- What are the plans to reduce the visual complexity of huge workflows? BPMN has swimlanes and call activities to group and hide details. Are there plans to add this?
+**Q:** How do I visualize the current state of a workflow instance for the users? Flows has this and is extremely useful.
+
+_A: This is on the Workflow Roadmap and we plan to prioritize it for our future release(s)._
+
+**Q:** Is this only scoped for developers, or meant to be something you can discuss with and show to non-technical people?
+
+_A: This is something you can discuss and show to non-technical people. The visualization makes it easier to demonstrate and communicate the business logic to non-technical people._
+
+**Q:** How can we wait for user input? There are waiting activities, but I did not find a way to set variables for an existing workflow instance. There is an API for that, but it is only meant to be used by admins to resolve issues.
+
+_A: The points at which users can interact with the Workflow are Human Task Activities. In 23.2 we have Action Tasks in addition to Approval Tasks. Action tasks are human tasks which do not have a defined Approve or Reject outcome. To learn more about them you could [check this blog](https://blogs.oracle.com/apex/post/using-action-tasks-with-oracle-apex-232)._
+
+**Q:** How does the integration with "Approval Tasks" work? Can I set a variable in the workflow instance from there?
+
+_A: The Task Outcome and Actual Owner values of the approval task can be returned to the workflow instance._
+
+**Q:** In the "Participants" section, we can define roles, but only "Workflow Administrator" and "Workflow Owner" are available types. Can I fit roles like department X into this somehow?
+
+_A: The participants can be initialized through select queries /expressions and can be a list of comma-separated users. You could define a Participant named Department X of type Workflow Owner and in the Source enter something like_
+`select users from department where department ='X'`.
+
+**Q:** What are the plans to reduce the visual complexity of huge workflows? BPMN has swimlanes and call activities to group and hide details. Are there plans to add this?
+
+_A: Yes, we have call activities in the roadmap and they will be coming in the future releases of Workflow._
+
+**Annotation from Ananya:**
+_Please refer to my [blog on APEX Workflow](https://blogs.oracle.com/apex/post/simplify-medical-appointments-using-apex-workflow) which has detailed demonstration of how workflows interact with approval tasks and action tasks along with description and usage of the various workflow artifacts._
 
 I guess this is the next step in a long-term feature set that will have a big impact on how we can build apps with APEX. So I think the workflow feature is not final as it is but will get many upgrades over time. Approval components definitely make more sense to me as they integrate with workflows. I am looking forward to seeing how it evolves.
