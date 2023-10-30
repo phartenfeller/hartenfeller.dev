@@ -32,6 +32,15 @@
   font-family: 'Raleway', serif;
 }
 
+.blog-comments {
+  @apply font-mono text-sm leading-7;
+}
+
+.blog-comments p {
+  @apply mb-4;
+}
+
+.blog-comments a,
 .blog-body a:not(.custom-link) {
   @apply rounded text-red-600 underline decoration-red-100 hover:decoration-red-300 focus:ring-1 focus:ring-red-600;
 }

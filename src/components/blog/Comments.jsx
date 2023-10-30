@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
+import Markdown from 'react-markdown';
 import LinkButton from '../LinkButton';
 
 const LOADING = 1;
@@ -50,7 +51,7 @@ const Comments = ({ ghCommentsIssueId }) => {
               <div className="mr-8 flex-shrink-0">
                 <a href={comment.user.html_url}>
                   <img
-                    className="h-16 w-16 rounded-full bg-zinc-400 flex items-center justify-center ring-8 ring-white"
+                    className="flex h-16 w-16 items-center justify-center rounded-full bg-zinc-400 ring-8 ring-white"
                     src={comment.user.avatar_url}
                     alt={comment.user.login}
                     loading="lazy"
@@ -61,21 +62,21 @@ const Comments = ({ ghCommentsIssueId }) => {
                 <div>
                   <a
                     href={comment.user.html_url}
-                    className="font-medium text-lg text-zinc-900 hover:underline"
+                    className="text-lg font-medium text-zinc-900 hover:underline"
                   >
                     {comment.user.login}
                   </a>
-                  <span className="mx-2 text-zinc-900 font-bold">•</span>
+                  <span className="mx-2 font-bold text-zinc-900">•</span>
                   <time className="text-zinc-600" dateTime={comment.created_at}>
                     {new Date(comment.created_at).toLocaleDateString()}
                   </time>
                 </div>
-                <p className="mt-2 text-zinc-700">{comment.body}</p>
+                <Markdown className="blog-comments">{comment.body}</Markdown>
               </div>
             </li>
           ))}
         {comments.length === 0 && (
-          <li className="text-center py-3 text-zinc-700 font-light text-lg">
+          <li className="py-3 text-center text-lg font-light text-zinc-700">
             No comments yet...
           </li>
         )}
