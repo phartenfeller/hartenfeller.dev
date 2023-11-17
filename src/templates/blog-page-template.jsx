@@ -4,7 +4,7 @@ import { GatsbyImage } from 'gatsby-plugin-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { ClockIcon } from '@heroicons/react/outline';
+import { ArrowUpIcon, ClockIcon, RssIcon } from '@heroicons/react/outline';
 import AuthorShowcase from '../components/blog/AuthorShowcase';
 import getComponents from '../components/blog/blogComponents';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
@@ -16,6 +16,7 @@ import Layout from '../components/layout';
 import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
+import BlogAPEXSidebar from '../components/blog/blogAPEXSidebar';
 
 export const query = graphql`
   query ($id: String!, $relativeDirectory: String!) {
@@ -179,7 +180,7 @@ const BlogPageTemplate = ({ data }) => {
     <Layout header toc={tableOfContents}>
       <SEO title={title} description={description} meta={meta} />
       <ScrollTracker />
-      <article className="flex max-w-[100vw] flex-col overflow-hidden">
+      <article className="flex max-w-[100vw] flex-col overflow-hidden scroll-smooth">
         <div className="m-auto bg-white shadow-sm ">
           <GatsbyImage
             image={titleImage.childImageSharp.gatsbyImageData}
@@ -189,7 +190,10 @@ const BlogPageTemplate = ({ data }) => {
           <div className="flex space-x-8 px-4 pb-8 md:px-8">
             <div className="flex-grow lg:max-w-[75ch]">
               <header>
-                <h1 className="leading-12 brown-header-text pt-8 text-2xl font-extrabold md:text-3xl lg:text-4xl">
+                <h1
+                  id={slug}
+                  className="leading-12 brown-header-text scroll-mt-32 pt-8 text-2xl font-extrabold md:text-3xl lg:text-4xl"
+                >
                   {title}
                 </h1>
                 <div className="mt-6 flex  justify-between text-sm font-medium leading-5 text-zinc-700">
@@ -261,13 +265,28 @@ const BlogPageTemplate = ({ data }) => {
                 </Link>
               </footer>
             </div>
-            <aside className="my-5 hidden grow-0 border-l border-zinc-300 py-5 pl-8 lg:block lg:w-[280px]">
-              <div className="mb-12 flex items-center text-stone-700">
-                <ClockIcon className="mr-1 h-4 w-4 text-stone-400" />
-                Time to read:{' '}
-                <span className="mx-1 font-bold">{timeToRead}</span> min
+            <aside className="my-5  hidden grow-0 justify-between border-l border-zinc-300 py-5 pl-8 lg:flex lg:w-[280px] lg:flex-col">
+              <div>
+                <div className="mb-12 flex items-center text-stone-700">
+                  <ClockIcon className="mr-1 h-4 w-4 text-stone-400" />
+                  Time to read:{' '}
+                  <span className="mx-1 font-bold">{timeToRead}</span> min
+                </div>
+                <AuthorShowcase />
               </div>
-              <AuthorShowcase />
+
+              {tags.includes('APEX') ? <BlogAPEXSidebar /> : null}
+
+              <div className="blog-sidebar">
+                <a href="/rss.xml" className="mb-4 flex items-center">
+                  <RssIcon className=" mr-3 h-5 w-5 text-red-300" />
+                  RSS Feed
+                </a>
+                <a href={`#${slug}`} className="flex items-center">
+                  <ArrowUpIcon className="mr-3 h-5 w-5 text-red-300" />
+                  Back to top
+                </a>
+              </div>
             </aside>
           </div>
         </div>
