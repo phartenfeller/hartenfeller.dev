@@ -7,6 +7,14 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2023,
+    conference: 'UKOUG 2023',
+    place: 'Reading, UK',
+    title: 'APEX UI Testing: Best Practices and Pitfalls',
+    language: '🇬🇧',
+    slides: '/slides/UKOUG2023-apex-testing-Hartenfeller.pdf',
+  },
+  {
+    year: 2023,
     conference: 'Kscope 2023',
     place: 'Aurora, CO, USA',
     title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
