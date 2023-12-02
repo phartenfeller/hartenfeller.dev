@@ -15,19 +15,19 @@ ghCommentsIssueId: 96
 ## Advent of Code
 
 [Advent of Code](https://adventofcode.com/) is a great yearly programming challenge.
-Each day (1st to 25th December) a new challenge appears that challenges your and problem solving and programming skills.
-I learn a lot every year and it is a lot of fun.
+Each day (1st to 25th December), a new challenge arises that challenges your problem-solving and programming skills.
+I learn a lot every year, and it is a lot of fun.
 
-I will do the challenges in Oracle (SQL and where necessary PL/SQL) this year again. You can find my solutions in [this repository](https://github.com/phartenfeller/advent-of-code-2023) and if I find the time on this blog.
+I will do the challenges in Oracle (SQL and, where necessary, PL/SQL) this year again. You can find my solutions in [this repository](https://github.com/phartenfeller/advent-of-code-2023) and, if I find the time, on this blog.
 
-I really **recommend checking Advent of Code out yourself** before reading on.
-The challenges are clearly and in a christmas theme.
-There is alawys a small sample input to test your solution and a bigger input to get the real result.
-When solving the first challenge you get a star and a second more difficult challenge appears.
+I strongly **recommend checking out Advent of Code yourself** before reading on.
+The challenges are clearly and in a Christmas theme.
+There is always a small sample input to test your solution and a bigger input to get the real result.
+When you solve the first challenge, you get a star, and a second, more difficult challenge appears.
 
 ## My setup
 
-I am doing the challenges on a local 23c free edition database. I want to explore some of the new features of 23 so some of the syntax might not work on older versions. I also will use the Oracle APEX API packages.
+I am doing the challenges on a local 23c free edition database. I am eager to explore some of the new features of 23c, so some of the syntax might not work on older versions. Furthermore, I will also use the Oracle APEX API packages.
 
 I import the input data into a table that stores each line of the input as a row.
 
@@ -90,7 +90,7 @@ __________ _______
 */
 ```
 
-Next we need to extract the first and last digit of each line. We can just use `substr` for that. With `1` we get the first and with `-1` the last character. Additionally we need concat both chars and convert the result to a number:
+Next, we need to extract the first and last digits of each line. We can just use `substr` for that. With `1` we get the first, and with `-1` the last character. Additionally, we need to concatenate both characters and convert the result to a number:
 
 ```sql
 with only_nums as (
@@ -118,7 +118,7 @@ __________ __________
 */
 ```
 
-At last we only need to sum up all the results:
+At last, we only have to sum up all the results:
 
 ```sql
 with only_nums as (
@@ -142,9 +142,9 @@ select sum(row_res) from row_res
 
 ### Star 2
 
-I really struggled with this one. We need to convert the words of digits like `one` to the actual number `1`. At first I thought a simple `replace` would do the trick. But this does not work as `eighthree` should actually be converted to `83`. With the the replace approach we would replace the shared `t` and thus the second replace would not work (e.g. `8hree`).
+I really struggled with this one. We have to convert the words of digits like `one` to the actual number `1`. At first, I thought a simple `replace` would do the trick. But this does not work, as `eighthree` should actually be converted to `83`. With the replace approach, we would replace the shared `t` and thus the second replace would not work (e.g. `8hree`).
 
-I was already at the end of my SQL skills and thought only PL/SQL can solve this. So I created a function that loops over each char of the input and looks if there is a digit. If this is true i append the digit to a result string otherwise I append the char itself. This works but is not very elegant.
+I was already at the end of my SQL skills and thought only PL/SQL could solve this. So I created a function that loops over each character of the input and looks to see if there is a digit. If this is true, I append the digit to a result string; otherwise, I append the character itself. This works, but is not very elegant.
 
 ```sql
 CREATE OR REPLACE FUNCTION day1_replace_digits(pi_str VARCHAR2) RETURN VARCHAR2 IS
@@ -227,9 +227,9 @@ select sum(row_res) from row_res
 
 ### Star 1
 
-This challenge is a great example of how great SQL is for data analysis. I noticed pretty fast that we want to get the highest count for each colored block of each line. So we will probably need the `max` function.
+This challenge is a great example of how great SQL is for data analysis. I noticed pretty quickly that we want to get the highest count for each colored block of each line. So we will probably need the `max` function.
 
-Additionally we want to get the counts for each color. Repeated text block scream regex to me. To catch each amount of green blocks in `Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 20 green` e.g. a regex like `([0-9]+) green` will work. Notice how I use the brackets to capture the number.
+Additionally, we would like to get the counts for each color. Repeated text blocks scream regex to me. To catch each amount of green blocks in `Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 20 green` e.g. a regex like `([0-9]+) green` will work. Notice how I use the brackets to capture the number.
 
 Another trick to do this in a quick fashion is using `apex_string.grep`. This function returns the beautiful `APEX_T_VARCHAR2` type to which I dedicated <Link to="/blog/ode-to-apex-t-varchar2">a whole blog post</Link>.
 
@@ -249,7 +249,7 @@ __________
 */
 ```
 
-More interestingly we can use the `table` operator to query the array. With that we can just ask for the max value. The `table` thing returns the column `column_value` which we first need to convert to a number.
+More interestingly, we can use the `table` operator to query the array. With that, we can just ask for the maximum value. The `table` thing returns the column `column_value` which we first need to convert to a number.
 
 ```sql
 with str as (
@@ -289,7 +289,7 @@ __________ ________ _______ ______ ____________________________________
 */
 ```
 
-Next we can just apply a where clause to filter out all the impossible games and sum the `line_no` to get our result:
+Next, we can just apply a where clause to filter out all the impossible games and sum the `line_no` to get our result:
 
 ```sql
 with max_draws as (
@@ -317,7 +317,7 @@ from possible_games
 
 ### Star 2
 
-Star 2 was no problem at all because of our work for star 1. We only need to multiply the max values for each color and sum the results:
+Star 2 was no problem at all because of our work on Star 1. We only need to multiply the maximum values for each color and sum the results:
 
 ```sql
 with max_draws as (
@@ -340,6 +340,6 @@ select sum(pwr) from power
 
 ## Conclusion
 
-If you found different or better solutions please let me know in the comments. I am always eager to learn new things.
+If you find different or better solutions, please let me know in the comments. I am always eager to learn new things.
 
 You can check out the [full code on GitHub](https://github.com/phartenfeller/advent-of-code-2023).
