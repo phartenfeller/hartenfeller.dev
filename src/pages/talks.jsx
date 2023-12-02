@@ -7,6 +7,14 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2023,
+    conference: 'DOAG 2023',
+    place: 'Nürnberg',
+    title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
+    language: '🇬🇧',
+    slides: '/slides/DOAG-2023-P_Hartenfeller-apex-off-grid.pdf',
+  },
+  {
+    year: 2023,
     conference: 'UKOUG 2023',
     place: 'Reading, UK',
     title: 'APEX UI Testing: Best Practices and Pitfalls',
@@ -19,7 +27,6 @@ const talks = [
     place: 'Aurora, CO, USA',
     title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
     language: '🇬🇧',
-    slides: '/slides/Kscope23_apex_off_grid_hartenfeller.pdf',
   },
   {
     year: 2023,
