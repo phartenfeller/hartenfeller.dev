@@ -1,6 +1,6 @@
 ---
 title: >
-  Advent of Code 2023 in Oracle - Day 7
+  Advent of Code 2023 in Oracle - Day 7: Camel Cards
 date: 2023-12-07
 description: >
   Advent of Code 2023 in Oracle SQL and PL/SQL. Day 7: Camel Cards.
@@ -9,7 +9,7 @@ titleImage: ../_common_imgs/dalle-2023-christmas-pixel.png
 titleImageAlt: ''
 titleImageSource: { text: 'Generated with DALL-E', href: null }
 tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
-ghCommentsIssueId: 96
+ghCommentsIssueId: 97
 ---
 
 ## Advent of Code
@@ -68,9 +68,9 @@ end;
 
 ### Star 1
 
-I noticed pretty fast that ranking the games would be to complicated to achieve in pure SQL for my taste. So I opted to create a PL/SQL function that returns a numeric rank for a given hand. It will be numeric so that we can just sort by it to get the best/worst hands.
+I noticed pretty quickly that ranking the games would be too complicated to achieve in pure SQL for my taste. So I opted to create a PL/SQL function that returns a numeric rank for a given hand. It will be numeric so that we can just sort by it to get the best/worst hands.
 
-To achieve such a rank we need to consider the highest factor. In the poker case this is the type. Notice how most types require only one information and some two: **The count of the most common card and the count of the second most common card**. I just created the following scale:
+To achieve such a rank, we need to consider the highest factor. In the poker case, this is the "type" like "two pairs" or "four of a kind". Notice how most types require only one piece of information and some two: **The count of the most common card and the count of the second most common card**. I just created the following scale:
 
 ```txt
 mc = most common card, smc = second most common card
@@ -84,7 +84,7 @@ mc = most common card, smc = second most common card
 1. High card mc=1
 ```
 
-To program this out we first need to loop over each character to count the occurrences. We can use a map/associative array (`table of number index by varchar2(1char)`) to store the counts. I have dedicated <Link to="/blog/maps-oracle-plsql">a whole blog post to maps in PL/SQL</Link> if you want to find out more. Afterward we loop over our map to store the highest and second-highest count.
+To program this out, we first need to loop over each character to count the occurrences. We can use a map/associative array (`table of number index by varchar2(1char)`) to store the counts. I have dedicated <Link to="/blog/maps-oracle-plsql">a whole blog post to maps in PL/SQL</Link> if you want to find out more. Afterward, we loop over our map to store the highest and second-highest counts.
 
 ```sql
 create or replace function day7_get_hand_rank (pi_hand in varchar2)
@@ -141,7 +141,7 @@ begin
   -- ...
 ```
 
-Next we can give scores to each type. I used a regular `case` statement for this. For the cases where we need to consider the second highest count I added an `if` statement. In the end we add the rank number (higher -> better) to a string.
+Next, we can give scores to each type. I used a regular `case` statement for this. For the cases where we need to consider the second-highest count, I added an `if` statement. In the end, we add the rank number (higher → better) to a string.
 
 ```sql
 case l_fir_highest
@@ -168,9 +168,9 @@ case l_fir_highest
 end case;
 ```
 
-The next question is what happens if two hands have the same type. In this case we need to compare the hands card by card. At the first occurrences they differ we use the higher card to determine the winner. We can also achieve that with numerical sorting.
+The next question is: What happens if two hands have the same type? In this case, we need to compare the hands, card by card. On the first occurrence they differ we use the higher card to determine the winner. We can also achieve that with numerical sorting.
 
-Because there are more than 10 cards we need to pad the cards with a leading zero. This way we can sort them numerically. We can use a function for this:
+Because there are more than 10 cards, we have to pad the cards with a leading zero. This way, we can sort them numerically. We can use a function for this:
 
 ```sql
 create or replace function day7_get_hand_rank (pi_hand in varchar2)
@@ -200,7 +200,7 @@ create or replace function day7_get_hand_rank (pi_hand in varchar2)
   -- ...
 ```
 
-Inside the loop where we iterate over each character we can use this function to get each cards value. We just append every value to a string so the first cards value will be at the start of the string:
+Inside the loop where we iterate over each character, we can use this function to get each card's value. We just append every value to a string, so the first card value will be at the start of the string:
 
 ```sql
   for i in 1..5
@@ -217,7 +217,7 @@ Inside the loop where we iterate over each character we can use this function to
   end loop;
 ```
 
-In the end we can append the type result nuber to the front of the card value string so that it has the most impact on the number size. Now we only need to return the string converted to a number.
+In the end, we can append the type result number to the front of the card value string so that it has the most impact on the number size. Now we only need to return the string converted to a number.
 
 ```sql
   l_res_str := l_res_str || l_card_value_seq;
@@ -235,7 +235,7 @@ end day7_get_hand_rank;
 
 [You can check out the full code of the function here](https://github.com/phartenfeller/advent-of-code-2023/blob/main/src/7/1.sql).
 
-To see how it works we can query our inputs table and call the function. At first I seperate the hand and the bet of each line:
+To see how it works, we can query our input table and call the function. At first, I separate the hand and the bet for each line:
 
 ```sql
 with hand_bet as (
@@ -264,9 +264,9 @@ KTJJT       220    31310111110
 */
 ```
 
-We can see that `QQQJA` and `T55J5` both start with a `4` because both are a "Three of a kind". The first has a higher card value. The first card is `Q` vs a `T` thats why the second and third numbers are `12` vs `10`. Great our function seems to work.
+We can see that `QQQJA` and `T55J5` both start with a `4` because both are three of a kind's. The first has a higher card value. The first card is `Q` vs a `T` that's why the second and third numbers are `12` vs `10`. Great; our function seems to work.
 
-To get the result for our data input we need to get a rank for each score and then multiply that with the bet (5 hands, best hand has rank 5, 2nd best rank 4...). We can use the `row_number` analytic function for this. At last we need to multiply the rank with the bet and sum it up:
+To get the result for our data input, we need to get a rank for each score and then multiply that with the bet (5 hands: best hand has rank 5, 2nd best has rank 4...). We can use the `row_number` analytic function for this. At last, we need to multiply the rank by the bet and sum it up:
 
 ```sql
 with hand_bet as (
@@ -298,11 +298,11 @@ _______________
 
 ### Star 2
 
-For the second challenge we need handle `J` differently as this is acutally a Joker card. This means that this card should be used as any card with the best potential outcome.
+For the second challenge, we must handle `J` differently, as this is actually a Joker card. This means that this card should be used as any other card with the best potential outcome.
 
-I thought this would be complicated but it was actually pretty easy. We don't need to write intelligent code that tries out different combinations as the solution is to **always use the Jokers as the most common card**. It never makes sense to go for two pairs or a full house as a triplet or a four of a kind is always better. So `77J22` should be treated as `77722` and `JJJ77` as `77777`.
+I thought this would be complicated, but it was actually pretty easy. We don't need to write intelligent code that tries out different combinations, as the solution is to **always use the Joker as the most common card**. It never makes sense to go for two pairs or a full house, as a triplet or a four of a kind is always better. So `77J22` should be treated as `77722` and `JJJ77` as `77777`.
 
-To achieve this I started to count the Joker cards in the loop where we fill the map. Note that it is important that we don't want to add the Jokers to the map itself. Otherwise if the most common card is a Joker we would get a wrong result.
+To achieve this, I started to count the Joker cards in the loop where we fill the map. Note that it is important that we don't add the Jokers to the map itself. Otherwise, if the most common card is a joker, we would get the wrong result (applying jokers to jokers).
 
 ```sql
 for i in 1..5
@@ -321,7 +321,7 @@ loop
 end loop;
 ```
 
-Before the `case` statement where determine the type of the hand we just add the amount of Jokers to the most common card count:
+Before the `case` statement that determines the type of the hand, we just add the number of jokers to the most common card count:
 
 ```sql
 if l_joker_count > 0 then
@@ -329,7 +329,16 @@ if l_joker_count > 0 then
 end if;
 ```
 
-And thats basically it. We now just use all the Jokers as the most common card. If we use the same query with the new function we get the result.
+Additionally, the value of the Joker card has changed. Instead of `11` we now return `01`:
+
+```sql
+case pi_char
+  -- ...
+  when 'J' then
+    return '01';
+```
+
+And that's basically it. We now just use all the Jokers as the most common card. If we use the same query with the new function, we get the result.
 
 ## Conclusion
 
