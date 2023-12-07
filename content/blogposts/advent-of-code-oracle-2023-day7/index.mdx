@@ -1,0 +1,338 @@
+---
+title: >
+  Advent of Code 2023 in Oracle - Day 7
+date: 2023-12-07
+description: >
+  Advent of Code 2023 in Oracle SQL and PL/SQL. Day 7: Camel Cards.
+slug: advent-of-code-oracle-2023-day7
+titleImage: ../_common_imgs/dalle-2023-christmas-pixel.png
+titleImageAlt: ''
+titleImageSource: { text: 'Generated with DALL-E', href: null }
+tags: ['AdventOfCode', 'Oracle', 'PL/SQL']
+ghCommentsIssueId: 96
+---
+
+## Advent of Code
+
+[Advent of Code](https://adventofcode.com/) is a great yearly programming challenge.
+Each day (1st to 25th December), a new challenge arises that challenges your problem-solving and programming skills.
+I learn a lot every year, and it is a lot of fun.
+
+I will do the challenges in Oracle (SQL and, where necessary, PL/SQL) this year again. You can find my solutions in [this repository](https://github.com/phartenfeller/advent-of-code-2023) and, if I find the time, on this blog.
+
+I strongly **recommend checking out Advent of Code yourself** before reading on.
+The challenges are clearly and in a Christmas theme.
+There is always a small sample input to test your solution and a bigger input to get the real result.
+When you solve the first challenge, you get a star, and a second, more difficult challenge appears.
+
+## My setup
+
+I am doing the challenges on a local 23c free edition database. I am eager to explore some of the new features of 23c, so some of the syntax might not work on older versions. Furthermore, I will also use the Oracle APEX API packages.
+
+I import the input data into a table that stores each line of the input as a row.
+
+```sql
+create table aoc_input (
+  day      integer             not null -- 1-25
+, key      varchar2(255 char)  not null -- 'SAMPLE1', 'INPUT' etc.
+, line_no  integer             not null -- 1, 2, 3, ...
+, line_str varchar2(4000 char) not null -- The actual line
+, constraint aoc_input_pk primary key (day, key, line_no)
+);
+```
+
+I then use SQL Developer to import the input data into the table. I use a bind for the input and paste the data from the website:
+
+```sql
+begin
+  insert into aoc_input
+    (day, key, line_no, line_str)
+  with x as (
+    select :bind as data from dual
+  )
+  select 1
+       , 'INPUT' -- or something like 'SAMPLE1'
+       , rownum
+       , column_value
+    from x
+       , apex_string.split(x.data, chr(10));
+
+  commit;
+end;
+/
+```
+
+## Day 7
+
+[You can read the challenge text here](https://adventofcode.com/2023/day/7).
+
+### Star 1
+
+I noticed pretty fast that ranking the games would be to complicated to achieve in pure SQL for my taste. So I opted to create a PL/SQL function that returns a numeric rank for a given hand. It will be numeric so that we can just sort by it to get the best/worst hands.
+
+To achieve such a rank we need to consider the highest factor. In the poker case this is the type. Notice how most types require only one information and some two: **The count of the most common card and the count of the second most common card**. I just created the following scale:
+
+```txt
+mc = most common card, smc = second most common card
+
+7. Five of a kind: mc=5
+6. Four of a kind: mc=4
+5. Full House: mc=3, smc=2
+4. Three of a kind: mc=3
+3. Two pair: mc=2, smc=2
+2. One Pair: mc=2
+1. High card mc=1
+```
+
+To program this out we first need to loop over each character to count the occurrences. We can use a map/associative array (`table of number index by varchar2(1char)`) to store the counts. I have dedicated <Link to="/blog/maps-oracle-plsql">a whole blog post to maps in PL/SQL</Link> if you want to find out more. Afterward we loop over our map to store the highest and second-highest count.
+
+```sql
+create or replace function day7_get_hand_rank (pi_hand in varchar2)
+  return number
+as
+  type t_char_map is table of number index by varchar2(1char);
+  l_char_map t_char_map;
+  /* map would look like this as JSON for hand 'A73A7':
+  {
+    "A": 2,
+    "7": 2,
+    "3": 1
+  }
+  */
+
+  l_char varchar2(1 char);
+  l_key  varchar2(1 char);
+  l_fir_highest number := 0;
+  l_sec_highest number := 0;
+begin
+  -- loop over eacht character and store it in the map
+  for i in 1..5
+  loop
+    l_char := substr(pi_hand, i, 1);
+    if l_char_map.exists(l_char) then
+      l_char_map(l_char) := l_char_map(l_char) + 1;
+    else
+      l_char_map(l_char) := 1;
+    end if;
+  end loop;
+
+  -- loop over the map to find the highest and second highest count
+  l_key := l_char_map.first;
+  while l_key is not null
+  loop
+    if l_char_map(l_key) > l_fir_highest then
+      l_sec_highest := l_fir_highest;
+      l_fir_highest := l_char_map(l_key);
+    elsif l_char_map(l_key) > l_sec_highest then
+      l_sec_highest := l_char_map(l_key);
+    end if;
+
+    l_key := l_char_map.next(l_key);
+  end loop;
+
+  dbms_output.put_line(
+    apex_string.format(
+      'l_fir_highest: %s, l_sec_highest: %s',
+      l_fir_highest,
+      l_sec_highest
+    )
+  );
+
+  -- ...
+```
+
+Next we can give scores to each type. I used a regular `case` statement for this. For the cases where we need to consider the second highest count I added an `if` statement. In the end we add the rank number (higher -> better) to a string.
+
+```sql
+case l_fir_highest
+  when 5 then
+    l_res_str := '7';
+  when 4 then
+    l_res_str := '6';
+  when 3 then
+    if l_sec_highest = 2 then
+      l_res_str := '5';
+    else
+      l_res_str := '4';
+    end if;
+  when 2 then
+    if l_sec_highest = 2 then
+      l_res_str := '3';
+    else
+      l_res_str := '2';
+    end if;
+  when 1 then
+    l_res_str := '1';
+  else
+    raise no_data_found;
+end case;
+```
+
+The next question is what happens if two hands have the same type. In this case we need to compare the hands card by card. At the first occurrences they differ we use the higher card to determine the winner. We can also achieve that with numerical sorting.
+
+Because there are more than 10 cards we need to pad the cards with a leading zero. This way we can sort them numerically. We can use a function for this:
+
+```sql
+create or replace function day7_get_hand_rank (pi_hand in varchar2)
+
+  -- ...
+
+  function get_card_value (pi_char in varchar2)
+    return varchar2
+  as
+  begin
+    case pi_char
+      when 'A' then
+        return '14';
+      when 'K' then
+        return '13';
+      when 'Q' then
+        return '12';
+      when 'J' then
+        return '11';
+      when 'T' then
+        return '10';
+      else
+        return '0' || pi_char;
+    end case;
+  end get_card_value;
+
+  -- ...
+```
+
+Inside the loop where we iterate over each character we can use this function to get each cards value. We just append every value to a string so the first cards value will be at the start of the string:
+
+```sql
+  for i in 1..5
+  loop
+    l_char := substr(pi_hand, i, 1);
+    if l_char_map.exists(l_char) then
+      l_char_map(l_char) := l_char_map(l_char) + 1;
+    else
+      l_char_map(l_char) := 1;
+    end if;
+
+    -- build the card value string
+    l_card_value_seq := l_card_value_seq || get_card_value(l_char);
+  end loop;
+```
+
+In the end we can append the type result nuber to the front of the card value string so that it has the most impact on the number size. Now we only need to return the string converted to a number.
+
+```sql
+  l_res_str := l_res_str || l_card_value_seq;
+
+  dbms_output.put_line(
+    apex_string.format(
+      'l_res_str %s',
+      l_res_str
+    )
+  );
+
+  return to_number(l_res_str);
+end day7_get_hand_rank;
+```
+
+[You can check out the full code of the function here](https://github.com/phartenfeller/advent-of-code-2023/blob/main/src/7/1.sql).
+
+To see how it works we can query our inputs table and call the function. At first I seperate the hand and the bet of each line:
+
+```sql
+with hand_bet as (
+  select regexp_substr(line_str, '([0-9A-Z]+) [0-9]+', 1, 1, null, 1) as hand
+       , to_number(
+          regexp_substr(line_str, '[0-9A-Z]+ ([0-9]+)', 1, 1, null, 1)
+         ) as bet
+    from aoc_input
+   where day = 7
+     and key = 'SAMPLE'
+)
+select hand
+     , bet
+     , day7_get_hand_rank(hand) as score
+  from hand_bet
+ order by 3 desc
+;
+/*
+HAND        BET          SCORE
+________ ______ ______________
+QQQJA       483    41212121114
+T55J5       684    41005051105
+KK677        28    31313060707
+KTJJT       220    31310111110
+32T3K       765    20302100313
+*/
+```
+
+We can see that `QQQJA` and `T55J5` both start with a `4` because both are a "Three of a kind". The first has a higher card value. The first card is `Q` vs a `T` thats why the second and third numbers are `12` vs `10`. Great our function seems to work.
+
+To get the result for our data input we need to get a rank for each score and then multiply that with the bet (5 hands, best hand has rank 5, 2nd best rank 4...). We can use the `row_number` analytic function for this. At last we need to multiply the rank with the bet and sum it up:
+
+```sql
+with hand_bet as (
+  select regexp_substr(line_str, '([0-9A-Z]+) [0-9]+', 1, 1, null, 1) as hand
+       , to_number(
+          regexp_substr(line_str, '[0-9A-Z]+ ([0-9]+)', 1, 1, null, 1)
+         ) as bet
+    from aoc_input
+   where day = 7
+     and key = 'INPUT'
+), scores as (
+  select hand
+       , bet
+       , day7_get_hand_rank(hand) as score
+       , row_number() over(order by day7_get_hand_rank(hand) asc) as rnk
+    from hand_bet
+   order by 4 desc
+)
+select sum(rnk * bet)
+from scores
+;
+
+/*
+   SUM(RNK*BET)
+_______________
+      255048101
+*/
+```
+
+### Star 2
+
+For the second challenge we need handle `J` differently as this is acutally a Joker card. This means that this card should be used as any card with the best potential outcome.
+
+I thought this would be complicated but it was actually pretty easy. We don't need to write intelligent code that tries out different combinations as the solution is to **always use the Jokers as the most common card**. It never makes sense to go for two pairs or a full house as a triplet or a four of a kind is always better. So `77J22` should be treated as `77722` and `JJJ77` as `77777`.
+
+To achieve this I started to count the Joker cards in the loop where we fill the map. Note that it is important that we don't want to add the Jokers to the map itself. Otherwise if the most common card is a Joker we would get a wrong result.
+
+```sql
+for i in 1..5
+loop
+  l_char := substr(pi_hand, i, 1);
+  if l_char_map.exists(l_char) then
+    l_char_map(l_char) := l_char_map(l_char) + 1;
+  elsif l_char = 'J' then
+    -- dont put into map
+    l_joker_count := l_joker_count + 1;
+  else
+    l_char_map(l_char) := 1;
+  end if;
+
+  l_card_value_seq := l_card_value_seq || get_card_value(l_char);
+end loop;
+```
+
+Before the `case` statement where determine the type of the hand we just add the amount of Jokers to the most common card count:
+
+```sql
+if l_joker_count > 0 then
+  l_fir_highest := l_fir_highest + l_joker_count;
+end if;
+```
+
+And thats basically it. We now just use all the Jokers as the most common card. If we use the same query with the new function we get the result.
+
+## Conclusion
+
+If you find different or better solutions, please let me know in the comments. I am always eager to learn new things.
+
+You can check out the [full code on GitHub](https://github.com/phartenfeller/advent-of-code-2023).
