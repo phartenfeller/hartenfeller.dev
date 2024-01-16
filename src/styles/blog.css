@@ -85,7 +85,7 @@
 }
 
 .blog-body code {
-  @apply rounded border border-red-200 bg-gradient-to-br from-red-50/75 to-red-100 box-decoration-clone font-mono font-light tracking-tight;
+  @apply break-words rounded border border-red-200 bg-gradient-to-br from-red-50/75 to-red-100 box-decoration-clone font-mono font-light tracking-tight;
   padding: 0.1em 0.2em;
 }
 
