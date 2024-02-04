@@ -1,7 +1,17 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Suspense } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import useImagePreview from '../../state/useImagePreview';
+
+const TransformWrapper = React.lazy(() =>
+  import('react-zoom-pan-pinch').then((module) => ({
+    default: module.TransformWrapper,
+  }))
+);
+const TransformComponent = React.lazy(() =>
+  import('react-zoom-pan-pinch').then((module) => ({
+    default: module.TransformComponent,
+  }))
+);
 
 export default function BlogImagePopup() {
   const { isOpen, close, clear, imgSrc, alt, width, height } =
@@ -73,23 +83,25 @@ export default function BlogImagePopup() {
                 </button>
               </div>
               <div className="m-2 cursor-move bg-zinc-100 shadow-inner">
-                <TransformWrapper wheel={{ step: 12 }}>
-                  <TransformComponent>
-                    <img
-                      width={width}
-                      height={height}
-                      src={imgSrc}
-                      className="object-contain"
-                      alt={alt}
-                      style={{
-                        maxWidth: '85vw',
-                        maxHeight: '85vh',
-                        width,
-                        height,
-                      }}
-                    />
-                  </TransformComponent>
-                </TransformWrapper>
+                <Suspense fallback={<div>Loading...</div>}>
+                  <TransformWrapper wheel={{ step: 12 }}>
+                    <TransformComponent>
+                      <img
+                        width={width}
+                        height={height}
+                        src={imgSrc}
+                        className="object-contain"
+                        alt={alt}
+                        style={{
+                          maxWidth: '85vw',
+                          maxHeight: '85vh',
+                          width,
+                          height,
+                        }}
+                      />
+                    </TransformComponent>
+                  </TransformWrapper>
+                </Suspense>
               </div>
             </div>
           </Transition.Child>
