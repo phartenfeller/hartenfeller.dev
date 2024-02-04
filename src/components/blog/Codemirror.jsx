@@ -9,7 +9,16 @@ const Codemirror = ({ lang, code }) => {
     fontSize: 14,
   });
 
-  return <div className="max-w-[90vw]" ref={codeRef} />;
+  const [isMounted, setIsMounted] = React.useState(false);
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  return (
+    <div className="max-w-[90vw]" ref={codeRef}>
+      {!isMounted && <code>{code}</code>}
+    </div>
+  );
 };
 
 Codemirror.propTypes = {
