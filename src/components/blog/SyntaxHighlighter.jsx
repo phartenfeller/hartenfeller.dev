@@ -32,7 +32,8 @@ const SyntaxH = ({ lang, code }) => {
       language={l}
       style={oneDark}
       showLineNumbers
-      wrapLongLines
+      // wrapLongLines
+      // lineProps={{ style: { wordBreak: 'break-all', whiteSpace: 'pre-wrap' } }}
     >
       {code}
     </SyntaxHighlighter>
