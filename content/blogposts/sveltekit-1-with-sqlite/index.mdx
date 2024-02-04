@@ -112,17 +112,17 @@ import { getInitialTracks } from '$lib/server/db';
 import type { PageServerLoad } from './$types';
 
 export const load = (() => {
-	const tracks = getInitialTracks();
+  const tracks = getInitialTracks();
 
-	return {
-		tracks
-	};
+  return {
+    tracks,
+  };
 }) satisfies PageServerLoad;
 ```
 
 These few lines are enough for us to consume the data in our frontend svelte file. In the neighboring `+page.svelte` we can consume and display the data:
 
-```svelte header=src/routes/+page.svelte
+```html header=src/routes/+page.svelte
 <script lang="ts">
 	import type { PageData } from './$types';
 	export let data: PageData;
@@ -232,15 +232,15 @@ In the new `+page.server.ts` file, we can then define our load function. We can 
 
 ```typescript header=src/routes/album/[albumId]/+page.server.ts
 export const load = (({ params }) => {
-	const albumId = parseInt(params.albumId);
+  const albumId = parseInt(params.albumId);
 
-	const album = getAlbumById(albumId);
-	const tracks = getAlbumTracks(albumId);
+  const album = getAlbumById(albumId);
+  const tracks = getAlbumTracks(albumId);
 
-	return {
-		album,
-		tracks
-	};
+  return {
+    album,
+    tracks,
+  };
 }) satisfies PageServerLoad;
 ```
 
@@ -248,34 +248,34 @@ export const load = (({ params }) => {
 
 It is now trivial to display the loaded data on the page:
 
-```svelte header=src/routes/album/[albumId]/+page.svelte
+```html header=src/routes/album/[albumId]/+page.svelte
 <script lang="ts">
-	import type { PageData } from './$types';
-	export let data: PageData;
+  import type { PageData } from './$types';
+  export let data: PageData;
 </script>
 
 <div class="px-4">
-	<h1 class="is-size-1">{data.album.albumTitle}</h1>
-	<p class="is-size-4">By {data.album.artistName}</p>
+  <h1 class="is-size-1">{data.album.albumTitle}</h1>
+  <p class="is-size-4">By {data.album.artistName}</p>
 
-	<table class="table mt-6">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>Track</th>
-				<th>Duration</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each data.tracks as track, i}
-				<tr>
-					<td>{i + 1}</td>
-					<td>{track.trackName}</td>
-					<td>{Math.floor(track.trackMs / 1000)} s</td>
-				</tr>
-			{/each}
-		</tbody>
-	</table>
+  <table class="mt-6 table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Track</th>
+        <th>Duration</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each data.tracks as track, i}
+      <tr>
+        <td>{i + 1}</td>
+        <td>{track.trackName}</td>
+        <td>{Math.floor(track.trackMs / 1000)} s</td>
+      </tr>
+      {/each}
+    </tbody>
+  </table>
 </div>
 ```
 
@@ -289,24 +289,24 @@ The 500 error code is not great as 404 "not found" would be better as the error 
 import { error, type Actions } from '@sveltejs/kit';
 
 export const load = (({ params }) => {
-	const albumId = parseInt(params.albumId);
+  const albumId = parseInt(params.albumId);
 
-	if (!albumId) {
-		throw error(404, 'Album not found');
-	}
+  if (!albumId) {
+    throw error(404, 'Album not found');
+  }
 
-	const album = getAlbumById(albumId);
+  const album = getAlbumById(albumId);
 
-	if (!album) {
-		throw error(404, 'Album not found');
-	}
+  if (!album) {
+    throw error(404, 'Album not found');
+  }
 
-	const tracks = getAlbumTracks(albumId);
+  const tracks = getAlbumTracks(albumId);
 
-	return {
-		album,
-		tracks
-	};
+  return {
+    album,
+    tracks,
+  };
 }) satisfies PageServerLoad;
 ```
 
@@ -314,9 +314,9 @@ We may want this error page to match our page style or add more information. We 
 
 For a really simple page, we can just display the HTTP status code and a message by importing both from the `page` store:
 
-```svelte header=src/routes/album/[albumId]/+error.svelte
+```html header=src/routes/album/[albumId]/+error.svelte
 <script>
-	import { page } from '$app/stores';
+  import { page } from '$app/stores';
 </script>
 
 <h1 class="is-size-1 has-text-danger">Ooopsie Whooopsie</h1>
@@ -358,19 +358,25 @@ We add a hidden input field for the album ID that is prefilled by our load data.
 
 We can then add a button that submits the form. We can add the `formaction` property and set a function name that is then triggered in the `+page.server.ts` file. This way we can do different operations based on a single form (e. g. Create, Update, Delete). Note that we [prefix the function name with a question mark and slash to make it a relative path](https://kit.svelte.dev/docs/form-actions#get-vs-post:~:text=prefixed%20by%20a,character%3A).
 
-```svelte header=src/routes/album/[albumId]/+page.svelte
+```html header=src/routes/album/[albumId]/+page.svelte
 <!-- ... -->
 <h2 class="is-size-3 mb-4 mt-6">Update Album Name</h2>
 <form method="post">
-	<input
-		class="input"
-		type="text"
-		name="albumTitle"
-		value={data.album.albumTitle}
-		style="max-width: 50ch;"
-	/>
-	<input type="hidden" name="albumId" value={data.album.albumId} />
-	<button class="button is-primary" type="submit" formaction="?/updateAlbumTitle">Update</button>
+  <input
+    class="input"
+    type="text"
+    name="albumTitle"
+    value="{data.album.albumTitle}"
+    style="max-width: 50ch;"
+  />
+  <input type="hidden" name="albumId" value="{data.album.albumId}" />
+  <button
+    class="button is-primary"
+    type="submit"
+    formaction="?/updateAlbumTitle"
+  >
+    Update
+  </button>
 </form>
 ```
 
@@ -459,18 +465,18 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
 export const GET = (({ url }) => {
-	const searchTerm = url.searchParams.get('searchTerm')?.toString();
-	console.log('searchTerm', searchTerm);
+  const searchTerm = url.searchParams.get('searchTerm')?.toString();
+  console.log('searchTerm', searchTerm);
 
-	let tracks: Track[] = [];
+  let tracks: Track[] = [];
 
-	if (!searchTerm) {
-		tracks = getInitialTracks();
-	} else {
-		tracks = searchTracks(searchTerm) ?? [];
-	}
+  if (!searchTerm) {
+    tracks = getInitialTracks();
+  } else {
+    tracks = searchTracks(searchTerm) ?? [];
+  }
 
-	return json(tracks);
+  return json(tracks);
 }) satisfies RequestHandler;
 ```
 
@@ -478,15 +484,15 @@ export const GET = (({ url }) => {
 
 We add an input of type `search` to our home page. We can then add an `on:keyup` and `on:search` event listener. The `on:keyup` event is triggered on every key press. The `on:search` event is triggered when the user presses the enter key or clicks the 'x' to reset the input:
 
-```svelte header=src/routes/+page.svelte
+```html header=src/routes/+page.svelte
 <input
-	type="search"
-	placeholder="Search..."
-	class="input mb-5"
-	style="max-width: 80ch;"
-	value={searchTerm}
-	on:keyup={handleSearch}
-	on:search={handleSearch}
+  type="search"
+  placeholder="Search..."
+  class="input mb-5"
+  style="max-width: 80ch;"
+  value="{searchTerm}"
+  on:keyup="{handleSearch}"
+  on:search="{handleSearch}"
 />
 ```
 
@@ -494,33 +500,33 @@ Then `handleSearch` function receives the event and we can access the input valu
 
 The real request is done in the `fetchTracks` function. It uses the `fetch` API to make a GET request to our API route. We pass the search term as a query parameter. After the request is done we can parse the response as JSON and set the result to the **new** `tracks` variable.
 
-```svelte header=src/routes/+page.svelte
+```html header=src/routes/+page.svelte
 <script lang="ts">
-// ...
-let timer: NodeJS.Timeout;
-let searchTerm = '';
-function fetchTracks() {
-	fetch(`/api/searchTracks?searchTerm=${searchTerm}`)
-		.then((res) => res.json())
-		.then((data) => {
-			tracks = data;
-		});
-}
-function handleSearch(e: Event) {
-	clearTimeout(timer);
-	timer = setTimeout(() => {
-		const target = e.target as HTMLInputElement;
-		searchTerm = target.value;
-		fetchTracks();
-	}, 300);
-}
-let tracks = data.tracks;
+  // ...
+  let timer: NodeJS.Timeout;
+  let searchTerm = '';
+  function fetchTracks() {
+    fetch(`/api/searchTracks?searchTerm=${searchTerm}`)
+      .then((res) => res.json())
+      .then((data) => {
+        tracks = data;
+      });
+  }
+  function handleSearch(e: Event) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      const target = e.target as HTMLInputElement;
+      searchTerm = target.value;
+      fetchTracks();
+    }, 300);
+  }
+  let tracks = data.tracks;
 </script>
 ```
 
 We still need to change the table loop to accessing the `tracks` variable instead of `data.tracks` so that it updates after a search:
 
-```svelte header=src/routes/+page.svelte
+```html header=src/routes/+page.svelte
 {#each tracks as track}
 	<tr>
 		<td>{track.trackName}</td>

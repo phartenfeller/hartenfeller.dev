@@ -33,7 +33,7 @@
 }
 
 .blog-comments {
-  @apply font-mono text-sm leading-7;
+  @apply break-all font-mono text-sm leading-7;
 }
 
 .blog-comments p {
@@ -84,7 +84,7 @@
   height: 100%;
 }
 
-.blog-body code {
+.blog-body p > code {
   @apply break-words rounded border border-red-200 bg-gradient-to-br from-red-50/75 to-red-100 box-decoration-clone font-mono font-light tracking-tight;
   padding: 0.1em 0.2em;
 }
@@ -104,4 +104,21 @@
 
 .blog-body .footnotes ol {
   @apply ml-8 list-outside list-decimal;
+}
+
+.code-figure code {
+  @apply text-sm;
+}
+
+.code-figure pre {
+  line-height: 1 !important;
+  padding: 8px !important;
+  margin: 0 !important;
+}
+
+.code-figure code span::selection {
+  background: #363a49; /* WebKit/Blink Browsers */
+}
+.code-figure code span::-moz-selection {
+  background: #363a49; /* Gecko Browsers */
 }

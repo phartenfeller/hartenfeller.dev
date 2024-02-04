@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import BlogGifGetter from './BlogGifGetter';
 import Gist from './Gist';
-import Codemirror from './Codemirror';
+import SyntaxH from './SyntaxHighlighter';
 
 const CodeHandler = ({
   className = 'sh',
@@ -40,14 +40,14 @@ const CodeHandler = ({
     }
     default:
       return (
-        <figure className="mx-auto my-8 ">
+        <figure className="code-figure mx-auto my-8 ">
           {header && (
-            <figcaption className="lg:text-md bg-zinc-900 px-2 py-1 font-mono text-sm font-semibold tracking-tight text-zinc-200 selection:bg-zinc-700 selection:text-zinc-100 lg:py-2">
+            <figcaption className="lg:text-md px-2 py-0.5 font-mono text-sm font-semibold tracking-tight text-zinc-800 selection:bg-zinc-700 selection:text-zinc-100 lg:py-1">
               {header.replaceAll('#', ' ')}
             </figcaption>
           )}
           <div className="font-normal">
-            <Codemirror code={children} lang={language} />
+            <SyntaxH code={children} lang={language} />
           </div>
           {source && (
             <a href={source} className="text-sm">

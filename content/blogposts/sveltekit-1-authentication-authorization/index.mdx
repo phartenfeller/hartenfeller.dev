@@ -67,7 +67,7 @@ We also want to add a salt before we hash. It is a random value added to the pas
 [^1]: https://en.wikipedia.org/wiki/Cryptographic_hash_function
 [^2]: https://auth0.com/blog/adding-salt-to-hashing-a-better-way-to-store-passwords/
 
-```ts header="src/lib/server/db/index.ts"
+```ts header=src/lib/server/db/index.ts
 export async function createUser(
   username: string,
   password: string
@@ -88,7 +88,7 @@ export async function createUser(
 
 I created a new page that allows both registration and login. I started with two inputs for username and password and a button to register.
 
-```svelte header=src/routes/login/+page.svelte
+```html header=src/routes/login/+page.svelte
 <script lang="ts">
   import type { ActionData } from './$types';
 </script>
@@ -96,11 +96,27 @@ I created a new page that allows both registration and login. I started with two
 <div class="container">
   <h1 class="is-size-3 has-text-weight-semibold my-4">Login or Register</h1>
   <form method="post">
-    <input class="input my-2" type="text" placeholder="Username" name="username" required />
-    <input class="input my-2" type="password" placeholder="Password" name="password" required />
+    <input
+      class="input my-2"
+      type="text"
+      placeholder="Username"
+      name="username"
+      required
+    />
+    <input
+      class="input my-2"
+      type="password"
+      placeholder="Password"
+      name="password"
+      required
+    />
 
-    <button class="button mt-4 mr-3" type="submit" formaction="?/register">Register</button>
-    <button class="button is-primary mt-4" type="submit" formaction="?/login">Login</button>
+    <button class="button mr-3 mt-4" type="submit" formaction="?/register">
+      Register
+    </button>
+    <button class="button is-primary mt-4" type="submit" formaction="?/login">
+      Login
+    </button>
   </form>
 </div>
 ```
@@ -109,7 +125,7 @@ I created a new page that allows both registration and login. I started with two
 
 We also need to implement the `register` action in the backend. We will use the `createUser` method we created earlier.
 
-```ts header="src/routes/login/+page.server.ts"
+```ts header=src/routes/login/+page.server.ts
 import { createUser } from '$lib/server/db';
 import { fail, type Actions } from '@sveltejs/kit';
 
@@ -134,7 +150,7 @@ export const actions: Actions = {
 
 To make use of the `errorMessage` thrown by the `fail` function, we need to add a bit of code to the `login` page.
 
-```svelte header=src/routes/login/+page.svelte
+```html header=src/routes/login/+page.svelte
 <script lang="ts">
   import type { ActionData } from './$types';
 
@@ -145,16 +161,32 @@ To make use of the `errorMessage` thrown by the `fail` function, we need to add 
 <div class="container">
   <h1 class="is-size-3 has-text-weight-semibold my-4">Login or Register</h1>
   <form method="post">
-    <input class="input my-2" type="text" placeholder="Username" name="username" required />
-    <input class="input my-2" type="password" placeholder="Password" name="password" required />
+    <input
+      class="input my-2"
+      type="text"
+      placeholder="Username"
+      name="username"
+      required
+    />
+    <input
+      class="input my-2"
+      type="password"
+      placeholder="Password"
+      name="password"
+      required
+    />
 
     <!-- display error message -->
     {#if form?.errorMessage}
-      <div class="has-text-danger my-2">{form.errorMessage}</div>
+    <div class="has-text-danger my-2">{form.errorMessage}</div>
     {/if}
 
-    <button class="button mt-4 mr-3" type="submit" formaction="?/register">Register</button>
-    <button class="button is-primary mt-4" type="submit" formaction="?/login">Login</button>
+    <button class="button mr-3 mt-4" type="submit" formaction="?/register">
+      Register
+    </button>
+    <button class="button is-primary mt-4" type="submit" formaction="?/login">
+      Login
+    </button>
   </form>
 </div>
 ```
@@ -167,7 +199,7 @@ In this section, we will implement the login functionality. We check if the cred
 
 The password hashing library `bcrypt` also offers a function to compare a plain text password with a hashed one. We can use this to validate the credentials. Note that when the user enters an invalid username, we do a hash to “waste” some time. This makes brute forcing harder.
 
-```ts header="src/lib/server/db/index.ts"
+```ts header=src/lib/server/db/index.ts
 export async function checkUserCredentials(
   username: string,
   password: string
@@ -193,7 +225,7 @@ export async function checkUserCredentials(
 
 We need to call this function in our form handler for the login button. When the credentials are valid, we call the function `performLogin` which creates a session. In there, we define a maximum session length of 30 days. We call a `createSession` function which we will implement later that returns an ID. We store this ID in a cookie with `cookies.set`.
 
-```ts header="src/routes/login/+page.server.ts"
+```ts header=src/routes/login/+page.server.ts
 import { checkUserCredentials, createUser } from '$lib/server/db';
 import { createSession } from '$lib/server/sesstionStore';
 import { fail, redirect, type Actions, type Cookies } from '@sveltejs/kit';
@@ -238,7 +270,7 @@ The in-memory store is just a `Map` of the type `SessionInfo`. The key will be t
 
 In the `createSession` function we start by creating a random session ID. For that, we use the `randomBytes` function from node's internal `crybto` module. Now we can fetch all the user info we want to store in our session map. In our case, we already get the username from the login form and only need to query his roles from the `users` table.
 
-```ts header="src/lib/server/sessionStore/index.ts"
+```ts header=src/lib/server/sessionStore/index.ts
 import { randomBytes } from 'node:crypto';
 import { getUserRoles } from '../db';
 
@@ -276,7 +308,7 @@ export function createSession(username: string, maxAge: number): string {
 
 We also need to expire the session server-side. For that, we create a small function that loops over all sessions and deletes the ones that are expired. We call this function every hour when a session is created. We do this in a `setTimeout` to not block the server.
 
-```ts header="src/lib/server/sessionStore/index.ts"
+```ts header=src/lib/server/sessionStore/index.ts
 let nextClean = Date.now() + 1000 * 60 * 60; // 1 hour
 // ...
 function clean() {
@@ -310,7 +342,7 @@ To make this work **globally** in our app, we can use [hooks and locals](https:/
 
 In there, we grab the session ID from the cookie, and get the session data for it. We then store the username and roles in the `event.locals` object. This object is available in all components and pages.
 
-```ts header="src/hooks.server.ts"
+```ts header=src/hooks.server.ts
 import { getSession } from '$lib/server/sesstionStore';
 import type { Handle } from '@sveltejs/kit';
 
@@ -335,7 +367,7 @@ export const handle = (async ({ event, resolve }) => {
 
 For the `getSession` function, we just return the data of our map if the session is still valid. If the session is invalid, we delete it from the map and return `undefined` and delete the cookie in the function above.
 
-```ts header="src/lib/server/sessionStore/index.ts"
+```ts header=src/lib/server/sessionStore/index.ts
 export function getSession(sid: Sid): SessionInfo | undefined {
   const session = sessionStore.get(sid);
   if (session) {
@@ -355,7 +387,7 @@ export function getSession(sid: Sid): SessionInfo | undefined {
 
 We also to define the types for the `event.locals` object. We do this in a file called `types.d.ts` in the `src` folder.
 
-```ts header="src/types.d.ts"
+```ts header=src/types.d.ts
 declare namespace App {
   // interface Error {}
   interface Locals {
@@ -373,7 +405,7 @@ declare namespace App {
 
 The most obvious thing to do is to greet the user in the header so he knows he is logged in. As the header sits in our global `+layout.svelte` file, we first need to add a `+layout.server.ts` next to it. In there, we can access the locals and return the username in the `load` function.
 
-```ts header="src/routes/+layout.server.ts"
+```ts header=src/routes/+layout.server.ts
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ locals }) => {
@@ -385,7 +417,7 @@ export const load = (async ({ locals }) => {
 
 We can then just display the username in the header like with any other value from the load function.
 
-```svelte header="src/routes/+layout.svelte"
+```html header=src/routes/+layout.svelte
 <script lang="ts">
   import type { LayoutServerData } from './$types';
 
@@ -407,9 +439,9 @@ We can then just display the username in the header like with any other value fr
       <div class="navbar-item">
         <div class="buttons">
           {#if data?.username}
-            <span>Hello {data.username}</span>
+          <span>Hello {data.username}</span>
           {:else}
-            <a href="/login" class="button is-primary">Log in</a>
+          <a href="/login" class="button is-primary">Log in</a>
           {/if}
         </div>
       </div>
@@ -423,7 +455,7 @@ We can then just display the username in the header like with any other value fr
 
 As we defined user-roles in our table, we might want to lock some pages behind a role. We can do this by using the `load` function of the page. In there we can check if the user has the required role and return an error if not.
 
-```ts header="src/routes/admin/index.server.ts"
+```ts header=src/routes/admin/index.server.ts
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -447,7 +479,7 @@ Like we did with the header component, we can also hide specific regions of a pa
 
 To log out, we just need to delete the cookie and redirect the user to the home page. We don't even need a `.svelte` file in the logout folder.
 
-```ts header="src/routes/logout/index.server.ts"
+```ts header=src/routes/logout/index.server.ts
 import { deleteSession } from '$lib/server/sesstionStore';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from '../$types';
@@ -469,16 +501,17 @@ The first tells SvelteKit to not preload the data for this link. This can improv
 
 The second tells SvelteKit to reload the page after the link is clicked. This is needed because svelte won't do the redirect when the user is already on the home page, but we want to refresh the header to again show the login button.
 
-```svelte header="src/routes/+layout.svelte"
+```html header=src/routes/+layout.svelte
 {#if data?.username}
-  <a
-    href="/logout"
-    class="button is-primary"
-    data-sveltekit-preload-data="off"
-    data-sveltekit-reload>Hello {data.username}, Log out</a
-  >
+<a
+  href="/logout"
+  class="button is-primary"
+  data-sveltekit-preload-data="off"
+  data-sveltekit-reload
+  >Hello {data.username}, Log out</a
+>
 {:else}
-  <a href="/login" class="button is-primary">Log in</a>
+<a href="/login" class="button is-primary">Log in</a>
 {/if}
 ```
 
@@ -507,7 +540,7 @@ CREATE TABLE
 
 We need to add the following database functions:
 
-```ts header="src/lib/server/db/index.ts"
+```ts header=src/lib/server/db/index.ts
 export function deleteExpiredDbSessions(now: number) {
   const sql = `
   delete from sessions
@@ -562,7 +595,7 @@ export function getDbSession(sid: string): SessionInfoCache | undefined {
 
 We also need to add these types:
 
-```ts header="src/lib/server/db/types.ts"
+```ts header=src/lib/server/db/types.ts
 export type SessionInfo = {
   username: string;
   roles: string[];
@@ -575,7 +608,7 @@ export type SessionInfoCache = SessionInfo & {
 
 And at last, we always need to handle the DB next to our in-memory session store:
 
-```ts header="src/lib/server/sessionStore.ts"
+```ts header=src/lib/server/sessionStore.ts
 import { randomBytes } from 'node:crypto';
 import {
   deleteDbSession,

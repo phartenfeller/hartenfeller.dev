@@ -38,7 +38,7 @@ We add a change handler to the file input and call the function `handleImageUplo
 
 Additionally, we can disable the form submit button until the user selected an image.
 
-```svelte header=+page.svelte
+```html header=+page.svelte
 <script lang="ts">
   import type { PageData } from './$types';
   export let data: PageData;
@@ -54,22 +54,30 @@ Additionally, we can disable the form submit button until the user selected an i
 </script>
 
 <form method="post" enctype="multipart/form-data">
-  <input type="hidden" name="albumId" value={data.album.albumId} />
-  <input type="file" name="albumImage" accept="image/*" on:change={handleImageUpload} />
+  <input type="hidden" name="albumId" value="{data.album.albumId}" />
+  <input
+    type="file"
+    name="albumImage"
+    accept="image/*"
+    on:change="{handleImageUpload}"
+  />
 
   {#if uploadedImage}
-    <div class="mt-4">
-      <img src={uploadedImage} style="max-width: 50ch;" alt="" />
-    </div>
+  <div class="mt-4">
+    <img src="{uploadedImage}" style="max-width: 50ch;" alt="" />
+  </div>
   {/if}
 
-  <div class="mt-4 mb-6">
+  <div class="mb-6 mt-4">
     <button
       class="button is-primary is-disabled"
       type="submit"
       formaction="?/updateAlbumImage"
-      disabled={!uploadedImage ?? null}
-      >Upload Image
+      disabled="{!uploadedImage"
+      ??
+      null}
+    >
+      Upload Image
     </button>
   </div>
 </form>
@@ -188,7 +196,7 @@ import type { RequestHandler } from './$types';
 export const GET = (async ({ params, setHeaders }) => {
   if (!params.albumId) {
     throw error(404, {
-      message: 'Album not found'
+      message: 'Album not found',
     });
   }
 
@@ -196,7 +204,7 @@ export const GET = (async ({ params, setHeaders }) => {
   console.log('albumId', albumId);
   if (!albumId) {
     throw error(404, {
-      message: 'Album not found'
+      message: 'Album not found',
     });
   }
 
@@ -212,7 +220,7 @@ export const GET = (async ({ params, setHeaders }) => {
     'Content-Type': img.mimeType,
     'Content-Length': img.size.toString(),
     'Last-Modified': new Date(img.lastModified).toUTCString(),
-    'Cache-Control': 'public, max-age=600'
+    'Cache-Control': 'public, max-age=600',
   });
 
   return new Response(img.data);
@@ -258,15 +266,11 @@ export function getAlbumImage(albumId: number, filename: string): AlbumImage {
 
 To load the image, we only need to add another image element to the album page. I extended the load function to also return the image filename. With that, can just call our new API endpoint to request the image.
 
-```svelte header=+page.svelte
+```html header=+page.svelte
 <!-- ... -->
-{#if data.album.imgName}
-  <img
-    src={`/api/album/${data.album.albumId}/image/${data.album.imgName}`}
-    alt=""
-    class="mt-4 image"
-    style="max-width: 250px;"
-  />
+{#if data.album.imgName} <img
+src={`/api/album/${data.album.albumId}/image/${data.album.imgName}`} alt=""
+class="mt-4 image" style="max-width: 250px;" />
 <!-- ... -->
 {/if}
 ```
