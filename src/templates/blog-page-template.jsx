@@ -8,7 +8,6 @@ import React, { Suspense } from 'react';
 import LinkButton from '../components/LinkButton';
 import AuthorShowcase from '../components/blog/AuthorShowcase';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
-import OtherPosts from '../components/blog/OtherPosts';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
 import BlogAPEXSidebar from '../components/blog/blogAPEXSidebar';
@@ -18,7 +17,8 @@ import SEO from '../components/seo';
 import '../styles/blog.css';
 import lazyLoad from '../util/lazy';
 
-const Comments = lazyLoad(() => import('../components/blog/Comments'), 1);
+const Comments = lazyLoad(() => import('../components/blog/Comments'), 2.5);
+const OtherPosts = lazyLoad(() => import('../components/blog/OtherPosts'), 2.5);
 
 export const query = graphql`
   query ($id: String!, $relativeDirectory: String!) {
@@ -233,10 +233,6 @@ const BlogPageTemplate = ({ data }) => {
                 </div>
               ) : null}
 
-              <div className="my-8 max-w-[90vw]">
-                <OtherPosts postId={id} />
-              </div>
-
               <div className="my-12">
                 <div className="pb-16 pt-4 text-center">
                   <LinkButton
@@ -246,6 +242,15 @@ const BlogPageTemplate = ({ data }) => {
                     newWindow
                   />
                   <LinkButton type="rss" link="/rss.xml" newWindow />
+                </div>
+
+                <h2 className="brown-header-text mb-8 text-2xl font-semibold">
+                  Other Posts
+                </h2>
+                <div className="my-8 max-w-[90vw]">
+                  <Suspense fallback={<div>Loading...</div>}>
+                    <OtherPosts postId={id} />
+                  </Suspense>
                 </div>
                 {ghCommentsIssueId && (
                   <>
