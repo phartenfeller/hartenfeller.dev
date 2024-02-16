@@ -1,13 +1,13 @@
-import React, { Fragment, Suspense } from 'react';
+import React, { lazy, Fragment, Suspense } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import useImagePreview from '../../state/useImagePreview';
 
-const TransformWrapper = React.lazy(() =>
+const TransformWrapper = lazy(() =>
   import('react-zoom-pan-pinch').then((module) => ({
     default: module.TransformWrapper,
   }))
 );
-const TransformComponent = React.lazy(() =>
+const TransformComponent = lazy(() =>
   import('react-zoom-pan-pinch').then((module) => ({
     default: module.TransformComponent,
   }))

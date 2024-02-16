@@ -113,7 +113,7 @@
   @apply text-xs md:text-sm;
 }
 
-.code-figure pre {
+.code-figure pre:not(.loading-code) {
   line-height: 1 !important;
   padding: 8px !important;
   margin: 0 !important;

@@ -1,22 +1,24 @@
+import { ArrowUpIcon, ClockIcon, RssIcon } from '@heroicons/react/outline';
 import { MDXProvider } from '@mdx-js/react';
-import { graphql, Link } from 'gatsby';
+import { Link, graphql } from 'gatsby';
 import { GatsbyImage } from 'gatsby-plugin-image';
 import { MDXRenderer } from 'gatsby-plugin-mdx';
 import PropTypes from 'prop-types';
-import React from 'react';
-import { ArrowUpIcon, ClockIcon, RssIcon } from '@heroicons/react/outline';
+import React, { Suspense } from 'react';
+import LinkButton from '../components/LinkButton';
 import AuthorShowcase from '../components/blog/AuthorShowcase';
-import getComponents from '../components/blog/blogComponents';
 import BlogImagePopup from '../components/blog/BlogImagePopup';
-import Comments from '../components/blog/Comments';
 import OtherPosts from '../components/blog/OtherPosts';
 import ScrollTracker from '../components/blog/ScrollTracker';
 import TagsDisplay from '../components/blog/TagsDisplay';
+import BlogAPEXSidebar from '../components/blog/blogAPEXSidebar';
+import getComponents from '../components/blog/blogComponents';
 import Layout from '../components/layout';
-import LinkButton from '../components/LinkButton';
 import SEO from '../components/seo';
 import '../styles/blog.css';
-import BlogAPEXSidebar from '../components/blog/blogAPEXSidebar';
+import lazyLoad from '../util/lazy';
+
+const Comments = lazyLoad(() => import('../components/blog/Comments'), 1);
 
 export const query = graphql`
   query ($id: String!, $relativeDirectory: String!) {
@@ -251,7 +253,9 @@ const BlogPageTemplate = ({ data }) => {
                       Comments
                     </h2>
 
-                    <Comments ghCommentsIssueId={ghCommentsIssueId} />
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <Comments ghCommentsIssueId={ghCommentsIssueId} />
+                    </Suspense>
                   </>
                 )}
               </div>
