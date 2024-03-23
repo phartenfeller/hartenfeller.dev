@@ -20,7 +20,7 @@ const talks = [
     title:
       'From Concept to Component: efficient Template Component development',
     language: '🇬🇧',
-    slides: '/slides/apex_world24_template_components',
+    slides: '/slides/apex_world24_template_components.pdf',
   },
   {
     year: 2023,
