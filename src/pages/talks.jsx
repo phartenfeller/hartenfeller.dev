@@ -6,6 +6,23 @@ import SEO from '../components/seo';
 
 const talks = [
   {
+    year: 2024,
+    conference: 'APEX World 2024',
+    place: 'Amersfoort, NL',
+    title: 'Step-by-Step Creation of an Offline APEX App with Plug-Ins',
+    language: '🇬🇧',
+    slides: '/slides/apex_world24_apex_offline.pdf',
+  },
+  {
+    year: 2024,
+    conference: 'APEX World 2024',
+    place: 'Amersfoort, NL',
+    title:
+      'From Concept to Component: efficient Template Component development',
+    language: '🇬🇧',
+    slides: '/slides/apex_world24_template_components',
+  },
+  {
     year: 2023,
     conference: 'DOAG 2023',
     place: 'Nürnberg',
