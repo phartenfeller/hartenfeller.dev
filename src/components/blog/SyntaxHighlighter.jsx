@@ -1,23 +1,67 @@
 import PropTypes from 'prop-types';
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 // import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import waitMs from '../../util/waitMs';
 
+const LoadingPre = ({ code }) => (
+  <pre
+    className="loading-code"
+    style={{
+      fontFamily: `"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace`,
+      fontSize: '14px',
+      lineHeight: '22px',
+      margin: '10px 0',
+      backgroundColor: 'rgb(40, 44, 52)',
+      color: 'rgb(171, 178, 191)',
+      backgroundClip: 'border-box',
+      padding: '12px',
+    }}
+  >
+    {code}
+  </pre>
+);
+
+LoadingPre.propTypes = {
+  code: PropTypes.string.isRequired,
+};
+
 const SyntaxHighlighter = lazy(async () => {
-  await waitMs(0.2 * 1000);
-  return import('react-syntax-highlighter').then((module) => ({
-    default: module.Prism,
-  }));
+  await waitMs(1.5 * 1000);
+  const obj = import('react-syntax-highlighter');
+  return { default: obj.Prism };
 });
 
-// const SyntaxHighlighter = lazy(async () => {
-//   await waitMs(1.5 * 1000);
-//   const obj = import('react-syntax-highlighter');
-//   return { default: obj.Prism };
-// });
-
 const SyntaxH = ({ lang, code }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const componentRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.disconnect(); // Optional: disconnect observer if you only want to load once
+          }
+        });
+      },
+      {
+        rootMargin: '0px', // Adjust this value to control how early the callback is executed as the element comes into view
+        threshold: 0.1, // Adjust this value to control what portion of the target must be visible for the callback to be executed
+      }
+    );
+
+    if (componentRef.current) {
+      observer.observe(componentRef.current);
+    }
+
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      }
+    };
+  }, [componentRef]);
   let l;
 
   switch (lang) {
@@ -41,26 +85,16 @@ const SyntaxH = ({ lang, code }) => {
       break;
   }
 
+  if (!isVisible) {
+    return (
+      <div ref={componentRef}>
+        <LoadingPre code={code} />
+      </div>
+    );
+  }
+
   return (
-    <Suspense
-      fallback={
-        <pre
-          className="loading-code"
-          style={{
-            fontFamily: `"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace`,
-            fontSize: '14px',
-            lineHeight: '22px',
-            margin: '10px 0',
-            backgroundColor: 'rgb(40, 44, 52)',
-            color: 'rgb(171, 178, 191)',
-            backgroundClip: 'border-box',
-            padding: '12px',
-          }}
-        >
-          {code}
-        </pre>
-      }
-    >
+    <Suspense fallback={LoadingPre}>
       <SyntaxHighlighter
         language={l}
         style={oneDark}
