@@ -92,10 +92,7 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
       name: `twitter:image`,
       content: `https://hartenfeller.dev${imgSrc}`,
     },
-    {
-      name: `twitter:image:alt`,
-      content: imgAlt,
-    },
+
     {
       name: `og:image`,
       content: `https://hartenfeller.dev${imgSrc}`,
@@ -109,10 +106,6 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
       content: imgHeight,
     },
     {
-      name: `og:image:alt`,
-      content: imgAlt,
-    },
-    {
       name: `article:published_time`,
       content: publishISO,
     },
@@ -120,11 +113,18 @@ const getMeta = ({ imgSrc, imgAlt, publishISO, tags, imgHeight, imgWidth }) => {
       name: `article:author`,
       content: 'Philipp Hartenfeller',
     },
-    {
-      name: `monetization`,
-      content: `$ilp.uphold.com/dhUZx4rikrgf`,
-    },
   ];
+
+  if (imgAlt) {
+    meta.push({
+      name: `twitter:image:alt`,
+      content: imgAlt,
+    });
+    meta.push({
+      name: `og:image:alt`,
+      content: imgAlt,
+    });
+  }
 
   tags.forEach((tag) => {
     meta.push({
