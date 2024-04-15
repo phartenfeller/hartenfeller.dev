@@ -3,17 +3,17 @@ title: >
   How to add global application search to your APEX app
 date: 2024-04-15
 description: >
-  Learn how to add a global search to your APEX app that searches through all your data and navigation entries.
+  Learn how to add a global search to your Oracle APEX app that searches through all your data and navigation entries.
 slug: apex-global-application-search
 titleImage: ./apex-search-thumb.jpg
 titleImageAlt: ''
 titleImageSource: { text: null, href: null }
 tags: ['APEX', 'User-Interfaces']
-ghCommentsIssueId: 20
+ghCommentsIssueId: 99
 ---
 
 <InfoBox>
-  If you're prefering for a more visual and interactive way to learn about the
+  If you're looking for a more visual and interactive way to learn about the
   topic of this post, check out{' '}
   <a href="https://youtu.be/N3rfp-fZYLE">
     my YouTube video on the same subject
@@ -21,31 +21,31 @@ ghCommentsIssueId: 20
   .
 </InfoBox>
 
-If you build large APEX applications it will be hard for your maintain an overview of what is available. Well though through hierachies supported by an navigation menu and breadcrumbs can help but sometimes it will still be unclear how to navigate from point A to point B. The best solution for this is to offer search.
+If you build large APEX applications, it will be difficult for your users to maintain an overview of what is available. Well-designed hierarchies supported by a navigation menu and breadcrumbs can help, but sometimes it will still be unclear how to navigate from point A to point B. The best solution for this is to offer search.
 
-Luckily Oracle has our back since [APEX version 22.2 ](https://apex.oracle.com/en/platform/features/whats-new-222/) by offering the `Application Search` feature which makes it easy to define search sources and later use them in a designated search region.
+Luckily, Oracle has had our back since [Oracle APEX version 22.2](https://apex.oracle.com/en/platform/features/whats-new-222/) by offering the `Application Search` feature, which makes it easy to define search sources and later use them in a designated search region.
 
-To demonstrate this feature I am implementing this into the "Customers" app that is available from the "Starter Apps" section in the gallery.
+To demonstrate this functionality, I am implementing it into the "Customers" app that is available from the "Starter Apps" section in the gallery.
 
 <BlogImg filename="apex-search-customers-gallery.png" alt="" maxWidthPx="450" />
 
-## Create first search config
+## Creating the first search configuration
 
-To get started we need to create a search configuration. These are available in the shared components of any app.
+To get started, we need to create a search configuration. These are available in the shared components of any app.
 
 <BlogImg
   filename="apex-search-config-shared-comp.png"
   alt="Screenshot of the shared components. The option 'Search configuration' appears under the section 'Navigation and search' and is highlighted."
 />
 
-In there we can create a new one and get prompted for a name and type. Our first search should cover the entries the navigation menu offers so I will give it that name. The four offered search types are:
+In there, we can create a new one and get prompted for a name and type. Our first search should cover the entries the navigation menu offers, so I will give it that name. The four offered search types are:
 
 - Standard: Fed from a custom SQL query
 - Oracle Text: Powerful fuzzy and linguistic search index (must be on a table)
-- Oracle Ubiquitous Search: 23c DB feature; database search definition over multiple sources (basically what APEX search definitions do but implemented in the DB level)
+- Oracle Ubiquitous Search: 23c DB feature; database search definition over multiple sources (basically what APEX search definitions do but implemented at the DB level)
 - List: reference an existing list definition from the app
 
-We could go the easy route and choose the list type and reference the navigation menu but I wanted to give some hierachy information in my example which we have to manually query. So instead I built this rather complex query:
+We could go the easy route and choose the list type and reference the navigation menu, but I wanted to give some hierarchical information in my example (e. g. `Administration > Code Tables > Status` instead of just showing the page title), which we have to manually query. So instead, I built this rather complex query:
 
 ```sql
                              -- regexp_replace to remove badges with count (Customers [19])
@@ -81,11 +81,11 @@ Next we can assign our columns:
 - Icon type: Icon Class Column
 - Icon column: `icon`
 
-After clicking create we will get redirected to the details page where we could our settings. In `searchable columns` we can define which columns are used for answering the search requests. You can use more columns than you actually show to the users. In our case we should make sure that only `path` and `title` are selected as searchable columns as we don't want the URL or icon to be considered.
+After clicking create, we will get redirected to the details page, where we can refine our settings. In `searchable columns` we can define which columns are used for answering the search requests. You can use more columns than you actually show to the users. In our case, we should make sure that only `path` and `title` are selected as searchable columns, as we don't want the URL or icon to be considered.
 
 <BlogImg filename="apex-search-searchable-columns.png" alt="" />
 
-We also need to set the URL target of our search results. In the section "Link" we choose redirect to URL as the type and pass our target as a substituion string: `&TARGET.`
+We also need to set the URL target of our search results. In the section "Link", we choose "redirect to URL" as the type and pass our target as a substitution string: `&TARGET.`
 
 <BlogImg filename="apex-search-link-target.png" alt="" />
 
@@ -95,21 +95,21 @@ There are also a lot slots you can use to visually enrich your search results. Y
 
 ## Create Search Page
 
-To make use of our search definition we can create a new page. Luckily there is a create page template we can use that gives us a ready to run page. We just have to check our search configuration and can test it.
+To make use of our search definition, we can create a new page. Luckily, there is a create-page template we can use that gives us a ready-to-run page. We just have to check our search configuration and test it.
 
 <BlogImg filename="apex-search-create-page-template.png" alt="" />
 
-In the page designer we can see that it has an search input item, a region of type "Search" and our search configuration as a child. We could add multiple definitions so that the region looks up multiple sources. In the attributes of the search region we disable "search as you type", set minimum characters, configure messages for nothing found and no prompt and much more.
+In the page designer we can see that it has a search input item, a region of type "Search", and our search configuration as a child. We could add multiple definitions so that the region looks at multiple sources. In the attributes of the search region, we disable "search as you type", set minimum characters, configure messages for nothing found and no prompt, and much more.
 
 <BlogImg filename="apex-search-page-designer.png" alt="" maxWidthPx="450" />
 
-When we run the page we can test the search. The title is the clickable link to open its target and our path is displayed below it.
+When we run the page, we can test the search. The title is the clickable link to open its target, and our path is displayed below it.
 
 <BlogImg filename="apex-search-run-page.png" alt="" />
 
 ## Add customer search config
 
-For now the search only returns results for the outer surface of our app. What about all the data that is stored in the database? It would be neat to be able to search each customer of you know the customers app and then being able to jump to his details page.
+For now, the search only returns results for the outer surface of our app. What about all the data that is stored in the database? It would be neat to be able to look for each customer and be able to jump to their details page.
 
 Luckily this is fairly easy to accomplish. We can just create another search configuration and this time use a query that returns all the customers data:
 
@@ -123,58 +123,61 @@ select id
   from eba_cust_customers;
 ```
 
-We define `id` as our primary key, `customer_name` and `summary` as title and subtitle and `fa-user` as our static icon class. We also query the columns `tags` and `web_site` to add them to `searchable columns` as they contain valuable context that should be searchable.
+We define `id` as our primary key, `customer_name` and `summary` as title and subtitle, and `fa-user` as our static icon class. Furthermore, we also query the columns `tags` and `web_site` to add them to `searchable columns` as they contain valuable context that should be searchable.
 
-Back in the page designer we can right-click on "Search Sources" to add our new config. Now our search page can return customers and directly link to their details page. If we search for "cloud" which is used in the `tags` column for some customers we get them as results:
+Back in the page designer, we can right-click on "Search Sources" to add our new configuration. Now our search page can return customers and directly link to their details page. If we search for "cloud", which is used in the `tags` column for some customers, we get the following results:
 
-<BlogImg filename="apex-search-tag-results.png" alt="" />
+<BlogImg
+  filename="apex-search-tag-results.png"
+  alt="Screenshot of the APEX search page. The search term is 'Cloud' with three results which don't include this word."
+/>
 
-We should additionally add other entities as products, partners, etc. in the same way.
+We should additionally add other entities, such as products, partners, etc. in the same way.
 
 ## Make the search global
 
-Currently our search is not really accessible to users. It is hidden in the menu on a seperate page but what all the big websites have tought us is that it needs to be everywhere and at the same page. Luckily we can do that in APEX too but this is quite hacky...
+Currently, our search is not really accessible to users. It is hidden in the menu on a separate page, but what all the big websites have taught us is that it needs to be everywhere and on the same page. Luckily, we can do that in APEX too, but this is quite hacky...
 
-First we need to go to page 0 - the global page. Any region, item or button in there will be displayed on every page. Perfect for our case. Now we just need to create a new text field page item and set it to the position "After Logo". Now I will list all the tweaks to get it to look in a way I like, you are of course free to do it differently:
+First, we need to go to page 0 - the global page. Any region, item or button in there will be displayed on every page. Perfect for our case. Now we just have to create a new text field page item and set it to the position "After Logo". Now I will list all the tweaks to get it to look in a way I like, you are, of course, free to do it differently:
 
 - Subtype: Search
 - Icon: fa-search
 - Placeholder: Seach...
-- Label: `&nbsp;` (hack to have no label, not possible to set label grid width to 0 here)
+- Label: `&nbsp;` (hack to have no label; not possible to set label grid width to 0 here)
 - Template Options: Size Large
 
-And voila this is what it looks like now:
+And voilà, this is what it looks like now:
 
 <BlogImg
   filename="apex-search-global-item.png"
   alt="Screenshot of classic APEX app layout with an search input in the title bar."
 />
 
-Note that the title bar is a little big bigger now, I guess you can fix that with decreasing the items margin with CSS if you don't like that.
+Note that the title bar is a little bigger now; I guess you can fix that by decreasing the items margin with CSS if you don't like that.
 
-Unfortunately the item does not do anything currently... What it should do in my opinion is redirecting to the search page when the user presses enter (after typing something in there). Achieving this is not a straightforward as it seems like. At P0 we can't define branches that run after submitting the page. Instead we need to:
+Unfortunately, the item does not do anything currently... What it should do, in my opinion, is redirect to the search page when the user presses enter (after typing something in there). Achieving this is not as straightforward as it seems. At P0, we can't define branches that run after submitting the page. Instead, we need to:
 
 1. Check the pressed key is enter
 1. Send the current item value to the DB
 1. Ask the DB for a link to the search page (with checksums included)
 1. Navigate to that URL
 
-This is tricky to do manually but luckily there is a Plug-In for that (coincidentally it is currently maintained by my employer, United Codes, after FOEX Plug-Ins which where discontinued after their aquisition found a new home there. This is not sponsored content!). It is called `UC Redirect` and you can get it from [Plug-Ins Pro](https://www.united-codes.com/products/plug-ins-pro/?plugin=uc-redirect).
+This is tricky to do manually, but luckily, there is a Plug-In for that! It is called `UC Redirect` and you can get it from [Plug-Ins Pro](https://www.united-codes.com/products/plug-ins-pro/?plugin=uc-redirect). (Coincidentally, it is currently maintained by my employer, United Codes. They took over the FOEX Plug-Ins after their acquisition. This is not sponsored content).
 
-Now we just need to create a dynamic action of the type "Keydown" on the search input item. To only run the actions when the "Enter" key is pressed we add this client-side condition:
+Now we just need to create a dynamic action of the type "Keydown" on the search input item. To only run the actions when the "Enter" key is pressed, we add this client-side condition:
 
 ```js
 this.browserEvent.originalEvent.code === 'Enter';
 ```
 
-For the true action we choose the UC Redirect plug-in, set URL Source to `PL/SQL Expression` and add following call to the `get_url` API: `apex_page.get_url(p_page => 500, p_items => 'P500_SEARCH', p_values => :P0_SEARCH)`. Additionally we need to check "submit items before redirect" and add our item.
+For the true action, we choose the UC Redirect plug-in, set the URL Source to `PL/SQL Expression` and add the following call to the `get_url` API: `apex_page.get_url(p_page => 500, p_items => 'P500_SEARCH', p_values => :P0_SEARCH)`. Additionally, we need to check "submit items before redirect" and add our item.
 
 <BlogImg
   filename="apex-search-uc-redirect.png"
   alt="Screenshot of classic APEX app layout with an search input in the title bar."
 />
 
-No we can access our search from anywhere.
+Now we can access our search from anywhere.
 
 <BlogGif
   filename="apex-search-in-action.gif"
@@ -183,4 +186,4 @@ No we can access our search from anywhere.
 
 ## Think like your users
 
-To use this feature to its full potential you need to know how people use the app. If users create customers customers and products fairly often or you have an important button that opens a modal somewhere you can and maybe should add this to the search results. The goal is to make the global application search the entry portal to your entire app.
+To use this feature to its full potential, you must know how people use the app. If users create plenty of customers and products, or if you have an important button that opens a modal somewhere, you can and probably should add this to the search results. The goal is to make the global application search the entry portal for your entire Oracle APEX app.
