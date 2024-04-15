@@ -1,0 +1,482 @@
+---
+title: >
+  Building a SvelteKit App with Oracle 23c JSON Duality Views
+date: 2021-09-30
+description: JSON Duality Views bridge the gap between relational datamodels and object represantions to accelerate application development. In this post I show how to use them with SvelteKit.
+slug: json-duality-views-sveltekit-app
+titleImage: ./github-actions-cronicle-title-image.jpg
+titleImageAlt: Car construction plant with robots
+titleImageSource:
+  {
+    text: 'Title photo by Lenny Kuhne on Unsplash',
+    href: 'https://unsplash.com/s/photos/automation?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText',
+  }
+tags: ['Oracle', 'ORDS']
+ghCommentsIssueId: 66
+published: false
+---
+
+<InfoBox>
+  If you're looking for a more visual and interactive way to learn about the
+  topic of this post, check out{' '}
+  <a href="https://youtu.be/oxqu61PJsSo">
+    my YouTube video on the same subject
+  </a>
+  .
+</InfoBox>
+
+## The Problem with Document Stores
+
+To understand which benefit JSON Duality Views provide we first need to understand the difference between efficient data storage and efficient data usage.
+
+Let's assume we are building a website for film lovers. For each movie we have a detail page with basic information and the cast.
+
+<BlogImg filename="json-dv-movie-details.png" alt="" maxWidthPx="700" />
+
+We consume a JSON with all the information to render the page. This JSON could look like this:
+
+```json
+{
+  "title": "Pulp Fiction",
+  "year": 1994,
+  "rating": 8.9,
+  "runtime": 154,
+  "cast": [
+    {
+      "name": "Samuel L. Jackson",
+      "role": "Jules Winnfield",
+      "oscars": 0
+    },
+    {
+      "name": "Uma Thurman",
+      "role": "Mia Wallace",
+      "oscars": 0
+    }
+  ]
+}
+```
+
+To make it as convinient as possible to store and retrieve the data we can use a document database where we just persist the JSON with a unique identifier to retrieve it later. Rendering a page is as **easy** as fetching the correct JSON and passing it to the frontend.
+
+### Problem 1: Different Perspectives
+
+Problems start to occur when we want to extend our application. Users should be able to see an actor details page that lists all movies the actor has played in. In theory this should be doable as we have all the required information stored in the JSON.
+
+<BlogImg filename="json-dv-actor-details.png" alt="" maxWidthPx="700" />
+
+Well this means that if we want to render the page for Samuel L. Jackson we have to:
+
+- Loop through all movies
+- Check if the actor is in the cast
+- If yes, add the movie to an array
+
+This is of course doable but not very efficient. We basically lost all the advantages of the approach "just store the JSON and pass it to the frontend" and it only took a new question the data should answer to get into this situation.
+
+### Problem 2: Data Duplication
+
+Another problem we had the whole time is data duplication. For each movie we have to store the name of each actor aswell as how many oscars they have won. This is information that is not specific to the movie but to the actor and could change over time. If this happens we need to update all movies the actor has played in.
+
+This is again doable but not very efficient. And have you heard about [Murphy's law](https://en.wikipedia.org/wiki/Murphy%27s_law) - "Anything that can go wrong will go wrong."? Maybe someone forgets to put the middle L. and we now have "Samuel Jackson" and "Samuel L. Jackson" in our database. Are these the same person? Or maybe when he gets an Oscar something goes wrong during the update and only half of the movies have the information that he won one. In the end we basically have to trust that the data is correct and consistent. You should not need to trust your data, you should treat them as facts!
+
+### The solution?!
+
+There must be a better solution to this problem. We can fix these issues by creating a new document store for actors. We assign each actor a unique identifier and store all the information about the actor in a JSON. This JSON could look like this:
+
+```json
+{
+  "actorId": 23522,
+  "name": "Samuel L. Jackson",
+  "oscars": 0
+}
+```
+
+In the movie documents we just store a reference to the actor:
+
+```json
+{
+  "title": "Pulp Fiction",
+  "year": 1994,
+  "rating": 8.9,
+  "runtime": 154,
+  "cast": [
+    {
+      "actorId": 23522,
+      "role": "Jules Winnfield"
+    },
+    {
+      "actorId": 9342,
+      "role": "Mia Wallace"
+    }
+  ]
+}
+```
+
+Wonderful we solved the data duplication problem and maybe our document store supports indexes so we can also more efficiently combine both information.
+
+But what we actually did is to create a relational datamodel. We have a table for movies and a table for actors and we have a foreign key in the movies table that references the actors table.
+
+Additionally we **lost the main advantage the document approach had**. We now have to join the tables to get the information instead of just fetching a whole document.
+
+And more importantly we have a relational datamodel without the advantages of a relational database. Look at all the stuff we are missing out on:
+
+| Advantages                                                                     | Disadvantages        |
+| ------------------------------------------------------------------------------ | -------------------- |
+| referential integrity / foreign keys                                           | Have to learn SQL    |
+| indexes                                                                        | no easy JSON mapping |
+| data integrity (transactions, schema defiitions, constraints)                  |
+| SQL with all of its features (aggregations, groupings, window functions, etc.) |
+| No data redundancy                                                             |
+| Proven for decades                                                             |
+
+**(Advantages and disadvantages of relational databases vs. document stores)**
+
+And trust me these advantages are big if you are dealing with valuable data. Data quality is important to have trust in the data, SQL can answer almost all real life questions and the performance of a relational database is not bad at all. The relational model literally runs the world since the 70s it is probably one of the best proven concepts in IT.
+
+## How JSON Duality Views fit into this
+
+Actually since the release Oracle 23c the two disadvantages of relational don't apply anymore. The newest release of the database introduces a new object type that allows easy mapping of relational data structure to JSON objects. We can **query and update our data without SQL but JSON interfaces**.
+
+### Creating a JSON Duality View
+
+Let's take a look on how they work. Our goal is to create a view for our movie details page that returns a single JSON object with all the necessary information. Our data model looks like this:
+
+<BlogImg
+  filename="json-dv-datamodel.png"
+  alt="Movies table with columns like movie_id, title, year, etc. Movie_cast table with columns: person_id, movie_id and role. Persons table with columns: person_id and name."
+  maxWidthPx="700"
+/>
+
+We start with creating the duality view with just the movie details. Notice how the structure mimics the JSON we want to return:
+
+```sql
+create or replace json relational duality view movie_details_page_jdv as
+  movies -- name of the table
+  {
+    -- name in JSON: column name
+    _id: movie_id, -- _id is a reserved name to define the document-identifier
+    title, -- same as title: title
+    description,
+    year,
+    runtime,
+    rating: imdb_rating
+  }
+;
+```
+
+We can now query the view and get the JSON we want:
+
+```sql
+select * from movie_details_page_jdv;
+/*
+   | DATA
+   | ________________________
+ 1 | {"_id": 68646, "title": "The Godfather", ...
+ 2 | {"_id": 71562, "title": "The Godfather: Part II", ...
+*/
+
+select *
+  from movie_details_page_jdv d
+ where d.data.year = 1999
+ order by d.data.rating desc
+ fetch first 5 rows only;
+```
+
+We also want to include the cast in the JSON. We can do this adding a cast array to our structure:
+
+```sql
+create or replace json relational duality view movie_details_page_jdv as
+  movies
+  {
+    _id: movie_id,
+    title,
+    description,
+    year,
+    runtime,
+    rating: imdb_rating
+    cast: movie_cast -- auto joins on fk
+    [ -- array of objects
+      {
+        movieId: movie_id, -- need all of the pks of joined table
+        personId: person_id, -- need all of the pks of joined table
+        role
+      }
+    ]
+  }
+;
+```
+
+In the same way we can additionally join the persons table to get the actor details. Notice how we use the `@unnest` annotation to bring the actors name to the same level as the cast array objects. Otherwise ther would be an additional child object inside the cast object.
+
+```sql
+create or replace json relational duality view movie_details_page_jdv as
+  movies
+  {
+    _id: movie_id,
+    title,
+    description,
+    year,
+    runtime,
+    rating: imdb_rating
+    cast: movie_cast
+    [
+      {
+        movieId: movie_id,
+        personId: person_id,
+        role,
+        persons @unnest -- join persons and unnest
+        {
+          personId2: person_id, -- need to select table pk
+          -- and "personId" already inside the parent object we unnest into
+          name: person_name
+        }
+      }
+    ]
+  }
+```
+
+If we now query the view we get this formatted JSON. Notice how Oracle appends a `_metadata` object with the etag and asof timestamp. This is important for update operations.
+
+```json
+{
+  "_id": 137523,
+  "title": "Fight Club",
+  "description": "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+  "year": 1999,
+  "runtime": 139,
+  "rating": 8.8,
+  "cast": [
+    {
+      "movieId": 137523,
+      "personId": 93,
+      "role": "Tyler Durden",
+      "personId2": 93,
+      "name": "Brad Pitt"
+    },
+    {
+      "movieId": 137523,
+      "personId": 307,
+      "role": "Marla Singer",
+      "personId2": 307,
+      "name": "Helena Bonham Carter"
+    }
+    // ...
+  ],
+  "_metadata": {
+    "etag": "g6hvcv8PO1Jp/332hPziiQ==",
+    "asof": "AAAAAAHZr2g="
+  }
+}
+```
+
+### SQL Syntax
+
+Oracle also provides a second syntax to create JSON Duality Views that is more similar to SQL. I prefer the presented "GraphQL" syntax as it seems more simple and thus readable to me. You can check the [official documentation](https://docs.oracle.com/en/database/oracle/oracle-database/23/jsnvu/introduction-car-racing-duality-views-example.html#GUID-9BEF9851-1B01-431A-A3CF-BFD165351678) for more examples.
+
+```sql
+CREATE JSON RELATIONAL DUALITY VIEW driver_dv AS
+  SELECT JSON {'_id'     : d.driver_id,
+               'name'     : d.name,
+               'points'   : d.points,
+               UNNEST
+                 (SELECT JSON {'teamId' : t.team_id,
+                               'team'   : t.name}
+                    FROM team t
+                    WHERE t.team_id = d.team_id),
+               'race'     :
+                 [ SELECT JSON {'driverRaceMapId' : drm.driver_race_map_id,
+                                UNNEST
+                                  (SELECT JSON {'raceId' : r.race_id,
+                                                'name'   : r.name}
+                                     FROM race r
+                                     WHERE r.race_id = drm.race_id),
+                                'finalPosition'   : drm.position}
+                    FROM driver_race_map drm
+                    WHERE drm.driver_id = d.driver_id ]}
+    FROM driver d;
+```
+
+From the docs it looks like both offer the same functionality but I am not sure how to use order bys and subqueries in the GraphQL syntax. If anybody knows please let me know in the comments.
+
+### REST Enable the View
+
+As REST is the convient standard for transfering data for web apps it would be nice to have a REST endpoint for our view. Luckily we are able to achieve this with the [Oracle REST Data Services (ORDS)](https://www.oracle.com/database/technologies/appdev/rest.html). This is a seperate program that runs beside the database and allows to create REST endpoints for the database. I can't go into on how to install and configure ORDS in this post but you can check the website or ask your prefered search engine.
+
+When you have ORDS up and running you first need to REST enable your schema:
+
+```sql
+begin
+  ords.enable_schema(
+    p_enabled => true,
+    p_schema  => 'YOUR_SCHEMA'
+  );
+
+  commit;
+end;
+/
+```
+
+After that you can REST enable the view:
+
+```sql
+begin
+  ords.enable_object(
+    p_enabled     => true,
+    p_object      => 'MOVIE_DETAILS_PAGE_JDV',
+    p_object_type => 'VIEW'
+  );
+
+  commit;
+end;
+/
+```
+
+<WarningBox>
+  If you are using a production system you definetly want to secure your REST
+  endpoints. Check out{' '}
+  <a href="https://oracle-base.com/articles/misc/oracle-rest-data-services-ords-authentication">
+    this Oracle Base guide
+  </a>{' '}
+  for more information.
+</WarningBox>
+
+Now we can fetch our data with simple `GET` requests:
+
+```sh
+curl https://example.com/ords/movies/movie_details_page_jdv
+
+# get by id
+curl 'https://example.com/ords/movies/movie_details_page_jdv?q={"_id": {"$eq": 68646}}'
+
+# filter tilte with instr
+curl 'https://example.com/ords/movies/movie_details_page_jdv?q={"title":{"$instr": "Endg"}}'
+
+# order by
+curl 'https://example.com/ords/movies/movie_test_jdv?q={"$orderby":{"title":"asc"}}'
+# in ORDS 23.4.0 this is broken: https://forums.oracle.com/ords/apexds/post/can-t-use-orderby-in-json-duality-view-1003
+```
+
+## Building a SvelteKit App
+
+With our databse and REST setup we can now look into building an application on top. I am using [SvelteKit](https://kit.svelte.dev/) a JavaScript server framework that is based on the [Svelte](https://svelte.dev/) frontend framework. You could of course use **any other tool you like**.
+
+### Homepage
+
+The homepage should list all movies. As we just want to display the basic information and not the full suite of field the `movie_details_page_jdv` provides I like to create a new view for this. As the naming suggests I advise to create a new view for each page of your app. This way you can easily change the structure of the JSON without breaking other pages. Additionally you can save some bandwidth by only fetching the fields you need.
+
+```sql
+create or replace json relational duality view all_movies_jdv as
+  movies
+  {
+    _id: movie_id,
+    title,
+    year,
+    rating: imdb_rating
+  }
+;
+
+begin
+  ords.enable_object(
+    p_enabled     => true,
+    p_object      => 'ALL_MOVIES_JDV',
+    p_object_type => 'VIEW'
+  );
+
+  commit;
+end;
+/
+```
+
+Now we can create a reusable function that fetches any duality view from the REST endpoint:
+
+```ts
+type FetchDualityView = {
+  viewName: string;
+  query?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export async function fetchDualityView({
+  viewName,
+  query = '',
+  limit,
+  offset,
+}: FetchDualityView) {
+  const urlParams = new URLSearchParams();
+
+  // cann be specific ORDS operations like $eq, $instr, $orderby
+  // example input: { "_id": {"$eq": 12} }
+  if (query) {
+    urlParams.set('q', query);
+  }
+
+  // limit + offset for pagination
+  if (limit) {
+    urlParams.set('limit', limit.toString());
+  }
+  if (offset) {
+    urlParams.set('offset', offset.toString());
+  }
+
+  const url = `https://example.com/ords/movies/${viewName}?${urlParams.toString()}`;
+
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch ${url}`);
+  }
+
+  return res.json();
+}
+```
+
+With that set up we can create the `+page.server.ts` file that fetches the data from the REST endpoint and passes it to the frontend:
+
+```ts
+function fetchAllMovies() {
+  return fetchDualityView({
+    viewName: 'all_movies_jdv',
+    limit: 250,
+  }) as Promise<DualityViewResponse<MovieData>>;
+}
+
+export const load: PageServerLoad = async () => {
+  return {
+    movies: (await fetchAllMovies()).items,
+  };
+};
+```
+
+For the TypeScript nerds out there: the duality views of course always return the specific data specified but additionaly a `_metadata` and `links` field. I defined this in a type `DualityViewResponse` which you can compose with your specific data type. This way you can easily use the same fetch function for all your duality views.:
+
+```ts
+type Metadata = {
+  etag: string;
+  asof: string;
+};
+
+type Link = {
+  rel: string;
+  href: string;
+};
+
+export type DualityViewResponse<T> = {
+  items: (T & { _metadata: Metadata; links: Link[] })[];
+  hasMore: boolean;
+  limit: number;
+  offset: number;
+  count: number;
+  links: Link[];
+};
+
+// somewhere else
+import {
+  fetchDualityView,
+  type DualityViewResponse,
+} from '$lib/server/fetchDualityView';
+
+// compose answer type with your specific data type
+return fetchDualityView({ viewName: 'all_movies_jdv', limit: 250 }) as Promise<
+  DualityViewResponse<MovieData>
+>;
+```
