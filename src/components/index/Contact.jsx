@@ -22,7 +22,7 @@ const Contact = () => {
   return (
     <div className="py-16" style={{ background: '#bcaaa4' }}>
       <SectionHeader section="Contact" />
-      <address className="m-auto mt-5 grid w-3/4 grid-cols-1 overflow-hidden rounded-lg bg-white not-italic shadow md:grid-cols-3 lg:w-3/4">
+      <address className="m-auto mt-5 grid w-3/4 grid-cols-1 overflow-hidden rounded-lg bg-white not-italic shadow lg:w-3/4 lg:grid-cols-3">
         <div className="border-t border-zinc-300 md:border-0 md:border-l">
           <div className="px-4 py-5 text-center text-xl sm:p-6">
             <div className="mb-6">Send me an E-Mail:</div>
