@@ -5,38 +5,44 @@ import SectionHeader from '../SectionHeader';
 const Contact = () => {
   const [email, setEmail] = useState('');
 
+  const encodedEmail =
+    '97-71-86-115-98-71-57-65-97-71-70-121-100-71-86-117-90-109-86-115-98-71-86-121-76-109-82-108-100-103-61-61';
+  function decode(encoded) {
+    const ascii = encoded.split('-');
+    const str = String.fromCharCode(...ascii);
+    return atob(str);
+  }
+
   useEffect(() => {
     setTimeout(() => {
-      const encoded =
-        '97-71-86-115-98-71-57-65-97-71-70-121-100-71-86-117-90-109-86-115-98-71-86-121-76-109-82-108-100-103-61-61';
-
-      const ascii = encoded.split('-');
-      const res = String.fromCharCode(...ascii);
-      setEmail(atob(res));
+      setEmail(decode(encodedEmail));
     }, 2000);
   }, [setEmail]);
 
   return (
     <div className="py-16" style={{ background: '#bcaaa4' }}>
       <SectionHeader section="Contact" />
-      <address className="mt-5 grid grid-cols-1 rounded-lg bg-white overflow-hidden shadow not-italic md:grid-cols-2 w-3/4 lg:w-1/2 m-auto">
+      <address className="m-auto mt-5 grid w-3/4 grid-cols-1 overflow-hidden rounded-lg bg-white not-italic shadow md:grid-cols-3 lg:w-3/4">
         <div className="border-t border-zinc-300 md:border-0 md:border-l">
-          <div className="px-4 py-5 sm:p-6 text-center text-xl">
-            <div className="mb-6">Reach out to me on Twitter:</div>
-            <LinkButton
-              type="twitter"
-              link="https://twitter.com/phartenfeller"
-            />
-          </div>
-        </div>
-        <div className="border-t border-zinc-300 md:border-0 md:border-l">
-          <div className="px-4 py-5 sm:p-6 text-center text-xl">
+          <div className="px-4 py-5 text-center text-xl sm:p-6">
             <div className="mb-6">Send me an E-Mail:</div>
             <LinkButton
               type="email"
               link={email ? `mailto:${email}` : '#loading'}
               text={!email ? 'Loading...' : email}
             />
+          </div>
+        </div>
+        <div className="border-t border-zinc-300 md:border-0 md:border-l">
+          <div className="px-4 py-5 text-center text-xl sm:p-6">
+            <div className="mb-6">Message me on Signal:</div>
+            <div>ID: hartenfellerdev.01</div>
+          </div>
+        </div>
+        <div className="border-t border-zinc-300 md:border-0 md:border-l">
+          <div className="px-4 py-5 text-center text-xl sm:p-6">
+            <div className="mb-6">Message me on Threma:</div>
+            <div>ID: hartenfellerdev</div>
           </div>
         </div>
       </address>
