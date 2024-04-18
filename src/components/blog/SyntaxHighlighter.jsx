@@ -17,6 +17,10 @@ const SyntaxHighlighter = lazy(async () => {
 //   return { default: obj.Prism };
 // });
 
+const oneDarkCustom = oneDark;
+oneDarkCustom['code[class*="language-"]'].fontFamily =
+  "'Berkeley Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas,'DejaVu Sans Mono', monospace";
+
 const SyntaxH = ({ lang, code }) => {
   let l;
 
@@ -45,7 +49,7 @@ const SyntaxH = ({ lang, code }) => {
     <Suspense
       fallback={
         <pre
-          className="loading-code"
+          className="loading-code font-berkeley-mono"
           style={{
             fontSize: '14px',
             lineHeight: '22px',
@@ -62,8 +66,9 @@ const SyntaxH = ({ lang, code }) => {
     >
       <SyntaxHighlighter
         language={l}
-        style={oneDark}
+        style={oneDarkCustom}
         showLineNumbers
+
         // wrapLongLines
         // lineProps={{ style: { wordBreak: 'break-all', whiteSpace: 'pre-wrap' } }}
       >
