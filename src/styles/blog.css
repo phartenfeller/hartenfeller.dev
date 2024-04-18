@@ -31,12 +31,24 @@
   font-display: swap;
 }
 
+/* Berkeley Mono */
+@font-face {
+  font-display: swap;
+  font-family: 'Berkeley Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/BerkeleyMono-Regular.woff2') format('woff2'),
+    /* Chrome 36+, Opera 23+, Firefox 39+ */
+      url('/fonts/BerkeleyMono-Regular.woff2') format('woff'); /* Chrome 5+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  font-display: swap;
+}
+
 .font-raleway {
   font-family: 'Raleway', serif;
 }
 
 .blog-comments {
-  @apply break-all font-mono text-sm leading-7;
+  @apply font-berkeley-mono break-all text-sm leading-7;
 }
 
 .blog-comments p {
@@ -87,8 +99,13 @@
   height: 100%;
 }
 
+.font-berkeley-mono {
+  font-family: 'Berkeley Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas,
+    'DejaVu Sans Mono', monospace;
+}
+
 .blog-body p > code {
-  @apply break-words rounded border border-red-200 bg-gradient-to-br from-red-50/75 to-red-100 box-decoration-clone font-mono font-light tracking-tight;
+  @apply font-berkeley-mono break-words rounded border border-red-200 bg-gradient-to-br from-red-50/75 to-red-100 box-decoration-clone text-base lg:text-lg;
   padding: 0.1em 0.2em;
 }
 
@@ -110,7 +127,7 @@
 }
 
 .code-figure code {
-  @apply text-xs md:text-sm;
+  @apply font-berkeley-mono text-xs md:text-sm;
 }
 
 .code-figure pre:not(.loading-code) {

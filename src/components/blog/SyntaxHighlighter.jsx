@@ -47,7 +47,6 @@ const SyntaxH = ({ lang, code }) => {
         <pre
           className="loading-code"
           style={{
-            fontFamily: `"Fira Code", "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace`,
             fontSize: '14px',
             lineHeight: '22px',
             margin: '10px 0',

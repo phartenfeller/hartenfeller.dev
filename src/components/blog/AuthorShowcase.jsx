@@ -84,8 +84,8 @@ const AuthorShowcase = () => (
       </div>
       <div className="mt-5 text-stone-600">
         <p>
-          I am a Senior IT-Consultant mainly working with Oracle APEX. I
-          regularly give{' '}
+          I am Product Lead at United Codes focussing on extending Oracle APEX.
+          I regularly give{' '}
           <Link to="/talks" className="underline hover:text-black">
             talks
           </Link>{' '}
