@@ -7,11 +7,19 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2024,
+    conference: 'APEX Connect 2024',
+    place: 'Düsseldorf, DE',
+    title: 'Step-by-Step Creation of an Offline APEX App with Plug-Ins',
+    language: '🇬🇧',
+    slides: '/slides/apex-conn-24-offline-apex.html',
+  },
+  {
+    year: 2024,
     conference: 'APEX World 2024',
     place: 'Amersfoort, NL',
     title: 'Step-by-Step Creation of an Offline APEX App with Plug-Ins',
     language: '🇬🇧',
-    slides: '/slides/apex_world24_apex_offline.pdf',
+    // slides: '/slides/apex_world24_apex_offline.pdf',
   },
   {
     year: 2024,
@@ -25,7 +33,7 @@ const talks = [
   {
     year: 2023,
     conference: 'DOAG 2023',
-    place: 'Nürnberg',
+    place: 'Nürnberg, DE',
     title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
     language: '🇬🇧',
     slides: '/slides/DOAG-2023-P_Hartenfeller-apex-off-grid.pdf',
@@ -48,7 +56,7 @@ const talks = [
   {
     year: 2023,
     conference: 'APEX Connect 2023',
-    place: 'Berlin',
+    place: 'Berlin, DE',
     title: 'Offline data manipulations for everyone with Plug-Ins and SQLite',
     language: '🇬🇧',
   },
@@ -62,14 +70,14 @@ const talks = [
   {
     year: 2022,
     conference: 'DOAG 2022',
-    place: 'Nürnberg',
+    place: 'Nürnberg, DE',
     title: 'Immersive Analytics: Datenvisualisierung mit VR',
     language: '🇩🇪',
   },
   {
     year: 2022,
     conference: 'DOAG 2022',
-    place: 'Nürnberg',
+    place: 'Nürnberg, DE',
     title: 'APEX Security Grundlagen',
     language: '🇩🇪',
     slides: '/slides/DOAG-2022-APEX-Security-Grundlagen-Hartenfeller.pdf',
@@ -77,7 +85,7 @@ const talks = [
   {
     year: 2022,
     conference: 'APEX Connect 2022',
-    place: 'Brühl',
+    place: 'Brühl, DE',
     title: 'APEX Security Grundlagen',
     language: '🇩🇪',
   },
@@ -116,28 +124,28 @@ const talks = [
   {
     year: 2019,
     conference: 'DOAG 2019',
-    place: 'Nürnberg',
+    place: 'Nürnberg, DE',
     title: 'One API to rule them all - Schnittstellen-Fusion mit GraphQL',
     language: '🇩🇪',
   },
   {
     year: 2019,
     conference: 'APEX Connect 2019',
-    place: 'Bonn',
+    place: 'Bonn, DE',
     title: 'Dokumentengenerierung in APEX',
     language: '🇩🇪',
   },
   {
     year: 2018,
     conference: 'DOAG 2018',
-    place: 'Nürnberg',
+    place: 'Nürnberg, DE',
     title: 'Material Design: professionelle User Interfaces im Web',
     language: '🇩🇪',
   },
   {
     year: 2018,
     conference: 'DOAG 2018',
-    place: 'Nürnberg',
+    place: 'Nürnberg, DE',
     title: 'Dokumentengenerierung in APEX',
     language: '🇩🇪',
   },
