@@ -2,6 +2,7 @@
 title: >
   How to add global application search to your APEX app
 date: 2024-04-15
+lastUpdate: 2024-05-04
 description: >
   Learn how to add a global search to your Oracle APEX app that searches through all your data and navigation entries.
 slug: apex-global-application-search
@@ -72,6 +73,8 @@ select title
   from list_entries
  where page_id is not null
 ```
+
+If you are not on database 23c/ai yet, you can use [this query instead that works without boolean support](https://gist.github.com/phartenfeller/93ba48aeea3b9c55879ff2689f9e6790#file-query-pre23ai-sql).
 
 Next we can assign our columns:
 
