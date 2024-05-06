@@ -2,30 +2,30 @@
   title: >
     Upgrading from Oracle 23c FREE to 23ai
   date: 2024-05-06
-  description: My upgrade journey from dockerized Oracle 23c to 23ai
+  description: My upgrade journey from dockerized Oracle 23c FREE to 23ai
   slug: upgrade-oracle-23c-free-to-23ai-docker
   titleImage: ./23c_to_23ai_upgrade.jpg
-  titleImageAlt: change me
+  titleImageAlt: ""
   titleImageSource: null
   tags: ['Oracle', 'Server-Admin']
-  ghCommentsIssueId: 9999999
+  ghCommentsIssueId: 100
 ---
 
-[Last week a new Oracle release dropped](https://blogs.oracle.com/database/post/oracle-23ai-now-generally-available) . Instead of a completely new release it is an update of the 23c build with a few highly anticipated changes like vector support and updates to JSON duality views. Instead of the "c" prefix reffering to cloud they are now marketing it as 23ai release. Currently it is avalable in the cloud and you can run "FREE" release on your own hardware.
+[Last week, a new Oracle release dropped](https://blogs.oracle.com/database/post/oracle-23ai-now-generally-available). Instead of an entirely new release, it is an update of the 23c build with a few highly anticipated changes, like vector support and updates to JSON duality views. Instead of the "c" prefix referring to cloud, they are now marketing it as a 23ai release. Currently, it is available in the cloud, and you can run the "FREE" release on your own hardware.
 
 As I want to try out the new features and need to look into the JSON duality view updates in preparation of my KScope24 talk on it, I wanted to upgrade my 23c FREE instance. I hoped the upgrade would be a breeze by just being able to reuse the datafiles and start the new image from them but this is not the case. So instead we have to migrate all the data into a fresh database instance. So lets get started.
 
 ## Stop DB writes
 
-As we will take some time to backup everything we need to stop users from being able to change data. As I only have an ORDS that connects users to the data I simply stopped it. You might want to disconnect other users or disable writes.
+As it will take some time to back up everything, we need to stop users from being able to change data. As I only have an ORDS that connects users to the data, I simply stopped it. You might want to disconnect other users or disable writing.
 
 ```bash
 docker stop oracle-23c-free-ords
 ```
 
-## Export data from old 23c
+## Export data from the old 23c
 
-### Create Oracle directory
+### Create an Oracle directory
 
 As I want to export the data with a datapump, I need a directory where the dumps get exported to.
 
@@ -104,22 +104,22 @@ SQL> apex export-all-applications -woi 14850141765267480
 # ...
 ```
 
-## Start new 23ai database container
+## Start a new 23ai database container
 
 As I am using docker-compose I created a new entry there for the new database container. I changed the port so I can temporarily run the old an new container next to each other.
 
 ```yaml
-	oracle-23ai-free:
-		container_name: oracle-23ai-free
-    image: container-registry.oracle.com/database/free:23.4.0.0
-    ports:
-      - 95212:1521
-    environment:
-      - ORACLE_PWD=**SetTheSamePwHere**
-      - TZ=Europe/Berlin
-    volumes:
-      - ~/dbs/oracle-23ai-free/oradata:/opt/oracle/oradata
-    hostname: orcl-23ai-free
+oracle-23ai-free:
+  container_name: oracle-23ai-free
+  image: container-registry.oracle.com/database/free:23.4.0.0
+  ports:
+    - 95212:1521
+  environment:
+    - ORACLE_PWD=**SetTheSamePwHere**
+    - TZ=Europe/Berlin
+  volumes:
+    - ~/dbs/oracle-23ai-free/oradata:/opt/oracle/oradata
+  hostname: orcl-23ai-free
 ```
 
 Now we can start the new database:
@@ -142,7 +142,7 @@ DBCA_PROGRESS : 0%
 
 So I lazily ran `sudo chmod 777 ./oradata` , dropped the container and created a new one; now it worked.
 
-You can follow the DB init process with `docker logs oracle-23ai-free --follow`. This can take some time depending on your hardware.
+You can follow the DB initial process with `docker logs oracle-23ai-free --follow`. This can take some time, depending on your hardware.
 
 This is what the log should look like when the DB is ready:
 
@@ -231,7 +231,7 @@ DATABASE IS READY TO USE!
 #########################
 ```
 
-## Connect to new DB
+## Connect to the new DB
 
 You can now connect to the new DB and should be greeted by following message:
 
@@ -243,7 +243,7 @@ sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba
 # Version 23.4.0.24.05
 ```
 
-## Import data into new 23ai DB
+## Import data into the new 23ai DB
 
 ### Create datapump dir in new DB
 
@@ -353,7 +353,7 @@ sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba @ap
 
 ### Import Workspaces and Apps
 
-To make our life easier we can go to the folder where we exported all the APEX stuff and call `ls -A1` . Copy the the file names into a new `install-all.sql` file and prefiex them with `@`. Move the `w` prefixed workspace files to the top.
+To make our lives easier, we can go to the folder where we exported all the APEX stuff and call `ls -A1`. Copy the file names into a new `install-all.sql` file and prefix them with `@`. Move the `w` prefixed workspace files to the top.
 
 ```sql
 # install workspaces
@@ -377,7 +377,7 @@ To make our life easier we can go to the folder where we exported all the APEX s
 @f9910.sql
 ```
 
-Now we can connect to the FREEPDB1 and install all workspaces and apps with a single script:
+Now we can connect to `FREEPDB1 and install all workspaces and apps with a single script:
 
 ```sql
 sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba @install-all.sql
@@ -385,7 +385,7 @@ sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba @in
 
 ## Reconfigure ORDS
 
-Now the data and APEX stuff should be back as it was. We can now change our ORDS config to point to our new database.
+Now the data and APEX stuff should be back as they were. We can now change our ORDS config to point to our new database.
 
 ```bash
 cd [PATH_TO_ORDS_CONFIG]
@@ -394,7 +394,7 @@ sudo rm -r databases
 # Creatte conn_string.txt with DB credentials
 cd [PATH_TO_ORDS_VARIABLES_DIR]
 nano conn_string.txt
-CONN_STRING=sys/...@23ai.phartenfeller.de:95212/FREEPDB1
+CONN_STRING=sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1
 ```
 
 Now we can restart the ORDS:
