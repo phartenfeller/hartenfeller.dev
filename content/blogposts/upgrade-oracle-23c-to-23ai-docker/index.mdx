@@ -1,0 +1,414 @@
+---
+  title: >
+    Upgrading from Oracle 23c FREE to 23ai
+  date: 2024-05-06
+  description: My upgrade journey from dockerized Oracle 23c to 23ai
+  slug: upgrade-oracle-23c-free-to-23ai-docker
+  titleImage: ./23c_to_23ai_upgrade.jpg
+  titleImageAlt: change me
+  titleImageSource: null
+  tags: ['Oracle', 'Server-Admin']
+  ghCommentsIssueId: 9999999
+---
+
+[Last week a new Oracle release dropped](https://blogs.oracle.com/database/post/oracle-23ai-now-generally-available) . Instead of a completely new release it is an update of the 23c build with a few highly anticipated changes like vector support and updates to JSON duality views. Instead of the "c" prefix reffering to cloud they are now marketing it as 23ai release. Currently it is avalable in the cloud and you can run "FREE" release on your own hardware.
+
+As I want to try out the new features and need to look into the JSON duality view updates in preparation of my KScope24 talk on it, I wanted to upgrade my 23c FREE instance. I hoped the upgrade would be a breeze by just being able to reuse the datafiles and start the new image from them but this is not the case. So instead we have to migrate all the data into a fresh database instance. So lets get started.
+
+## Stop DB writes
+
+As we will take some time to backup everything we need to stop users from being able to change data. As I only have an ORDS that connects users to the data I simply stopped it. You might want to disconnect other users or disable writes.
+
+```bash
+docker stop oracle-23c-free-ords
+```
+
+## Export data from old 23c
+
+### Create Oracle directory
+
+As I want to export the data with a datapump, I need a directory where the dumps get exported to.
+
+```bash
+# ssh into docker database container
+# my container is named "oracle-23c-free" you might need to change this
+docker exec -u oracle -it oracle-23c-free bash
+
+cd /opt/oracle/oradata
+mkdir datapump
+exit
+
+# Connect to FREEPDB1 as sysdba
+sql sys/▋▋▋▋▋▋▋@23c.phartenfeller.de:15211/FREEPDB1 as sysdba
+
+# Create a new directory to store datapump exports
+SQL> CREATE OR REPLACE DIRECTORY dp_dir AS '/opt/oracle/oradata/datapump';
+# Directory created.
+
+#                                             schema_name
+SQL> GRANT READ, WRITE ON DIRECTORY dp_dir TO apex_off_grid;
+# Repeat this for every schema you want to export
+
+SQL> exit
+```
+
+### Export data
+
+To back up the schema data we will use SQLcl and run a datapump export. Note that the dumps will be written to the database directory, not to the machine that runs SQLcl.
+
+```bash
+## connect to a database user/schema you want to export
+sql apex_off_grid/▋▋▋▋▋▋▋@23c.phartenfeller.de:15211/FREEPDB1
+
+
+SQL> datapump export -
+     -schemas apex_off_grid -
+     -directory DP_DIR -
+     -dumpdirectory DP_DIR -
+     -dumpfile apex_off_grid.dmp -
+     -logfile apex_off_grid.log -
+     -version latest
+# I needed to run this two times as the first time I got this strange error:
+## Value DATA_PUMP_DIR is not valid for Parameter directory
+##DataPump: Unable to process request. Verify specified options:
+
+```
+
+Repeat this step for every database schema you want to backup.
+
+### Export APEX Workspaces and Apps
+
+This time SQLcl will export all the workspace and app scripts to the machine where you run SQLcl. So changed my current directory to a new folder so I have all the files in one place.
+
+```bash
+# create folder to store workspace and app files
+mkdir apex_exports
+cd apex_exports
+
+sql apex_off_grid/▋▋▋▋▋▋▋@23c.phartenfeller.de:15211/FREEPDB1
+
+SQL> select WORKSPACE_DISPLAY_NAME, WORKSPACE_ID  from apex_workspaces;
+# WORKSPACE_DISPLAY_NAME            WORKSPACE_ID
+# _________________________ ____________________
+# APEX_OFF_GRID                14850141765267480
+
+SQL> apex export-workspace -woi 14850141765267480
+# Exporting Workspace 14850141765267480:'APEX_OFF_GRID'
+# File w14850141765267480.sql created
+
+SQL> apex export-all-applications -woi 14850141765267480
+# Exporting Workspace APEX_OFF_GRID - application 100:Recipes (Blueprint)
+# File f100.sql created
+# Exporting Workspace APEX_OFF_GRID - application 101:Changes
+# File f101.sql created
+# ...
+```
+
+## Start new 23ai database container
+
+As I am using docker-compose I created a new entry there for the new database container. I changed the port so I can temporarily run the old an new container next to each other.
+
+```yaml
+	oracle-23ai-free:
+		container_name: oracle-23ai-free
+    image: container-registry.oracle.com/database/free:23.4.0.0
+    ports:
+      - 95212:1521
+    environment:
+      - ORACLE_PWD=**SetTheSamePwHere**
+      - TZ=Europe/Berlin
+    volumes:
+      - ~/dbs/oracle-23ai-free/oradata:/opt/oracle/oradata
+    hostname: orcl-23ai-free
+```
+
+Now we can start the new database:
+
+```bash
+docker-compose up -d oracle-23ai-free
+```
+
+I had some issues with file permissions. Even though the container created the `oradata` folder the DB init failed with following error message:
+
+```
+[ 2024-05-05 16:30:40.671 CEST ] Prepare for db operation
+[ 2024-05-05 16:30:40.713 CEST ] Cannot create directory "/opt/oracle/oradata/FREE".
+DBCA_PROGRESS : 7%
+DBCA_PROGRESS : 100%
+[ 2024-05-05 16:30:40.718 CEST ] [FATAL] Prepare Operation has failed.
+DBCA_PROGRESS : 0%
+
+```
+
+So I lazily ran `sudo chmod 777 ./oradata` , dropped the container and created a new one; now it worked.
+
+You can follow the DB init process with `docker logs oracle-23ai-free --follow`. This can take some time depending on your hardware.
+
+This is what the log should look like when the DB is ready:
+
+```bash
+Prepare for db operation
+7% complete
+Copying database files
+29% complete
+Creating and starting Oracle instance
+30% complete
+33% complete
+36% complete
+39% complete
+43% complete
+Completing Database Creation
+47% complete
+49% complete
+50% complete
+Creating Pluggable Databases
+54% complete
+71% complete
+Executing Post Configuration Actions
+93% complete
+Running Custom Scripts
+100% complete
+Database creation complete. For details check the logfiles at:
+ /opt/oracle/cfgtoollogs/dbca/FREE.
+Database Information:
+Global Database Name:FREE
+System Identifier(SID):FREE
+Look at the log file "/opt/oracle/cfgtoollogs/dbca/FREE/FREE.log" for further details.
+
+Connect to Oracle Database using one of the connect strings:
+     Pluggable database: orcl-23ai-free/FREEPDB1
+     Multitenant container database: orcl-23ai-free
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Sun May 5 16:41:16 2024
+Version 23.4.0.24.05
+
+Copyright (c) 1982, 2024, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.4.0.24.05
+
+SQL>
+System altered.
+
+SQL>
+Pluggable database altered.
+
+SQL>
+PL/SQL procedure successfully completed.
+
+SQL> SQL>
+Session altered.
+
+SQL>
+User created.
+
+SQL>
+Grant succeeded.
+
+SQL>
+Grant succeeded.
+
+SQL>
+Grant succeeded.
+
+SQL>
+User altered.
+
+SQL> SQL> Disconnected from Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.4.0.24.05
+The Oracle base remains unchanged with value /opt/oracle
+
+Executing user defined scripts
+/opt/oracle/runUserScripts.sh: ignoring /opt/oracle/scripts/extensions/setup/*
+
+DONE: Executing user defined scripts
+
+The Oracle base remains unchanged with value /opt/oracle
+#########################
+DATABASE IS READY TO USE!
+#########################
+```
+
+## Connect to new DB
+
+You can now connect to the new DB and should be greeted by following message:
+
+```bash
+sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba
+
+# Connected to:
+# Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+# Version 23.4.0.24.05
+```
+
+## Import data into new 23ai DB
+
+### Create datapump dir in new DB
+
+To import our datapump dumps we need them accessible to the DB inside a directory.
+
+```bash
+# ssh into docker database container
+docker exec -u oracle -it oracle-23ai-free bash
+
+cd /opt/oracle/oradata
+mkdir datapump
+exit
+
+sql sys/▋▋▋▋▋▋▋@23c.phartenfeller.de:15211/FREEPDB1 as sysdba
+
+# Create a new directory to store datapump exports
+SQL> CREATE OR REPLACE DIRECTORY dp_dir AS '/opt/oracle/oradata/datapump';
+# Directory created.
+
+SQL> GRANT READ, WRITE ON DIRECTORY dp_dir TO apex_off_grid;
+# Repeat this for every schema you want to export
+
+SQL> exit
+```
+
+### Copy datapump dumps to 23ai directory
+
+```bash
+sudo cp -r ~/dbs/orcl-23c-free/oradata/datapump ~/dbs/oracle-23c-bkp
+sudo chmod 777 -R ~/dbs/oracle-23c-bkp/datapump
+sudo chown -R myuser:myuser ~/dbs/oracle-23c-bkp/datapump
+
+docker cp ~/dbs/oracle-23c-bkp/datapump/apex_off_grid.dmp oracle-23ai-free:/opt/oracle/oradata/datapump
+# repeat for ever *.dmp file you have
+```
+
+### Recreate DB users
+
+This is my typical create user/schema script that I ran for every schema I wanted to import. I reused all my old passwords for convenience.
+
+```sql
+create tablespace tbs_apex_off_grid
+  datafile 'tbs_apex_off_grid.dat'
+    size 10M
+    reuse
+    autoextend on next 2M;
+
+create user apex_off_grid
+  identified by ##secret_password##
+  default tablespace tbs_apex_off_grid
+;
+
+grant create session to apex_off_grid;
+grant create table to apex_off_grid;
+grant create view to apex_off_grid;
+grant create any trigger to apex_off_grid;
+grant create any procedure to apex_off_grid;
+grant create sequence to apex_off_grid;
+grant create synonym to apex_off_grid;
+grant unlimited tablespace to apex_off_grid;
+
+-- also recommended when with apex workspace
+grant create cluster to apex_off_grid;
+grant create dimension to apex_off_grid;
+grant create indextype to apex_off_grid;
+grant create job to apex_off_grid;
+grant create materialized view to apex_off_grid;
+grant create operator to apex_off_grid;
+grant create procedure to apex_off_grid;
+grant create trigger to apex_off_grid;
+grant create type to apex_off_grid;
+grant create any context to apex_off_grid;
+grant create mle to apex_off_grid;
+grant create property graph to apex_off_grid;
+grant execute dynamic mle to apex_off_grid;
+```
+
+### Import Data
+
+```bash
+# Connect with SQLcl to the user where we want to import data to
+sql offl_recipes/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1
+
+datapump import -
+  -schemas offl_recipes -
+  -directory dp_dir -
+  -dumpfile offl_recipes.dmp -
+  -logfile offl_recipes-imp.log -
+  -version latest
+# had to run this two times again because of:
+## Value DATA_PUMP_DIR is not valid for Parameter directory
+## DataPump: Unable to process request. Verify specified options:
+```
+
+Repeat this step for every schema.
+
+### Install APEX
+
+```bash
+wget https://download.oracle.com/otn_software/apex/apex_23.2_en.zip
+unzip apex_23.2_en.zip
+cd apex
+
+# Connect to FREEPDB1 as sys and run APEX install script
+sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba @apexins.sql SYSAUX SYSAUX TEMP /i/
+```
+
+### Import Workspaces and Apps
+
+To make our life easier we can go to the folder where we exported all the APEX stuff and call `ls -A1` . Copy the the file names into a new `install-all.sql` file and prefiex them with `@`. Move the `w` prefixed workspace files to the top.
+
+```sql
+# install workspaces
+@w3600473184497866.sql
+@w4395603499594930.sql
+
+# install apps
+@f100.sql
+@f101.sql
+@f102.sql
+@f103.sql
+@f104.sql
+@f105.sql
+@f106.sql
+@f107.sql
+@f110.sql
+@f111.sql
+@f113.sql
+@f145.sql
+@f185.sql
+@f9910.sql
+```
+
+Now we can connect to the FREEPDB1 and install all workspaces and apps with a single script:
+
+```sql
+sql sys/▋▋▋▋▋▋▋@23ai.phartenfeller.de:95212/FREEPDB1 as sysdba @install-all.sql
+```
+
+## Reconfigure ORDS
+
+Now the data and APEX stuff should be back as it was. We can now change our ORDS config to point to our new database.
+
+```bash
+cd [PATH_TO_ORDS_CONFIG]
+sudo rm -r databases
+
+# Creatte conn_string.txt with DB credentials
+cd [PATH_TO_ORDS_VARIABLES_DIR]
+nano conn_string.txt
+CONN_STRING=sys/...@23ai.phartenfeller.de:95212/FREEPDB1
+```
+
+Now we can restart the ORDS:
+
+```bash
+docker start oracle-23c-free-ords
+```
+
+And I needed to unlock the ORDS user in the database.
+
+## Summary
+
+This whole journey took me longer than expected but I have everything up and running again. If you know of better/faster/easier approaches please let me know.
+
+**Resources**
+
+- https://oracle-base.com/articles/misc/sqlcl-data-pump
