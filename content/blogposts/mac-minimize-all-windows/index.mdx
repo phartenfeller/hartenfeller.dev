@@ -1,0 +1,40 @@
+---
+title: >
+  Minimize all windows on Mac OS
+date: 2024-06-17
+description: AppleScript to quickly minimize every window on my Mac OS. This is not hiding the windows but minimizing them to the dock.
+slug: mac-minimize-all-windows
+titleImage: ./minimize-all-blogsplash.png
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['macOS']
+ghCommentsIssueId: null
+published: true
+---
+
+I have the issue that I tend to keep a lot of windows open on my Mac. This issue persists until my next reboot but in some cases I just get overwhelmed by all the mess. Unfortunately there is no built-in feature in Mac OS to minimize all windows at once. But there is a simple way to do it with an AppleScript.
+
+## Create the AppleScript
+
+You can use this AppleScript to minimize all windows. You might get asked for accessibility permissions the first time you run it.
+
+```applescript
+tell application "System Events"
+	set theProcesses to (every process whose visible is true and name is not "Finder")
+	repeat with proc in theProcesses
+		tell proc
+			set theWindows to every window
+			repeat with win in theWindows
+				set value of attribute "AXMinimized" of win to true
+			end repeat
+		end tell
+	end repeat
+end tell
+tell application "Finder" to set collapsed of windows to true
+```
+
+As I am an [Alfred](https://www.alfredapp.com/) user I created a small worflow to execute this via Spotlight. You can download it [here](/misc/Minimize-all.alfredworkflow). Also check out my [Alfred VS Code extension](/blog/alfred-vscode-workflow).
+
+## Other solutions
+
+I stumbled upon [this superuser thread](https://superuser.com/questions/36504/how-to-minimize-all-windows-in-macos) asking for the same thing. The answers point out the exposé and the `Command+Option+H+M` key combo. The later one unfortunately doesnt work for me as it only hides the windows, without them appearing in the dock as minimized windows.
