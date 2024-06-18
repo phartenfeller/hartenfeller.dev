@@ -1,0 +1,175 @@
+---
+  title: >
+    Oracle APEX 24.1 Template Component Improvements
+  date: 2024-06-18
+  description: >
+    Oracle APEX 24.1 Template Component Improvements
+  slug: apex-24-1-template-component-improvements
+  titleImage: ./blog-splash-tc-24-1.jpg
+  titleImageAlt: ""
+  titleImageSource:
+    {
+      text: "null",
+      href: "null",
+    }
+  tags: ['APEX', 'Plug-In', 'Template-Components', 'User-Interfaces']
+  ghCommentsIssueId: 9999999
+---
+
+Oracle APEX 24.1 was released yesterday. One of the features I am interested in is the improvements of Template Components. My opinion is still that Template Components were one of the best and impactful additions to APEX. They allow you to create custom and reusable components that can be shared across applications. Just take a look at the plug-in section of [apex.world](https://apex.world) to see the variety things they allow us to do.
+
+In the last chapter I will also give my first impression of the release in general.
+
+## Region only Template Components
+
+The help text describes it as follows:
+
+> When checked, the Template Component can be used as a region showing static values. The provided HTML template is displayed without any wrapping HTML elements around it. The region has a limited number of attributes in Page Designer (excludes Region Template, Header text, Footer text).
+
+So this is basically a minimal version of a template component where most importantly you don't need to use a query. I currently see mostly three use cases for this:
+
+### 1. Static Content
+
+Any text, images, links etc. you want to display on some pages. For example styled opening hours, contact information, etc. As it is formatted or styled, Text Messages can't be used and the old solution of creating a page template that includes this information is not flexible.
+
+<BlogImg filename="apex-24-1-tc-opening-hours.png" alt="" />
+
+Notice how we now have a new `#APEX$DOM_ID#` attribute? As the region only template-component doesn't render any wrapping HTML elements, you can place the identifier inside your template to reference the region in JavaScript or CSS.
+
+<BlogImg filename="apex-24-1-tc-dom.png" alt="" />
+
+In the Page Designer the source is set to "None". Interestingly, we could still provide a source.
+
+<BlogImg filename="apex-24-1-tc-region-only-location.png" alt="" />
+
+### 2. Content depending on Page Items
+
+You can still use attributes. This allows you to rely on already queried page item values. For a fictional project portfolio app you might want to display contact information in a nice fashion.
+
+```html
+<div id="#APEX$DOM_ID#">
+  <h3>Contact</h3>
+  <p>
+    This project is lead #PROJ_LEADER# from the #DEPT# department. {if
+    MAIL_ADDR/}If you have any questions please reach out to
+    <a href="mailto:#MAIL_ADDR#">#MAIL_ADDR#</a>{endif/}
+  </p>
+</div>
+```
+
+If your attribute type is the default "Session State Value" you get a select list with all page items. If you change this to "Text" you can actually type something in yourself and still reference page items with substitution strings with additionally the quick pick list. Why is this not the default?
+
+<BlogImg filename="apex-24-1-tc-attr.png" alt="" />
+
+Normally you could just set the HTML on a static region on the page. But with the template component you can reuse this on multiple pages and applications.
+
+<BlogImg filename="apex-24-1-tc-contact.png" alt="" />
+
+### 3. Composition
+
+With the `{with/}...{apply TEMPLATE/}` syntax you can include other template components. This allows you to compose more complex components. For example a card component that includes a title, an image and a description.
+
+For example we could have a project status template component that shows the status in either red, yellow or green. We also have a custom list view template component for the homepage and in there we include the project status template component.
+
+That way the list view is looking nicer as the case statement is encapsulated in the project status template component. Additionally we might want to reuse the project status component in other places in the future like an project overview Interactive Report. **But we can't**... Setting the region only option to true, disallows to enable Single (Partial) or Multiple. That's why we **can't use it in Interactive Report columns**. I think this is a shame and should be changed.
+
+So until then I actually would **rather use a Partial template component for composition**.
+
+## Slots
+
+Trust me, slots are a killer feature. They allow you to put anything inside your template component. This is composition overload!
+
+In the template component near the end there is a new section slots. Let's create a new one and only allow buttons in there. We can set our new slot as the default position.
+
+<BlogImg filename="apex-24-1-tc-slots-sched.png" alt="" />
+
+Like with action positions before we can now add a slot to our template:
+
+```html
+<div id="#APEX$DOM_ID#" class="uc-contact-banner">
+  <h3>Contact</h3>
+  <p>
+    This project is lead #PROJ_LEADER# from the #DEPT# department. {if
+    MAIL_ADDR/}If you have any questions please reach out to
+    <a href="mailto:#MAIL_ADDR#">#MAIL_ADDR#</a>{endif/}
+  </p>
+  <div class="uc-contact-banner-footer">
+    {if SCHEDULE_CALL/}#SCHEDULE_CALL#{endif/}
+  </div>
+</div>
+```
+
+In the page designer we can now see a position where we can add buttons to.
+
+<BlogImg filename="apex-24-1-tc-btn-slot-page-designer.png" alt="" />
+
+Let's get more crazy and add another slot that allows any content.
+
+<BlogImg filename="apex-24-1-tc-any-slot.png" alt="" />
+
+Note that we could also filter specific region and item types to be allowed in the slot. This may also be useful for composing your own template components where for example the project status list view template component only allows the project status template component to be included.
+
+I also added the slot to the HTML page and just added an input, a "Content Row" theme component and an instance of the same template component again (madness!). And it works great!
+
+<BlogImg filename="apex-24-1-tc-composition-result.png" alt="" />
+
+In the page designer it is just as if you would add stuff to a region. Super handy and intuitive!
+
+## Selection support
+
+For theme components like the "Content Row" there is a new Row Selection option. The four options are: None, Focus only, Single Selection and Multiple Selection.
+
+<BlogImg filename="apex-24-1-tc-row-selection.png" alt="" />
+
+None does not add any click targets to the rows where focus does with a visible outline appearing when you click a row. I guess this is useful for adding own click listeners.
+
+For Single Selection you get a new attribute called: "Current Selection Page Item". Whenever you click on a row the value of the column defined as "Primary Key" get's set to the page item. This is super useful to just add a dynamic action on the page item change event and do something with the selected row or submit it to a process.
+
+The last option, Multiple Selection, adds checkboxes to the rows. Again the values of the primary key column get set to the page item delimited by colons. Another attribute appears in the page desinger called "Select All Page Item". You can again select a page item but this has to be of type "Checkbox". When this is clicked every (visible, not hidden by pagination) row gets selected. You can place that item on top of the region or even add a nice slot for it.
+
+<BlogGif filename="apex-24-1-tc-check-multi.gif" alt="" />
+
+In the pagination section the number of selected records is displayed. This is a nice touch.
+
+Interestingly [Hayden Hudson](https://www.linkedin.com/in/haydenhhudson/) created the template component [IR_Row_Selector](https://apex.world/ords/f?p=100:710:::::P710_PLG_ID:IR_ROW_SELECTOR) which is just a checkbox that you can then use inside an Interactive Report to select rows. The odds that something similar now landing in native APEX and of course he is also member of the APEX dev team.
+
+## Add selection to own template components
+
+As this won't work with a "Region only" template component I created a new one as Single and Multiple. The template for it is just a text attribute and this selection div based on the `APEX$SELECTOR` attribute I copied from the content row component.
+
+```html
+<div>
+  {if ?APEX$SELECTOR%assigned/}
+  <div class="t-ContentRow-selection is-placeholder"></div>
+  {endif/}
+  <span>#TEXT#</span>
+</div>
+```
+
+Additionally we need to check "Has Row Selection Support" in the standard attributes.
+
+<BlogImg filename="apex-24-1-has-row-selection-supp.png" alt="" />
+
+Now the focus and Sinlge Selection options work as expected. Unfortunately the Multiple Selection option does not work. The checkboxes are never rendered to the DOM. I expect that I am missing a JavaScript call to initialize them. If you know more please let me know!
+
+<BlogImg filename="apex-24-1-tc-selection-multiple-not-working.png" alt="" />
+
+## My first impression of APEX 24.1
+
+I am very happy with the improvements to Template Components. The region only is a useful addition, slots are the killer feature and I will solve letting users select rows with the content row theme component with the checkbox in the future.
+
+But 24.1 was mostly about AI at least from the marketing point. I have to say the features didn't knocked me of my socks. SelectAI was shown before and it was clear that creating new pages would be something that LLMs fit into. Integration with LLM providers is something we have seen by the community also for some time already.
+
+I would have rather loved to see bringing AI more to the end-users. The end-user wants some filters and highlights to an Interactive Report? Just describe them and boom he has a new private report saved. Or even better "Show me a dashboard of the earnings of the last quarter. I am curios to see the weakest performing products and the ones with the highest growth. Show me any anomalies related to past quarters." And then APEX would ad-hoc generate a dashboard with tables and charts without having to create a new page with regions. Data scientist have been working with Jupyter Notebooks etc. for quite some time now where you just give them access to data and they can do their own analysis. I think this is something APEX should cover aswell. I know this is a big ask but this is my vision for being the ultimate data apllication platform.
+
+Other than that I am not overwhelmed by the other new features. Select One and Select Many confuse as we know have two more options next to select lists, popup lovs and comboboxes. I haven't warmed up with workflows but it's changes sound useful. I have no real use in Component Groups and Working Copies as I mostly work alone or in small teams. Document Generator seems nice but is nowhere near AOP.
+
+Other than that these are my highlights of small changes:
+
+- Auto dismissal of success messages
+- Unlimited Attributes for Plug-Ins
+- File download Dynamic Action
+- Button processing animation on click
+- Search improvements with Oracle TEXT fuzzy and proximity search
+- Dynamic Action input event as an alternative to change
+- New Font APEX Icons
