@@ -33,7 +33,10 @@ So this is basically a minimal version of a template component where, most impor
 
 Any text, images, links, etc. you want to display on some pages. For example, styled opening hours, contact information, etc. As it is formatted or styled, Text Messages can't be used, and the old solution of creating a page template that includes this information is not flexible.
 
-<BlogImg filename="apex-24-1-tc-opening-hours.png" alt="" />
+<BlogImg
+  filename="apex-24-1-tc-opening-hours.png"
+  alt="Template Component editor showing a checkbox 'Avaialble as'. Next Single and Multiple there is a new option called 'Region only'."
+/>
 
 Notice how we now have a new `#APEX$DOM_ID#` attribute? As the region-only template component doesn't render any wrapping HTML elements, you can place the identifier inside your template to reference the region in JavaScript or CSS.
 
@@ -64,7 +67,11 @@ You can still use attributes. This allows you to rely on already-queried page it
 
 If your attribute type is the default "Session State Value", you get a select list with all page items. If you change this to "text," you can actually type something in yourself and still reference page items with substitution strings, along with the quick pick list. Why is this not the default?
 
-<BlogImg filename="apex-24-1-tc-attr.png" alt="" maxWidthPx="400" />
+<BlogImg
+  filename="apex-24-1-tc-attr.png"
+  alt="Page Designer on the attributes section of the template component. Under settings three attributes can be defined. Two are select lists the last is a text field with a button next to it that opens a popup to quickly select page items."
+  maxWidthPx="400"
+/>
 
 Normally, you could just set the HTML in a static region on the page. But with the template component, you can reuse this on multiple pages and applications.
 
@@ -86,7 +93,10 @@ Trust me, slots are a killer feature. They allow you to put anything inside your
 
 In the template component near the end, there are new section slots. Let's create a new one and only allow buttons in there. We can set our new slot as the default position. (Click to zoom in on the images.)
 
-<BlogImg filename="apex-24-1-tc-slots-sched.png" alt="" />
+<BlogImg
+  filename="apex-24-1-tc-slots-sched.png"
+  alt="Section in template component screen with the title 'Slots'. There is a table where you can define the name, ID, check and filter regions, items and buttons. Additionally you can enable grid support and new row and define maximum grid columns."
+/>
 
 Like with action positions before, we can now add a slot to our template:
 
@@ -106,23 +116,35 @@ Like with action positions before, we can now add a slot to our template:
 
 In the page designer, we can now see a position where we can add buttons.
 
-<BlogImg filename="apex-24-1-tc-btn-slot-page-designer.png" alt="" />
+<BlogImg
+  filename="apex-24-1-tc-btn-slot-page-designer.png"
+  alt="In the preview section in page designer inside a template component region is a box called 'Schedule Call Buttoon'. In there is a button named 'Call'."
+/>
 
 Let's get more crazy and add another slot that allows any content.
 
-<BlogImg filename="apex-24-1-tc-any-slot.png" alt="" />
+<BlogImg
+  filename="apex-24-1-tc-any-slot.png"
+  alt="New row in the Slots table has regions, items and buttons checked. Next to regions is a column to filter types of regions, which shows a popup with a checkbox group of every region type."
+/>
 
 Note that we could also filter specific regions and item types to be allowed in the slot. This may also be useful for composing your own template components, where, for example, the project status list view template component only allows the project status template component to be included.
 
 I also added the slot to the HTML template. In the page designer, I added an input, a "Content Row" theme component, and an instance of the same template component again (madness!) into the slot. And it works great!
 
-<BlogImg filename="apex-24-1-tc-composition-result.png" alt="" />
+<BlogImg
+  filename="apex-24-1-tc-composition-result.png"
+  alt="Region with contact info. In the footer are two buttons, an text input a content row region and the same contact info region again without a footer."
+/>
 
 ## Selection support
 
 For theme components like the "Content Row", there is a new Row Selection option. The four options are: None, Focus Only, Single Selection and Multiple Selection.
 
-<BlogImg filename="apex-24-1-tc-row-selection.png" alt="" />
+<BlogImg
+  filename="apex-24-1-tc-row-selection.png"
+  alt="In the page designer attributes of a content row region is a new group called 'Row selection'. In there is a select list with the label type."
+/>
 
 None does not add any click targets to the rows. Focus does this with a visible outline appearing when you click a row. I guess this is useful for adding your own click listeners.
 
@@ -130,7 +152,10 @@ For Single Selection, you get a new attribute called "Current Selection Page Ite
 
 The last option, Multiple Selection, adds checkboxes to the rows. Again, the values of the primary key column get set to the page item delimited by colons. Another attribute appears in the page designer called "Select All Page Item". You can again select a page item, but this has to be of the type "Checkbox". When this is clicked, every (visible, not hidden by pagination) row gets selected. You can place that item on top of the region or even add a nice slot for it.
 
-<BlogGif filename="apex-24-1-tc-check-multi.gif" alt="" />
+<BlogGif
+  filename="apex-24-1-tc-check-multi.gif"
+  alt="Video showing a list view with emp names. Left to the names is a checkbox that can be clicked. Above the list is another checkbox that checks everything on click."
+/>
 
 In the pagination section, the number of selected records is displayed. This is a nice touch. One issue is that if you miss the checkbox by a few pixels, you click on one row and thus deselect all others. In my opinion, in multiple selection mode, the checkbox should be the only clickable element in the row.
 
