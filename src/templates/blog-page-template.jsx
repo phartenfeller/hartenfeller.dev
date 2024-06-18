@@ -186,7 +186,7 @@ const BlogPageTemplate = ({ data }) => {
         <div className="m-auto bg-white shadow-sm ">
           <GatsbyImage
             image={titleImage.childImageSharp.gatsbyImageData}
-            className="lg:max-w-[calc(75ch + 300px)] h-100 object-cover"
+            className="h-100 w-full object-cover"
             alt={titleImageAlt}
           />
           <div className="flex space-x-8 px-4 pb-8 md:px-8">
