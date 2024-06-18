@@ -2,6 +2,7 @@
   title: >
     Oracle APEX 24.1 Template Component Improvements
   date: 2024-06-18
+  lastUpdate: 2024-06-18
   description: >
     Region only, Slots, Selection support and my first impression of APEX 24.1.
   slug: apex-24-1-template-component-improvements
@@ -140,11 +141,11 @@ Interestingly, [Hayden Hudson](https://www.linkedin.com/in/haydenhhudson/) creat
 As this won't work with a "Region only" template component, I created a new one as Single and Multiple. The template for it is just a text attribute, and this selection `div` based on the `APEX$SELECTOR` attribute I copied from the content row component.
 
 ```html
-<div>
+<div class="u-flex">
   {if ?APEX$SELECTOR%assigned/}
-  <div class="t-ContentRow-selection is-placeholder"></div>
+  <div class="t-ContentRow-selection">#APEX$SELECTOR#</div>
   {endif/}
-  <span>#TEXT#</span>
+  <div>#TEXT#</div>
 </div>
 ```
 
@@ -152,10 +153,10 @@ Additionally, we need to check "Has Row Selection Support" in the standard attri
 
 <BlogImg filename="apex-24-1-has-row-selection-supp.png" alt="" />
 
-Now the focus and Single Selection options work as expected. Unfortunately, the **Multiple Selection option does not**! The checkboxes are never rendered to the DOM. I expect that I am missing a JavaScript call to initialize them. If you know more, please let me know!
+Now everything magically works on our own template component.
 
 <BlogImg
-  filename="apex-24-1-tc-selection-multiple-not-working.png"
+  filename="apex-24-1-tc-custom-selection-multiple.png"
   alt=""
   maxWidthPx="300"
 />
