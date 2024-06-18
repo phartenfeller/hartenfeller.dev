@@ -4,7 +4,7 @@
   date: 2024-06-18
   lastUpdate: 2024-06-18
   description: >
-    Region only, Slots, Selection support and my first impression of APEX 24.1.
+    Find out what's behind the region-only type, Slots and selection support. Read about my first impression of APEX 24.1 in the end.
   slug: apex-24-1-template-component-improvements
   titleImage: ./blog-splash-tc-24-1.jpg
   titleImageAlt: ""
@@ -17,26 +17,28 @@
   ghCommentsIssueId: 101
 ---
 
-Oracle APEX 24.1 was released yesterday. One of the features I am interested in is the improvement of Template Components. My opinion is still that Template Components were one of the best and most impactful additions to APEX. They allow you to create custom and reusable components that can be shared across applications. Just take a look at the plug-in section of [apex.world](https://apex.world) to see the variety of things they allow us to do.
+Oracle APEX 24.1 was released yesterday with enhancements to Template Components. I think that Template Components are one of the most impactful additions to APEX in recent times. They allow you to create custom and reusable components that can be shared across applications. Just take a look at the plug-in section of [apex.world](https://apex.world) to see the variety of things they allow us to do.
 
-In the last chapter, I will also give my first impression of the release in general.
+**TL;DR**: Slots allow you to put any other region, item or button inside your template component. Selection support allows you to add checkboxes to your template component and let users select rows.
 
 ## Region-only Template Components
-
-The help text describes it as follows:
-
-> When checked, the Template Component can be used as a region showing static values. The provided HTML template is displayed without any wrapping HTML elements around it. The region has a limited number of attributes in Page Designer (excludes Region Template, Header text, Footer text).
-
-So this is basically a minimal version of a template component where, most importantly, you don't need to use a query. I currently see three use cases for this:
-
-### 1. Static Content
-
-Any text, images, links, etc. you want to display on some pages. For example, styled opening hours, contact information, etc. As it is formatted or styled, Text Messages can't be used, and the old solution of creating a page template that includes this information is not flexible.
 
 <BlogImg
   filename="apex-24-1-tc-opening-hours.png"
   alt="Template Component editor showing a checkbox 'Avaialble as'. Next Single and Multiple there is a new option called 'Region only'."
 />
+
+Region only is a new option for the "Available as" attribute. Note that you can't check "Region only" and "Single" or "Multiple" at the same time.
+
+The difference to "Single" is that you don't need to provide a query and that there will be no wrapping of HTML elements around the template. The documentation states:
+
+> When checked, the Template Component can be used as a region showing static values. The provided HTML template is displayed without any wrapping HTML elements around it. The region has a limited number of attributes in Page Designer (excludes Region Template, Header text, Footer text).
+
+I currently see three use cases for this new type:
+
+### Use Case 1: Static Content
+
+Any text, images, links, etc. you want to display on some pages. For example, styled opening hours, contact information, etc. As it is formatted or styled, Text Messages can't be used, and the old solution of creating a page template that includes this information is not flexible.
 
 Notice how we now have a new `#APEX$DOM_ID#` attribute? As the region-only template component doesn't render any wrapping HTML elements, you can place the identifier inside your template to reference the region in JavaScript or CSS.
 
@@ -50,7 +52,7 @@ In the Page Designer, the source is set to "None". Interestingly, we could still
   maxWidthPx="400"
 />
 
-### 2. Content depending on Page Items
+### Use Case 2: Content depending on Page Items
 
 You can still use attributes. This allows you to rely on already-queried page item values. For a fictional project portfolio app, you might want to display contact information nicely.
 
@@ -77,21 +79,17 @@ Normally, you could just set the HTML in a static region on the page. But with t
 
 <BlogImg filename="apex-24-1-tc-contact.png" alt="" />
 
-### 3. Composition
+### Use Case 3: Composition (but with issues)
 
-With the `{with/}...{apply TEMPLATE/}` syntax, you can include other template components. This allows you to compose more complex components. For example, a card component that includes a title, an image and a description.
+With the `{with/}...{apply TEMPLATE/}` syntax and with slots, you can include other template components. This allows you to compose multiple components. APEX theme components utilize this to include avatars or buttons in the content row component. And useful is that you can still use avatars standalone.
 
-For example, we could have a project status template component that shows the status in either red, yellow or green. We also have a custom list view TC for the homepage, and in there we include the project status TC.
-
-That way, the list view looks nicer as the case statement for the colors is encapsulated in the project status TC. Additionally, we might want to reuse the project status component in other places in the future, like a project overview Interactive Report. **But we can't**... Setting the region-only option to true disallows enabling single (Partial) or Multiple. That's why we **can't use it in Interactive Report columns**. I think this is a shame and should be changed.
-
-So until then, I would actually **rather use a Partial TC for composition**.
+But the region-only option comes with issues in that regard. You can only use a "Single" in an Interactive Report. And as you can't say that a Region-only component should also be usable as a "Single" you have no way of using it in an Interactive Report. I think this is a shame and should be changed. So until then, I would actually **rather use a Partial TC for composition**.
 
 ## Slots
 
 Trust me, slots are a killer feature. They allow you to put anything inside your template component. This is composition overload!
 
-In the template component near the end, there are new section slots. Let's create a new one and only allow buttons in there. We can set our new slot as the default position. (Click to zoom in on the images.)
+In the template component near the end, there is a new section called "Slots". Let's create a new one and only allow buttons in there. We can set our new slot as the default position. (Click to zoom in on the images.)
 
 <BlogImg
   filename="apex-24-1-tc-slots-sched.png"
@@ -190,7 +188,17 @@ Now everything magically works on our own template component.
 
 ## My first impression of APEX 24.1
 
+### Template Components
+
 I am pleased with the improvements to Template Components. The region only is a useful addition; slots are the killer feature, and I will solve letting users select rows with the content row theme component with the checkbox in the future.
+
+Summarized, these are my issues with Template Components in 24.1:
+
+- You should be able to make a region-only component also usable as a single.
+- The default attribute type for attributes should be text, not session state value.
+- Missing the checkbox in the row in multiple selection mode should not deselect all other rows.
+
+### AI
 
 But 24.1 was mostly about AI, at least from the marketing point of view. I have to say, the features didn't knock me off my socks. SelectAI was shown before, and it was clear that creating new pages is something that LLMs can do easily. Integration with LLM providers is something we have seen in the community for some time already.
 
@@ -199,6 +207,8 @@ I would have rather seen AI brought to end-users. The end-user wants some filter
 Or even better, "Show me a dashboard of the earnings of the last quarter. I am curious to see the weakest-performing products and the ones with the highest growth. Show me any anomalies related to past quarters." And then APEX would ad-hoc generate a dashboard with tables and charts without having to create a new page with regions.
 
 Data scientists have been working with Jupyter Notebooks, etc., for quite some time now, where you just provide them with access to data and they can do their own analysis. I think this is something APEX should cover as well. I know this is a big ask, but this is my vision for being the ultimate data application platform.
+
+### The rest
 
 Other than that, I am not overwhelmed by the other new features. Select One and Select Many are confusing, as we now have two more options next to Select Lists, Popup LOVs and Comboboxes. I haven't warmed up with Workflows yet, but their changes sound useful. I have no real use for Component Groups and Working Copies, as I mostly work alone or in small teams. The Document Generator seems nice for small use cases but is nowhere near AOP in functionality.
 
