@@ -1,0 +1,64 @@
+---
+title: >
+  Alfred workflow to supercharge Oracle APEX development #JoelKallmanDay
+date: 2024-10-16
+description: Quickly access the APEX documentation, icons, CSS, and more from your spotlight search.
+slug: apex-alfred-dev-workflow
+titleImage: ./thumb-apex-alfred-workflow.jpg
+titleImageAlt: ''
+titleImageSource: { text: null, href: null }
+tags: ['Alfred', 'macOS', 'APEX']
+ghCommentsIssueId: null
+---
+
+## What is this?
+
+Type `apex` in your Alfred search bar, and you will get a list of useful links and tools for your Oracle APEX development:
+
+<BlogImg
+  filename="alfred-apex-overview.png"
+  alt="Typing apex into the spotlight reveals several submenus like Documentation, Icons, CSS, Views, and more."
+  maxWidthPx="700"
+/>
+
+You can select a category with the arrow keys and enter, and then start typing to filter the results:
+
+<BlogGif
+  filename="alfred-apex-full-demo.gif"
+  alt="In this video the user types 'apex', then select the documentation category and types 'mail'. The results show entries related to the 'APEX_MAIL' package. Upon selecting one a browser window opens with the documentation page."
+/>
+
+For resources with a URL, your browser will open the page directly. For others, like the CSS classes, icons, view names, etc. the result will be typed out. **If you have no focused input, nothing will happen.**
+
+## Requirements
+
+- [Alfred](https://alfredapp.com) (macOS only)
+- [Alfred Powerpack](https://www.alfredapp.com/powerpack/)
+- [Node.js](https://nodejs.org/en/) >= v20
+
+**Don't have a Mac or Alfred?** You are welcome to [fork this](https://github.com/United-Codes/uc-alfred-orclapex) repository and create a similar tool for your platform of choice. All the relevant data is stored in the `data` directory.
+
+## Installation
+
+```sh
+npm i -g uc-alfred-orclapex
+```
+
+## What categories are available?
+
+- **Documentation**: Quickly access the APEX documentation
+- **Icons**: Search through all font-apex icons
+- **Icon modifiers**: Modifiers for the font-apex icons
+- **CSS Classes**: Utility CSS classes
+- **CSS Variables**: UT CSS variables
+- **Views**: All APEX internal views
+- **HTML Snippets**: Useful HTML snippets
+- **APEX Links**: Official and community sites
+
+## Contribute and Bugs
+
+If you want to improve this workflow or report bugs/ ideas, feel free to open issues [in this Git repo](https://github.com/United-Codes/uc-alfred-orclapex).
+
+## Want more APEX-related content?
+
+Check out the [United Codes YouTube channel,](https://youtube.com/@united-codes) where I regularly post APEX-related content.
