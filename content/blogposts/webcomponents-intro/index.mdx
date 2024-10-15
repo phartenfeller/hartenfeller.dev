@@ -291,7 +291,7 @@ calculate() {
 }
 ```
 
-Notice how we redefine the `calculate()` method in the constructor. JavaScript and the `this` keyword are a confusing mess. Basically, what happens is that when we pass the method to the event listener, [>>this<< will get overwritten by the `addEventListener` function to the triggering element](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#the_value_of_this_within_the_handler). This results in us not being able to access the class properties anymore. To fix this, we have to **bind the method to the class in the constructor**. This will make sure that the `this` keyword will always refer to the class instance.
+Notice how we redefine the `calculate()` method in the constructor. JavaScript and the `this` keyword are a confusing mess. Basically, what happens is that when we pass the method to the event listener, ["this" will get overwritten by the `addEventListener` function to the triggering element](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#the_value_of_this_within_the_handler). This results in us not being able to access the class properties anymore. To fix this, we have to **bind the method to the class in the constructor**. This will make sure that the `this` keyword will always refer to the class instance.
 
 <BlogGif filename="html-vanilla-calc.gif" alt="" />
 
