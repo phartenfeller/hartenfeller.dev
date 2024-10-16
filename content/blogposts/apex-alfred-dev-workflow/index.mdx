@@ -11,9 +11,11 @@ tags: ['Alfred', 'macOS', 'APEX']
 ghCommentsIssueId: null
 ---
 
-## What is this?
+For this year's #JoelKallmanDay, I created a tool I always wanted to have. As a developer, you spend a lot of time looking something up, like the APEX PL/SQL API documentation, how the font-apex icons are called, or how the Universal Theme CSS utility class was named again. This tool will accelerate this process significantly.
 
-Type `apex` in your Alfred search bar, and you will get a list of useful links and tools for your Oracle APEX development:
+## How does it work?
+
+Type `apex` in your Alfred search bar, and you will get a list of categories related to Oracle APEX:
 
 <BlogImg
   filename="alfred-apex-overview.png"
@@ -28,17 +30,23 @@ You can select a category with the arrow keys and enter, and then start typing t
   alt="In this video the user types 'apex', then select the documentation category and types 'mail'. The results show entries related to the 'APEX_MAIL' package. Upon selecting one a browser window opens with the documentation page."
 />
 
-For resources with a URL, your browser will open the page directly. For others, like the CSS classes, icons, view names, etc. the result will be typed out. **If you have no focused input, nothing will happen.**
+For resources with a URL, your browser will open the page directly. For others, like the CSS classes, icons, view names, etc., the result will be typed out. **If you have no focused input, nothing will happen.**
+
+Check out [my YouTube demo](https://youtu.be/UoirbXmjDN0) too see it in action.
 
 ## Requirements
+
+Well, unfortunately, there is no universal spotlight tool, so I created this one for the one I use: Alfred. Here is what you need:
 
 - [Alfred](https://alfredapp.com) (macOS only)
 - [Alfred Powerpack](https://www.alfredapp.com/powerpack/)
 - [Node.js](https://nodejs.org/en/) >= v20
 
-**Don't have a Mac or Alfred?** You are welcome to [fork this](https://github.com/United-Codes/uc-alfred-orclapex) repository and create a similar tool for your platform of choice. All the relevant data is stored in the `data` directory.
+**Don't have a Mac or Alfred?** You are welcome to [fork this](https://github.com/United-Codes/uc-alfred-orclapex) repository and create a similar tool for your platform of choice. All the relevant data is stored in the `data` directory. The rest is just the logic to search and display the results.
 
 ## Installation
+
+You can install the workflow quickly with npm:
 
 ```sh
 npm i -g uc-alfred-orclapex
