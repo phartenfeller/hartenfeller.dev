@@ -7,6 +7,31 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2024,
+    conference: 'KScope 2024',
+    place: 'Nashville, TN, USA',
+    title: 'Step-by-Step Creation of an Offline APEX App with Plug-Ins',
+    language: '🇬🇧',
+    slides: '/slides/kscope-2024-offline-apex.html',
+  },
+  {
+    year: 2024,
+    conference: 'KScope 2024',
+    place: 'Nashville, TN, USA',
+    title: 'Oracle 23c unleashed: App Development with JSON Duality Views',
+    language: '🇬🇧',
+    slides: '/slides/kscope-2024-json-duality-views.html',
+  },
+  {
+    year: 2024,
+    conference: 'KScope 2024',
+    place: 'Nashville, TN, USA',
+    title:
+      'From Concept to Component: efficient Template Component development',
+    language: '🇬🇧',
+    slides: '/slides/kscope-2024-template-components.html',
+  },
+  {
+    year: 2024,
     conference: 'APEX Connect 2024',
     place: 'Düsseldorf, DE',
     title: 'Step-by-Step Creation of an Offline APEX App with Plug-Ins',
