@@ -1,0 +1,169 @@
+---
+  title: >
+    How to fix containerized Oracle 23ai Database not starting on Mac
+  date: 2024-11-08
+  description: When trying out the Free Oracle 23ai Database Docker Image I always encountered the same issue. The database wouldn't start. Here is how I fixed it.
+  slug: oracle-23ai-container-wont-start-mac
+  titleImage: ./ivan-n-AfStyhXC5kM-unsplash.jpg
+  titleImageAlt: A server room with lots of cables running into hardware. It looks very messy.
+  titleImageSource:
+    {
+      text: 'Photo by Ivan N on Unsplash',
+      href: 'https://unsplash.com/photos/a-bunch-of-wires-and-wires-in-a-room-AfStyhXC5kM',
+    }
+  tags: ['Oracle', 'macOS']
+  ghCommentsIssueId: 102
+---
+
+## TL;DR
+
+Make sure your containerization VM (podman, colima, etc.) is allowed to use **more than 2GB of memory**. Check the end of the blog post for the commands to increase the memory limit.
+
+## The Problem
+
+I was very enthusiastic when Oracle announced that 23ai now has an ARM image.
+As an M3 Mac user, I can finally run an up-to-date Oracle database on my machine without a throttling translation layer.
+
+As Oracle and Gerald Venzl offer a [dockerized DB image](https://github.com/gvenzl/oci-oracle-free), I thought I would be able to spin up a DB in no time. So, quickly start up colima (the Docker-compatible containerization VM of my choice) and copy and paste the following command:
+
+```sh
+docker run --name orcl23ai-free -d \
+    -p 1521:1521 \
+    -e ORACLE_PASSWORD=SuperSecret1 \
+    -e APP_USER=appuser \
+    -e APP_USER_PASSWORD=SuperSecret2 \
+    gvenzl/oracle-free:23.5-slim-faststart
+```
+
+In only a few seconds, I would be able to connect to my new database. But instead I was greeted with the following error message:
+
+```sh
+CONTAINER: starting up...
+CONTAINER: first database startup, initializing...
+CONTAINER: starting up Oracle Database...
+
+LSNRCTL for Linux: Version 23.0.0.0.0 - Production on 07-NOV-2024 14:44:04
+
+Copyright (c) 1991, 2024, Oracle.  All rights reserved.
+
+(...)
+
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC_FOR_FREE)))
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=0.0.0.0)(PORT=1521)))
+The listener supports no services
+The command completed successfully
+ORA-03113: end-of-file on communication channel
+```
+
+## ORA-03113
+
+What does this error message mean? Googling it gave me no clear answer. Instead, I looked up GitHub issues in Gerald's repository. There were no issues related to that ORA, but for other stuff, people posted their log files.
+
+I thought this would be a great starting point to dig deeper and copied all the log files from the container to my host:
+
+```sh
+docker cp orcl23ai-free:/opt/oracle/diag/rdbms/free/FREE/trace ./trace_files
+```
+
+The `alert_FREE.log` file is the most interesting one. It contains the following error message:
+
+```sh
+(...)
+Oracle instance running with ODM in SGA: Oracle File Server ODM Library, Version: 1.0
+Oracle instance running with ODM in SGA: Object Store ODM Library Version 8.0
+Broadcast on commit is enabled and is using Message mode.
+2024-11-07T14:44:05.778383+00:00
+Errors in file /opt/oracle/diag/rdbms/free/FREE/trace/FREE_vktm_37.trc  (incident=41) (PDBNAME=CDB$ROOT):
+ORA-00800: soft external error, arguments: [Set Priority Failed], [VKTM], [Check traces and OS configuration], [Check Oracle document and MOS notes], []
+Incident details in: /opt/oracle/diag/rdbms/free/FREE/incident/incdir_41/FREE_vktm_37_i41.trc
+--ATTENTION--
+The priority of process VKTM cannot be elevated.
+
+Failed to elevate VKTM's priority from 0 to 1, policy 5
+Error : Category(-2), Opname(skgdism_create), Loc(sp.c:setpr:1), ErrMsg(Error 0) Dism(16)
+Using default pga_aggregate_limit of 2048 MB
+2024-11-07T14:44:05.893920+00:00
+Errors in file /opt/oracle/diag/rdbms/free/FREE/trace/FREE_lgwr_75.trc  (incident=161) (PDBNAME=CDB$ROOT):
+ORA-00800: soft external error, arguments: [Set Priority Failed], [LGWR], [Check traces and OS configuration], [Check Oracle document and MOS notes], []
+Incident details in: /opt/oracle/diag/rdbms/free/FREE/incident/incdir_161/FREE_lgwr_75_i161.trc
+--ATTENTION--
+The priority of process LGWR cannot be elevated.
+
+Failed to elevate LGWR's priority from 0 to 1, policy 5
+Error : Category(-2), Opname(skgdism_create), Loc(sp.c:setpr:1), ErrMsg(Error 0) Dism(16)
+starting up 1 dispatcher(s) for network address '(ADDRESS=(PARTIAL=YES)(PROTOCOL=TCP))'...
+Warning: Shared server clients will not be able to connect because SHARED_SERVERS is 0
+(...)
+```
+
+Set priority failed? I know that from my daily life, but as a person who is afraid of compiling any C code, this was not very insightful to me.
+
+The log refers to another trace file with the name `FREE_vktm_37.trc`. Let's take a look at that file:
+
+```sh
+(...)
+*** 2024-11-07T14:44:05.743073+00:00 (CDB$ROOT(1))
+2024-11-07 14:44:05.742932 : fsd_notify_cb: FsDirect not implemented
+WARNING: Failed to disable OOMK
+2024-11-07T14:44:05.778558+00:00
+Incident 41 created, dump file: /opt/oracle/diag/rdbms/free/FREE/incident/incdir_41/FREE_vktm_37_i41.trc
+ORA-00800: soft external error, arguments: [Set Priority Failed], [VKTM], [Check traces and OS configuration], [Check Oracle document and MOS notes], []
+(...)
+```
+
+What the hell is `FsDirect`? And there is a link to another trace file. This one is much longer, and I will spare you the details. It was also not helpful to me.
+
+## Let's try podman
+
+You know what? Maybe my colima is just incompatible, or I messed something up. So let's just download and try it with podman. At least the Oracle container repo lists podman as the default containerization tool.
+
+Long story short, the same error message greeted me with podman too.
+
+Okay, I guess my machine is cursed. Containers are the tool to make software run on any machine, and as it clearly works for others, my machine must be the problem.
+
+## In the depths of the internet, there is always a solution
+
+My last hope was to open an issue on the GitHub repository, but before that, I googled a little bit deeper. Somehow I stumbled upon a GitHub issue by `davidg251` with the title "Unable to start container".
+
+He had an entirely different error message, but he was able to resolve the issue [by removing the 2GB memory limit from his container](https://github.com/oracle/docker-images/issues/1093#issuecomment-448695910).
+
+Wait a minute. Do I have memory limitations too?
+
+## Some solutions are simple
+
+```sh
+> colima list
+PROFILE    STATUS     ARCH       CPUS    MEMORY    DISK     RUNTIME    ADDRESS
+default    Stopped    aarch64    2       2GiB      60GiB
+```
+
+Damn it! Let's increase that:
+
+```sh
+colima start --memory 4
+```
+
+And now the database starts up without any issues...
+
+Why didn't podman work? Well, it turns out the default machine limitations are also 2GB.
+
+```sh
+> podman machine list
+NAME                     VM TYPE     CREATED         LAST UP     CPUS        MEMORY      DISK SIZE
+podman-machine-default*  applehv     51 seconds ago  Never       6           2GiB        100GiB
+```
+
+This should do the trick for podman:
+
+```sh
+podman machine set --memory 4096
+```
+
+## Conclusion
+
+I guess it makes sense that a feature-rich database like Oracle needs more than 2GB of memory to start up. I would have appreciated a more meaningful error message, but I'm glad I found the solution.
+
+Furthermore, I hope the search engines and LLMs will pick up this blog post so that others can find the solution more easily.
+
+**Edit**: [Chris Hoina made me aware](https://bsky.app/profile/chrishoina.bsky.social/post/3laeqaue5zk25) that he ran into the same issues. He actually has [a blog post on it](https://followthecoffee.com/podman-container-is-unhealthy-with-oracle-database-images/) too. He also said that the container team will add a note to the repository.
