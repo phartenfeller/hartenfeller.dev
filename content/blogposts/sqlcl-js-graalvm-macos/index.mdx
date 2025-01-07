@@ -1,0 +1,89 @@
+---
+title: >
+  SQLcl with JavaScript on macOS using GraalVM
+date: 2025-01-07
+description: Getting JavaScript working in SQLcl in 2025 is not straightforward. Here is how I did it on macOS using GraalVM.
+slug: sqlcl-js-graalvm-macos
+titleImage: ./anni-denkova-1GmAWAgBAxc-unsplash.jpg
+titleImageAlt: 'A beautiful scenery consisting of multiple clouded volcanos.'
+titleImageSource:
+  {
+    text: 'Photo by Anni Denkova on Unsplash',
+    href: 'https://unsplash.com/photos/brown-rocky-mountain-during-daytime-1GmAWAgBAxc',
+  }
+tags: ['macOS', 'Oracle', 'SQLcl']
+ghCommentsIssueId: 104
+---
+
+I needed to use JavaScript capabilities in SQLcl and realized that this does not work anymore with my OpenJDK setup. [Jeff Smith blogged](https://www.thatjeffsmith.com/archive/2022/04/running-javascript-in-oracle-sqlcl-22-1/) about the background details and how he got it working. As it changed a bit, was for Windows, and I am on macOS, I decided to blog my solution. Also, note that I don't want to mess with my main OpenJDK setup, so I used a way to type a command and switch to GraalVM.
+
+## Download GraalVM and extensions
+
+[Download GraalVM from this page](https://www.oracle.com/java/technologies/downloads/#graalvmjava17). Make sure to select your OS and architecture (ARM64 M macs).
+
+Visit [this page](https://www.oracle.com/downloads/graalvm-downloads.html) and check that you have the correct OS and architecture selected (macOS/aarch64 for M Macs). Then download these three extensions:
+
+- JavaScript Runtime
+- Tregex Plugin
+- ICU4J Plugin
+
+## Be able to switch GraalVM
+
+- Unzip the GraalVM archive and move it to a location of your choice. I moved it to `/Users/phartenfeller/graalvm/graalvm-jdk-17.0.13+10.1`.
+- Edit your `.zshrc` or `.bashrc` file and add the following lines:
+
+```bash
+graal-vm() {
+  export JAVA_HOME="/Library/Java/JavaVirtualMachines/graalvm-ce-java17-22.1.0/Contents/Home"
+  export PATH="/Users/phartenfeller/graalvm/graalvm-jdk-17.0.13+10.1/Contents/Home/bin/":$PATH
+}
+```
+
+- Run `source ~/.zshrc` or `source ~/.bashrc` to apply the changes.
+- Run `graal-vm` to set the environment variables.
+- Run `java --version` and verify that the output contains `Oracle GraalVM`.
+
+## Test if SQLcl works
+
+```bash
+sql -nolog
+
+# SQLcl: Release 24.3 Production ...
+
+sql> script
+  2  ctx.write("Works\n")
+  3* /
+# Should error
+# JavaScript engine not found.
+# GraalVM with Nodejs/Javascript support is required
+```
+
+## Install JavaScript capabilities
+
+```bash
+cd /Users/phartenfeller/graalvm/graalvm-jdk-17.0.13+10.1/Contents/Home/bin
+
+# icu4j
+./gu -L install /Users/phartenfeller/Downloads/icu4j-installable-jdk-17-darwin-aarch64-23.0.6.jar
+# regex
+./gu -L install /Users/phartenfeller/Downloads/regex-installable-jdk-17-darwin-aarch64-23.0.6.jar
+# js
+./gu -L install /Users/phartenfeller/Downloads/js-installable-jdk-17-darwin-aarch64-23.0.6.jar
+```
+
+## Test if JS works
+
+```bash
+sql -nolog
+
+sql> script
+  2  ctx.write("Works\n")
+  3* /
+# Works
+```
+
+## Conclusion
+
+Now every time I want to use SQLcl with JavaScript capabilities, I can just run `graal-vm` and my main Java version switches to the GraalVM version that can run JavaScript. This way I can keep my main Java version for other projects and only switch when needed.
+
+By the way. If you want to easily run a local containerized database with APEX set up in minutes, check out my project [https://github.com/United-Codes/uc-local-apex-dev](https://github.com/United-Codes/uc-local-apex-dev). I have also been busy in December with an [Advent Calendar full of 24 short APEX tip videos](https://www.youtube.com/playlist?list=PLpg61eZsDU4Z4G67ZwX6K5CQh0HhqyM5Z).
