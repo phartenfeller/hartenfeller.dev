@@ -21,7 +21,7 @@ I had to look at Gartner hype cycles a lot during my time at university, so I gu
 
 They are exceptional for writing, translating, etc., but my opinion for using them for programming is that you definitely still need an actual intelligence to operate them and critically analyze the results. I have been using Claude and GitHub Copilot for years now and am super happy with the help that they can provide. I am just not optimistic that they will replace real programmers in the near future for big and important codebases.
 
-But there are still people like Mark Zuckerberg stating that (AI will replace mid-level engineers soon)[https://www.forbes.com/sites/quickerbettertech/2025/01/26/business-tech-news-zuckerberg-says-ai-will-replace-mid-level-engineers-soon/]. I think it is never useful to listen to the opinion of people on matters where they invested a lot of money in. But the super optimism of also his peers like Altman and Musk seemed far from reality to me.
+But there are still people like Mark Zuckerberg stating that [AI will replace mid-level engineers soon](https://www.forbes.com/sites/quickerbettertech/2025/01/26/business-tech-news-zuckerberg-says-ai-will-replace-mid-level-engineers-soon/). I think it is never useful to listen to the opinion of people on matters where they invested a lot of money in. But the super optimism of also his peers like Altman and Musk seemed far from reality to me.
 
 ## Claude Code
 
@@ -51,22 +51,23 @@ These are the steps it would have to do:
 - Call the same react components from these Astro pages
 - Migrate data fetching from GraphQL to SQLite queries
 - Migrate Gatsby specifics to Astro specifics (handling images and links)
-- Don't change how anything looks (just keep the same HTML)
+- Don't change how anything looks (just keep the same HTML, even react components also work in Astro)
 
-As I am undergoing the same process for this blog, I have a good understanding of the steps and the complexity of the task. And my take on this is that this is with online resources, not hard or unique to do. It is just tedious and time-consuming.
+As I am undergoing the same process for this blog, I have a good understanding of the steps and the complexity of the task. And my take on this is that this is with online resources, not hard or unique to do. It is just tedious and time-consuming. So I expect Claude Code to give me a nice helping hand here.
 
-## Getting started
+## The experiment
 
-So I created a new branch in my Git repository and launched Claude Code.
+So let's get started. I created a new branch in my Git repository and launched Claude Code.
 
 ### Prompt 1
 
 **Prompt**: "This is a f1 data analysis website written in Gatsby.js (react). Please migrate it to Astro. With Gatsby, I have used postgraphile to import data into its graphql schema. I don't want that anymore. Please use `f1db.sqlite` from the data folder, it has the same data schema and data. You can find the schema in `datamodel.sql`."
 
-It started to do the work and nicely outputting the steps it is doing. If it wants to run a command (like grep or rm) or write to a file, it asks for permission. You can deny, allow once, or always allow for the same action/command.
-
 **Elapsed time**: ~200s
+
 **Cost**: ~0.9€
+
+It started to do the work and nicely outputting the steps it is doing. If it wants to run a command (like grep or rm) or write to a file, it asks for permission. You can deny, allow once, or always allow for the same action/command.
 
 It changed plenty of files, and I was excited to see the result. It even created `MIGRATION-README.md` with some context:
 
@@ -88,6 +89,7 @@ The next error that greeted me was that it could not load Gatsby Image files. I 
 **Prompt**: "There are some issues with the usage of Gatsby image. Please make it work for Astro: require() of ES Module (error message specifics)"
 
 **Elapsed time**: ~120s
+
 **Cost**: ~0.3€
 
 Now it created a script called `migrate-images.js` and told me to run it. It definitely made sense, as Astro requires you to store static assets in a different place. I ran it and still got the same error message...
@@ -97,6 +99,7 @@ Now it created a script called `migrate-images.js` and told me to run it. It def
 **Prompt**: "The blog part still uses gatsby image. Can you migrate it so that it works with astro."
 
 **Elapsed time**: ~200s
+
 **Cost**: ~0.7€
 
 Now it migrated the blog part of the website. I haven't noticed before that it actually did not migrate the blog yet. But still, the same error message greeted me. I took matters into my own hands and commented out the one image that is loaded from the index page.
@@ -108,6 +111,7 @@ Now I was greeted with the next error message: "It appears like Gatsby is miscon
 **Prompt**: "I still can't load the index page. I get this: (copied error message). Can you look over all react components and make sure that nothing Gatsby-related is in there. If there is anything, please migrate it to work with Astro."
 
 **Elapsed time**: ~200s
+
 **Cost**: ~1.8€
 
 At this point, frustration kicked in. Not only did I still get the same error message, the cost was rising, and it started to do stuff I hadn't asked it for.
@@ -124,7 +128,9 @@ I figured maybe the leftover Gatsby files and configs irritated the AI.
 **Prompt**: "Can you remove old Gatsby files that are not needed anymore?"
 
 **Elapsed time**: ~200s
+
 **Cost**: ~1.8€
+
 **Context**: 21% remaining
 
 It did remove the files and also changed others. It still didn't work. I noticed that it made errors in importing another file (relative path) and manually fixed it.
@@ -144,6 +150,7 @@ Total duration (wall): 56m 53.0s
 **Prompt**: "In this project, I am trying to migrate a Gatsby site to Astro. See MIGRATION-README.md for context. Much stuff changed, but a huge issue is actually getting data from the SQLite DB to the website. You generated the useAstroData.js hook file for this. Unfortunately, this won't work as the hooks run on the client where we can't and don't want to query the DB. Instead, can you move all the data loading to the Astro page files so that all the React components just get the data passed as props?"
 
 **Elapsed time**: ~200s
+
 **Cost**: ~0.5€
 
 Great, a success. For the first time, the index page loaded. It looks like it succeeded in the data fetching migration.
