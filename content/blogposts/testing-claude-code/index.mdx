@@ -1,0 +1,185 @@
+---
+title: >
+  Putting Cluade Code to the Test
+date: 2025-02-27
+description: Unwanted changes, bugs, but a jump-start. My first experience with Claude Code.
+slug: testing-claude-code
+titleImage: ./barth-bailey-d2uHXWTkGn4-unsplash.jpg
+titleImageAlt: ''
+titleImageSource:
+  {
+    text: 'Photo by Barth Bailey on Unsplash',
+    href: 'https://unsplash.com/photos/flock-of-flying-birds-during-golden-hour-d2uHXWTkGn4',
+  }
+tags: ['AI']
+ghCommentsIssueId: 105
+---
+
+## My stance on LLMs
+
+I had to look at Gartner hype cycles a lot during my time at university, so I guess I have a high hype tolerance. Of course, these language models are impressive and to me like magic, but the fact that they hallucinate and actually don't understand anything had me doubt that we are on the brink of A(G)I.
+
+They are exceptional for writing, translating, etc., but my opinion for using them for programming is that you definitely still need an actual intelligence to operate them and critically analyze the results. I have been using Claude and GitHub Copilot for years now and am super happy with the help that they can provide. I am just not optimistic that they will replace real programmers in the near future for big and important codebases.
+
+But there are still people like Mark Zuckerberg stating that (AI will replace mid-level engineers soon)[https://www.forbes.com/sites/quickerbettertech/2025/01/26/business-tech-news-zuckerberg-says-ai-will-replace-mid-level-engineers-soon/]. I think it is never useful to listen to the opinion of people on matters where they invested a lot of money in. But the super optimism of also his peers like Altman and Musk seemed far from reality to me.
+
+## Claude Code
+
+However, occasionally, a new tool comes along to challenge my beliefs with exceptional marketing. It was the same with Devin, the GitHub agent demo, and with Claude Code. With the additional impressive enhancements of their main model (Sonnet 3.7), I thought I should get my hands dirty and see if it can impress me.
+
+Please note that Claude Code is in closed **beta** state. My impression is that the issues I had with it are more model related than Claude Code CLI, but maybe everything changes dramatically until the release.
+
+Also note that using Claude Code charges you the normal API usage fees. Even though I am a Claude Pro subscriber (not judging, just the facts).
+
+## The benchmark
+
+I did put Claude Code to a pretty tough challenge. Perhaps I am expecting too much, but again, if billionaires talk about AI disrupting the world, I think it is fair to challenge it with something that is not just a simple CRUD application developed from scratch.
+
+I tasked it to migrate my hobby [Formula One statistics website](https://f1report.net) from Gatsby.js to Astro. Gatsby.js was the framework that made static site apps super cool again, but it lost to other frameworks that implemented the same ideas and is now dead.
+
+I think this challenge was good because of these reasons:
+
+- Just migration, not adding plenty of new features
+- Realistic size as it has a few pages and components
+- Some complexity as Gatsby and Astro have fundamentally different approaches to handling data
+
+These are the steps it would have to do:
+
+- Migrate dependencies
+- Setup Astro
+- Setup base pages
+- Call the same react components from these Astro pages
+- Migrate data fetching from GraphQL to SQLite queries
+- Migrate Gatsby specifics to Astro specifics (handling images and links)
+- Don't change how anything looks (just keep the same HTML)
+
+As I am undergoing the same process for this blog, I have a good understanding of the steps and the complexity of the task. And my take on this is that this is with online resources, not hard or unique to do. It is just tedious and time-consuming.
+
+## Getting started
+
+So I created a new branch in my Git repository and launched Claude Code.
+
+### Prompt 1
+
+**Prompt**: "This is a f1 data analysis website written in Gatsby.js (react). Please migrate it to Astro. With Gatsby, I have used postgraphile to import data into its graphql schema. I don't want that anymore. Please use `f1db.sqlite` from the data folder, it has the same data schema and data. You can find the schema in `datamodel.sql`."
+
+It started to do the work and nicely outputting the steps it is doing. If it wants to run a command (like grep or rm) or write to a file, it asks for permission. You can deny, allow once, or always allow for the same action/command.
+
+**Elapsed time**: ~200s
+**Cost**: ~0.9€
+
+It changed plenty of files, and I was excited to see the result. It even created `MIGRATION-README.md` with some context:
+
+Changes Made:
+
+1. Restructured the project to use Astro's file-based routing
+2. Created a SQLite data access layer with `better-sqlite3`
+3. Converted Gatsby page templates to Astro pages
+4. Adapted React components to work with Astro
+5. Updated dependencies to latest versions
+6. Replaced Gatsby image dealing with Astro's image optimization
+
+Now I wanted to see the result. I started the Astro dev server and was immediately greeted with an error message. It had upgraded the icon package I use (heroicons) to a new version but had not updated the imports in the components. I manually just downgraded again.
+
+The next error that greeted me was that it could not load Gatsby Image files. I hoped it would have replaced it with Astro specifics, but actually numerous files still used the Gatsby Image component.
+
+### Prompt 2
+
+**Prompt**: "There are some issues with the usage of Gatsby image. Please make it work for Astro: require() of ES Module (error message specifics)"
+
+**Elapsed time**: ~120s
+**Cost**: ~0.3€
+
+Now it created a script called `migrate-images.js` and told me to run it. It definitely made sense, as Astro requires you to store static assets in a different place. I ran it and still got the same error message...
+
+### Prompt 3
+
+**Prompt**: "The blog part still uses gatsby image. Can you migrate it so that it works with astro."
+
+**Elapsed time**: ~200s
+**Cost**: ~0.7€
+
+Now it migrated the blog part of the website. I haven't noticed before that it actually did not migrate the blog yet. But still, the same error message greeted me. I took matters into my own hands and commented out the one image that is loaded from the index page.
+
+Now I was greeted with the next error message: "It appears like Gatsby is misconfigured. Gatsby related `graphql` calls are supposed to only be evaluated at compile time".
+
+### Prompt 4
+
+**Prompt**: "I still can't load the index page. I get this: (copied error message). Can you look over all react components and make sure that nothing Gatsby-related is in there. If there is anything, please migrate it to work with Astro."
+
+**Elapsed time**: ~200s
+**Cost**: ~1.8€
+
+At this point, frustration kicked in. Not only did I still get the same error message, the cost was rising, and it started to do stuff I hadn't asked it for.
+
+- It changed my `team-colors.json` file where I have hand-picked color codes for F1 teams with the note `I darkened some, to make them more readable` ?!
+- It now changed the imports from the icon library to the style of the new version, where I had to manually downgrade before
+
+When I queried for Gatsby, I still found ~20 files that were imported from it. Additionally, I got the message that context is running low (32% remaining).
+
+I figured maybe the leftover Gatsby files and configs irritated the AI.
+
+### Prompt 5
+
+**Prompt**: "Can you remove old Gatsby files that are not needed anymore?"
+
+**Elapsed time**: ~200s
+**Cost**: ~1.8€
+**Context**: 21% remaining
+
+It did remove the files and also changed others. It still didn't work. I noticed that it made errors in importing another file (relative path) and manually fixed it.
+
+The next error was data fetching specific. It tries to use the SQLite database on the client. This does not work as the SQLite database is only available on the server, and it should instead run it there and pass the data to the client. Note that in Gatsby the data was passed over APIs so it worked this way before.
+
+I also noted again the price and context and decided it would make sense to start a new session.
+
+```
+Total cost: $5.53
+Total duration (API): 16m 20.7s
+Total duration (wall): 56m 53.0s
+```
+
+### Prompt 6 - New session
+
+**Prompt**: "In this project, I am trying to migrate a Gatsby site to Astro. See MIGRATION-README.md for context. Much stuff changed, but a huge issue is actually getting data from the SQLite DB to the website. You generated the useAstroData.js hook file for this. Unfortunately, this won't work as the hooks run on the client where we can't and don't want to query the DB. Instead, can you move all the data loading to the Astro page files so that all the React components just get the data passed as props?"
+
+**Elapsed time**: ~200s
+**Cost**: ~0.5€
+
+Great, a success. For the first time, the index page loaded. It looks like it succeeded in the data fetching migration.
+
+But then it struck me. The page looks quite off. The layout changed a bit; most buttons are gone and one empty, etc.
+
+<BlogImg filename="claude-code-front-page.png" alt="" />
+
+It got quite worse when I visited the circuits page. It changed the view from a table to cards divided by letters. You can argue what the better view is, but I never asked to have it changed.
+
+<BlogImg filename="claude-code-circuits.png" alt="" />
+
+At that point, I realized that Claude Code would not get me to my desired goal and decided to stop the experiment.
+
+## Conclusion
+
+### Result
+
+The experiment again reminded me that LLMs are not AIs. They are good at generating text (and code). But they are incapable of understanding. Maybe I should have told it over and over to only migrate and change anything. But it is an issue that they just change stuff that is statistically most likely useful (but not for me in cases).
+
+I still think that it was not a waste of money and time. In my opinion, it still was helpful to get started on actually migrating the website. And it actually solved a huge roadblock for me, which is powering the site from a different data source. So I still have to do a lot of manual work, but I am in a better position than before.
+
+### Cost
+
+I have mixed feelings about the cost. In my case, as a one-time experiment for my hobby site, 6€ is fine. For people who earn money with their work, this may be worth it. But for hobbyists who might even have to rely on LLMs as they are not good coders, it might be too much. And they might fall into a trap where the LLM charges money, makes some changes you don't want, but does not actually solve the issue you asked for.
+
+You also have to add time as a cost factor. Even though the AI only computed for like 20 minutes, you have to think about prompts, assess the situation, look what it actually changed, etc. The experiment took me 1.5 hours.
+
+### Is this where we are heading?
+
+Using Claude Code is not fun. You try to carefully give inputs to a machine you don't understand and hope for the best. This has nothing to do with why I like programming.
+
+You can see generative AI already taking jobs from artists who lost their payment for their passion. We developers could be next. I would hate it if I had to use something like this regularly.
+
+### I am still a happy Claude user
+
+Claude Code is just the tool I tested. There are and will be many other tools that do the same.
+
+The Claude model is still my favorite, and I use it daily. If you know in which scenarios it is helpful, it offers immense value. I just like to consult it on my terms and not have it fully take over if the results are not satisfying.
