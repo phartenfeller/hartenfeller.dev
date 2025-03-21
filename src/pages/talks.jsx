@@ -6,6 +6,22 @@ import SEO from '../components/seo';
 
 const talks = [
   {
+    year: 2025,
+    conference: 'APEX World 2025',
+    place: 'Ede, NL',
+    title: 'APEX UX: treat your users as you like to be treated',
+    language: '🇬🇧',
+    slides: '/slides/apex-world-2025-apex-ux',
+  },
+  {
+    year: 2025,
+    conference: 'APEX World 2025',
+    place: 'Ede, NL',
+    title: 'CSS Variables: The Secret Sauce of APEX Styling',
+    language: '🇬🇧',
+    slides: '/slides/apex-world-2025-apex-css-vars',
+  },
+  {
     year: 2024,
     conference: 'KScope 2024',
     place: 'Nashville, TN, USA',
