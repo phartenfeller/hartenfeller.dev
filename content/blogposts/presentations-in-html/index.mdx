@@ -1,0 +1,143 @@
+---
+title: >
+  How I create presentations in HTML
+date: 2025-03-24
+description: Since a year I don't use PowerPoint anymore. I instead enjoy to use HTML and CSS to create my slides with reveal.js.
+slug: presentations-in-html
+titleImage: ./alex-litvin-MAYsdoYpGuk-unsplash.avif
+titleImageAlt: multiple polaroid photos
+titleImageSource: { text: 'Photo by Alex Litvin on Unsplash
+      ', href: 'https://unsplash.com/photos/turned-on-led-projector-on-table-MAYsdoYpGuk' }
+tags: ['HTML', 'CSS', 'Personal-Update']
+ghCommentsIssueId: 106
+---
+
+In this blog post, I want to share my experience and tips. This is not a tutorial, so please refer to the reveal.js docs to find out more on how to use it. If you are interested in what the result looks like, check out my latest talk from APEX World 2025: [APEX UX: treat your users as you like to be treated](https://hartenfeller.dev/slides/apex-world-2025-apex-ux). Some people asked me what I use to create my slides, so I thought I should blog about it.
+
+## Why?
+
+In short:
+
+- Versioning
+- Minimalism
+- **Productivity**
+
+At my previous job, we had a corporate PowerPoint template that we had to use. At United Codes, we don't have one, so I thought to use my freedom to try out something new.
+
+### Versioning
+
+I switched because I was in favor of using a text file, which I can easily version. I usually do talks at multiple conferences, so they naturally evolve. With Git, it is super easy to do commits to keep track of the changes.
+
+After a conference, I can now save the state with a Git tag and start changing the slides with my adjustments. Before, I always had plenty of copies of the same presentation.
+
+### Productivity and Minimalism
+
+I like to keep things simple. Presentations should mainly focus on the content. I am not Apple, where the presentation is so well crafted that it is entertainment by itself. The people come to my presentation because they would like to learn something. So I want to spend my time on the content and not on aesthetics.
+
+PowerPoint is a mighty tool. You have so many tools to change any aspect of typography, add 3D effects to text, add shadows and reflections to images, animate things, and so on. But does that really make the presentation better? Many corporate templates are so visually overloaded with every detail of the branding that they are distracting.
+
+In VS Code, where I edit my slides, I don't have a what you see is what you get editor. I have a simple text file with HTML and CSS and a browser that live reloads to show me the output. I can change text size and line height pretty easily by adding classes. Other than that, I have a base CSS file that gives me a nice and clean look and feel. This is enough to make my slides look appealing.
+
+I noted that **I am much more productive** with that approach. I don't worry about making things pixel perfect or playing around with too many options. My code editor is distraction-free, and I can just write down the content.
+
+## How does the HTML look?
+
+With [reveal.js](https://revealjs.com/), each slide is a `<section>`. Use `<h2>` for the title. The content will mostly be `<div>`'s, `<p>`'s and `<ul>`'s. For media use, `<img>`'s, etc. For common styles, I use classes like `flex` (display next to each other), `line-height-2xl` and `font-2xl`. I even implemented Oracle APEX Universal Theme classes like `u-danger-text` to highlight important things. Specific styles, like image width, can just be added inline.
+
+```html
+<section>
+  <h2>
+    <span class="u-danger-text">Don't</span>: new page → add to navigation
+  </h2>
+  <div class="uc-slide-content line-height-2xl">
+    <div class="font-2xl flex">
+      <img
+        style="max-height: 60%; width: 20%;"
+        loading="lazy"
+        src="./imgs/bad-navigation.avif"
+      />
+      <div>
+        <ul>
+          <li>
+            This is just overwhelming, users will scroll this a lot during the
+            day
+          </li>
+          <li>New users need to find their way around</li>
+          <li>Existing users want to access things quickly</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+```
+
+<BlogImg
+  filename="slides-example.avif"
+  alt="Screenshot of a slide with a title and an image on the left and text on the right. The title is big and bold where the word 'Don't' is red. The image shows an APEX navigation menu with lots of items. The text on the right is an unordereed list where the text is black and the bullets are gray."
+/>
+
+### Don't get lost with big presentations
+
+I use these `<!-- region xyz -->` comments to wrap chapters:
+
+```html
+<!-- region app-structure -->
+
+<section>...</section>
+<section>...</section>
+<section>...</section>
+
+<!-- #endregion -->
+```
+
+Then, in combination with the [Region Viewer](https://marketplace.visualstudio.com/items?itemName=SantaCodes.santacodes-region-viewer) extension, I can easily jump between the chapters to never get lost in the presentation.
+
+<BlogImg
+  filename="slides-region-viewer.avif"
+  alt="Screenshot of my VS Code with a right panel listing regions. I can click on them to jump to the region."
+/>
+
+## Snippets
+
+I maintain a set of snippets for common slide types to quickly create new slides. Then I don't need to remember HTML structures and save time. I just use Alfred (macOS spotlight replacement) and type `sn {slide type}` and get the markup pasted in my editor. These are the snippets I use:
+
+- Agenda Slide
+- Chapter Slide
+- Code Slide
+- Image Slide
+- Image and Text Slide
+- List (ul) Slide
+- Table Slide
+- Title Slide
+
+## Benefits of having HTML slides
+
+I often use demos in my presentations. With PowerPoint, it is always a hassle to exit the presentation mode, switch to the right browser window, and get back to the presentation again. With HTML slides, I already present them in the browser, and thus can just switch to a tab with the demo. When I have links in my presentation, I can just click on them, and they immediately open in a new tab.
+
+Additionally, reveal makes the slides look great on any device. It allows you to swipe on touchscreens and even has a scroll-down mode for vertical phones, making it appear like a fancy page.
+
+With internal linking, I can easily link to other slides. I added an event listener for the `Shift + A` key combination to jump to the agenda slide, where you can then jump to each chapter via a link. Reveal also allows you to press `Esc` to zoom out a bit and scroll through the slides from an overview.
+
+```javascript
+document.addEventListener('keydown', (event) => {
+  if (event.shiftKey && event.code === 'KeyA') {
+    Reveal.slide(2); // Jump to the agenda slide index
+  }
+});
+```
+
+At last, I like that my slides are in a structured format. You can easily copy and paste the content, and probably it has better accessibility and is indexable by search engines.
+
+## More tips
+
+At last some uncategorized tips that help me with my slides:
+
+- With the [LanguageTool Linter](https://marketplace.visualstudio.com/items?itemName=davidlday.languagetool-linter) extension, I can check my slides for spelling and grammar mistakes.
+- If somebody needs a copy of my slides in the PDF format, I can add `?print-pdf` to the URL and then use the browser print dialog to create a PDF without issues. If the PDF is too big, I can compress it with GhostScript: `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf`.
+- To minimize file size, I convert all images to the AVIF format with this command: `bunx avif --input "./imgs/*.{jpg,png}" --quality 80 --effort 8 --overwrite && rm -r ./imgs/*.png || true && rm -r ./imgs/*.jpg || true` (requires Bun).
+- Download new languages for syntax highlighting from [highlightjs.org](https://highlightjs.org/). Add them to `/plugin/highlight/languages`. The SQL language also does a fantastic job for Oracle PL/SQL.
+- I can easily just copy the whole file, paste it into Claude (or any other LLM), and ask for feedback and parts that could be better phrased. (Note that I don't let Claude write my slides; I just use it to get feedback.)
+
+## Conclusion
+
+This is probably not for everyone. If you are productive with PowerPoint, then stick to it. For me, this approach worked out great, and I am super happy with it. My main idea to move to this approach was version control. Now I most like how my slides are more content-driven now and how I am more productive.
