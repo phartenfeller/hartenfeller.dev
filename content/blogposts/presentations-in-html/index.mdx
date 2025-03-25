@@ -2,7 +2,7 @@
 title: >
   Why I create presentations in HTML
 date: 2025-03-24
-description: Since a year I don't use PowerPoint anymore. I instead enjoy to use HTML and CSS to create my slides with reveal.js.
+description: Since a year, I don't use PowerPoint anymore. I instead enjoy using HTML and CSS to create my slides with reveal.js.
 slug: presentations-in-html
 titleImage: ./alex-litvin-MAYsdoYpGuk-unsplash.jpg
 titleImageAlt: multiple polaroid photos
@@ -112,7 +112,7 @@ I maintain a set of snippets for common slide types to quickly create new slides
 
 ## Benefits of having HTML slides
 
-I often use demos in my presentations. With PowerPoint, it is always a hassle to exit the presentation mode, switch to the right browser window, and get back to the presentation again. With HTML slides, I already present them in the browser, and thus can just switch to a tab with the demo. When I have links in my presentation, I can just click on them, and they immediately open in a new tab.
+I often use demos in my presentations. With PowerPoint, it is always a hassle to exit the presentation mode, switch to the right browser window, and get back to the presentation again. With HTML slides, I already present them in the browser, and thus I can just switch to a tab with the demo. When I have links in my presentation, I can just click on them, and they immediately open in a new tab.
 
 Additionally, reveal makes the slides look great on any device. It allows you to swipe on touchscreens and even has a scroll-down mode for vertical phones, making it appear like a fancy page.
 
@@ -138,7 +138,7 @@ If somebody needs a copy of my slides in the **PDF** format, I can add `?print-p
 
 To **minimize image** size, I convert all images to the AVIF format with this command: `bunx avif --input "./imgs/*.{jpg,png}" --quality 80 --effort 8 --overwrite && rm -r ./imgs/*.png || true && rm -r ./imgs/*.jpg || true` (requires Bun).
 
-Download new languages for **syntax highlighting** from [highlightjs.org](https://highlightjs.org/). Add them to `/plugin/highlight/languages`. The SQL language also does a fantastic job for Oracle PL/SQL.
+Download new languages for **syntax highlighting** from [highlightjs.org](https://highlightjs.org/). Add them to `/plugin/highlight/languages`. The SQL highlighter also does a fantastic job for Oracle PL/SQL.
 
 I can easily just copy the whole file, paste it into Claude (or any other LLM), and ask for feedback and parts that could be better phrased. (Note that I don't let Claude write my slides; I just use it to get feedback.)
 
