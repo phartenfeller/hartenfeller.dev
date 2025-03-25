@@ -134,11 +134,11 @@ At last some uncategorized tips that help me with my slides:
 
 With the [LanguageTool Linter](https://marketplace.visualstudio.com/items?itemName=davidlday.languagetool-linter) extension, I can check my slides for spelling and grammar mistakes.
 
-If somebody needs a copy of my slides in the PDF format, I can add `?print-pdf` to the URL and then use the browser print dialog to create a PDF without issues. If the PDF is too big, I can compress it with GhostScript: `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf`.
+If somebody needs a copy of my slides in the **PDF** format, I can add `?print-pdf` to the URL and then use the browser print dialog to create a PDF without issues. If the PDF is too big, I can compress it with GhostScript: `gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook -dNOPAUSE -dQUIET -dBATCH -sOutputFile=output.pdf input.pdf`.
 
-To minimize file size, I convert all images to the AVIF format with this command: `bunx avif --input "./imgs/*.{jpg,png}" --quality 80 --effort 8 --overwrite && rm -r ./imgs/*.png || true && rm -r ./imgs/*.jpg || true` (requires Bun).
+To **minimize image** size, I convert all images to the AVIF format with this command: `bunx avif --input "./imgs/*.{jpg,png}" --quality 80 --effort 8 --overwrite && rm -r ./imgs/*.png || true && rm -r ./imgs/*.jpg || true` (requires Bun).
 
-Download new languages for syntax highlighting from [highlightjs.org](https://highlightjs.org/). Add them to `/plugin/highlight/languages`. The SQL language also does a fantastic job for Oracle PL/SQL.
+Download new languages for **syntax highlighting** from [highlightjs.org](https://highlightjs.org/). Add them to `/plugin/highlight/languages`. The SQL language also does a fantastic job for Oracle PL/SQL.
 
 I can easily just copy the whole file, paste it into Claude (or any other LLM), and ask for feedback and parts that could be better phrased. (Note that I don't let Claude write my slides; I just use it to get feedback.)
 
