@@ -85,7 +85,7 @@ We have to call `APEX_DG_DATA_GEN.GET_EXAMPLE` for each domain, convert the retu
 
 ## SQL Macros to the rescue
 
-As the query follows a certain pattern, I thought it would be straightforward to dynamically generate the SQL. I could either build a function that returns the SQL, do some ref-cursor magic, or create a pipelined table function that returns the rows. But then I remembered one of the **best new features** of the Oracle Database recently: SQL Macros.
+As the query follows a certain pattern, I thought it would be straightforward to dynamically generate the SQL. I could either build a function that returns the SQL, do some ref-cursor magic, or create a pipelined table function that returns the rows. But then I remembered one of the **best new features** of the Oracle Database recently: SQL Macros. Recently meaning that unfortunately the macro I show is only available from Oracle 23ai.
 
 SQL macros allow you to encapsulate complex SQL logic into reusable functions with SQL like performance. One of the best use cases is [parameterized views](https://livesql.oracle.com/ords/livesql/file/tutorial_KQNYERE8ZF07EZMRR6KJ0RNIR.html). I don't want to go into too much detail here; please refer to the [documentation](https://docs.oracle.com/en/database/oracle/oracle-database/23/lnpls/SQL_MACRO-clause.html) if you are interested in the details.
 
