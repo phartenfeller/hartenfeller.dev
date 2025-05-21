@@ -1,0 +1,215 @@
+---
+title: >
+  Easily query testdata with Oracle APEX and the power of SQL Macros
+date: 2025-05-22
+description: How to use the Oracle APEX Data Generator/Blueprints feature purely from SQL and how to make it convenient with SQL Macros.
+slug: apex-testdata-and-sql-macros
+titleImage: ./harrison-chang-cgOu5IZD3VA-unsplash.jpg
+titleImageAlt: ''
+titleImageSource:
+  {
+    text: 'Photo by Harrison Chang on Unsplash',
+    href: 'https://unsplash.com/photos/a-shelf-filled-with-lots-of-glass-bottles-cgOu5IZD3VA',
+  }
+tags: ['APEX', 'Oracle', 'SQL']
+ghCommentsIssueId: 107
+---
+
+## APEX Test data with the Data Generator
+
+Have you ever used the Data Generator feature in Oracle APEX? It is hidden in SQL Workshop > Utilities > Data Generator. It allows you to create data shapes for your tables and, afterward, lets you easily generate test data for them.
+
+Furthermore, it comes with a great set of pre-defined domains like `person.first_name` or `country.name` so that the generated data looks realistic. You can customize the data shapes, create your own ones, or hook up values from your own tables.
+
+Check out [my ~1-min video](https://www.youtube.com/watch?v=0aa90crFt7I) to see the Data Generator in action.
+
+## Using it from SQL
+
+Today, I had a use-case where I did not want to create a blueprint in the APEX UI. Instead, I wanted to generate rows of test data on the fly from SQL.
+
+I looked over the [APEX_DG_DATA_GEN PL/SQL documentation](https://docs.oracle.com/en/database/oracle/apex/24.2/aeapi/APEX_DG_DATA_GEN.html), which describes the data generator API. Unfortunately, most functions require you to reference a blueprint ID, so you need to create one first. I also found the [GET_EXAMPLE function](https://docs.oracle.com/en/database/oracle/apex/24.2/aeapi/GET_EXAMPLE-Function.html#GUID-6DD10BBA-BCF7-4826-9953-F33B5F043606), which allows you to pass a domain name and a number of rows and gives you back an `apex_t_varchar2` array with example values of the domain.
+
+This sounded like a promising solution, so I tried to construct a single query that would result in 20 rows of a generated first name, last name, country, etc. This is the resulting SQL, which is enormous and complex:
+
+```sql
+with first_names as (
+  select rownum as rn, column_value as first_name
+    from table(
+      APEX_DG_DATA_GEN.GET_EXAMPLE (
+        p_friendly_name   => 'person.first_name',
+        p_rows            => 20 )
+      )
+), last_names as (
+  select rownum as rn, column_value as last_name
+    from table(
+      APEX_DG_DATA_GEN.GET_EXAMPLE (
+        p_friendly_name   => 'person.last_name',
+        p_rows            => 20 )
+      )
+), countries as (
+  select rownum as rn, column_value as country
+    from table(
+      APEX_DG_DATA_GEN.GET_EXAMPLE (
+        p_friendly_name   => 'country.name',
+        p_rows            => 20 )
+      )
+), credit_cards as (
+  select rownum as rn, column_value as credit_card
+    from table(
+      APEX_DG_DATA_GEN.GET_EXAMPLE (
+        p_friendly_name   => 'credit_card.card_number',
+        p_rows            => 20 )
+      )
+), phone_numbers as (
+  select rownum as rn, column_value as phone_number
+    from table(
+      APEX_DG_DATA_GEN.GET_EXAMPLE (
+        p_friendly_name   => 'phone.us_phone_number',
+        p_rows            => 20 )
+      )
+)
+select fn.first_name,
+       ln.last_name,
+       ct.country,
+       cc.credit_card,
+       ph.phone_number
+  from first_names fn
+  join last_names ln on fn.rn = ln.rn
+  join countries ct on ct.rn = ln.rn
+  join credit_cards cc on cc.rn = ln.rn
+  join phone_numbers ph on ph.rn = ln.rn
+;
+```
+
+We have to call `APEX_DG_DATA_GEN.GET_EXAMPLE` for each domain, convert the returned [apex_t_varchar2 array](https://hartenfeller.dev/blog/ode-to-apex-t-varchar2) to rows, and then join everything together. While it works great, it is not really flexible as adding or changing domains is cumbersome.
+
+## SQL Macros to the rescue
+
+As the query follows a certain pattern, I thought it would be straightforward to dynamically generate the SQL. I could either build a function that returns the SQL, do some ref-cursor magic, or create a pipelined table function that returns the rows. But then I remembered one of the **best new features** of the Oracle Database recently: SQL Macros.
+
+SQL macros allow you to encapsulate complex SQL logic into reusable functions with SQL like performance. One of the best use cases is [parameterized views](https://livesql.oracle.com/ords/livesql/file/tutorial_KQNYERE8ZF07EZMRR6KJ0RNIR.html). I don't want to go into too much detail here; please refer to the [documentation](https://docs.oracle.com/en/database/oracle/oracle-database/23/lnpls/SQL_MACRO-clause.html) if you are interested in the details.
+
+The core of a SQL macro looks like a function where you just return the string of an SQL statement. Notice the return type `clob sql_macro(table)`:
+
+```sql
+create or replace function gen_test_data (
+  p_parameter in varchar2
+) return clob sql_macro(table)
+as
+  l_sql clob;
+begin
+  l_sql := q'! select ... !';
+  -- do whatever you want to build the SQL
+
+  return l_sql;
+end;
+```
+
+Filling in the magic, this is now my SQL macro that generates a `with` section, the columns in the `select` and the `from` and `join` clauses from the array of domains you pass:
+
+```sql
+create or replace function gen_test_data (
+  p_domains in apex_t_varchar2,
+  p_rows in number default 20
+) return clob sql_macro(table)
+as
+  l_sql clob;
+  l_with_clauses clob;
+  l_select_clause clob;
+  l_from_clause clob;
+begin
+  l_select_clause := 'select ';
+  l_from_clause := 'from ';
+
+  <<domain_loop>>
+  for i in 1..p_domains.count loop
+    l_with_clauses := l_with_clauses ||
+      case when i > 1 then ', ' else ' ' end ||
+      't' || i || ' AS (
+          SELECT rownum AS rn, column_value AS ' || replace(p_domains(i), '.', '$') || '
+          FROM table(
+              APEX_DG_DATA_GEN.GET_EXAMPLE(
+                  p_friendly_name => ''' || p_domains(i) || ''',
+                  p_rows => ' || p_rows || '
+              )
+          )
+      )';
+
+      l_select_clause := l_select_clause ||
+        case when i > 1 then ', ' else ' ' end ||
+        't' || i || '.' || replace(p_domains(i), '.', '$');
+
+      l_from_clause := l_from_clause ||
+        case when i = 1 then 't' || i
+             else ' join t' || i || ' on t1.rn = t' || i || '.rn'
+        end;
+  end loop domain_loop;
+
+  l_sql := 'with ' || l_with_clauses || ' ' ||
+    l_select_clause || ' ' ||
+    l_from_clause;
+
+  return l_sql;
+end gen_test_data;
+```
+
+More interestingly, see how easy it is now to query the data:
+
+```sql
+select * from gen_test_data(
+  p_domains => apex_t_varchar2(
+    'person.first_name', 'person.last_name', 'country.name'
+  , 'credit_card.card_number', 'phone.us_phone_number'),
+  p_rows => 3
+);
+/*
+PERSON$FIRST_NAME    PERSON$LAST_NAME    COUNTRY$NAME    CREDIT_CARD$CARD_NUMBER    PHONE$US_PHONE_NUMBER
+____________________ ___________________ _______________ __________________________ ________________________
+Shaina               Catlin              Mauritania      3465040348097883           (703) 318-4641
+Otha                 Livshits            Oman            3458152993437495           (929) 977-5636
+Gregoria             Oathout             Dominica        6579642930445935           (556) 757-1107
+*/
+```
+
+Let's try another example:
+
+```sql
+select * from gen_test_data(
+  p_domains => apex_t_varchar2(
+    'animal.species', 'element.name', 'plant.species'),
+  p_rows => 3
+);
+/*
+
+ANIMAL$SPECIES    ELEMENT$NAME    PLANT$SPECIES
+_________________ _______________ ________________
+A.melanoleuca     Molybdenum      speciosa
+M.novaeangliae    Mendelevium     insularis
+L.rufus           Cerium          asahinae
+*/
+```
+
+## How do you know which domains are available?
+
+You can query the `APEX_DG_BUILTINS` view, which lists all the available domains and their categories. In APEX 24.2 there are 193 domains of a wide variety.
+
+```sql
+select * from APEX_DG_BUILTINS;
+```
+
+As I also frequently use my [Alfred extension](https://hartenfeller.dev/blog/apex-alfred-dev-workflow) to look up APEX-specific things. I added support for the list of domains to it. If you are on macOS and also use Alfred, this is probably interesting for you too.
+
+<BlogGif
+  filename="alfred-data-generator-domains.gif"
+  alt="The user types in apex data generator in the Alfred search bar. The Alfred window shows a list of domains with their friendly names. The user types in city to filter the list and then selects 'school.cities'. The word is typed out in a query editor window and then used with the macro to show results."
+/>
+
+## More you can do with SQL Macros
+
+I used a `table` macro (which you use in the `from` section). You can also create `scalar` macros (which you select as columns). Macros also allow you to pass literal tables and lists of columns, making them super flexible.
+
+Andrej Pashchenko blogged about more complex but super powerful macros, which are great examples of their flexibility. I recommend checking them out:
+
+- [Dynamic pivoting](https://blog.sqlora.com/en/dynamic-pivot-with-sql-macros-in-oracle-20c/)
+- [Dynamic column hashes/checksums](https://blog.sqlora.com/en/building-hash-keys-using-sql-macros-in-oracle-20c/)
+- [Only showing columns with different values for two rows](https://blog.sqlora.com/en/comparing-rows-using-a-sql-macro/)
