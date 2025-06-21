@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>CSS Variables: The Secret Sauce of APEX Styling</title>
+
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="reveal.css">
+  <link rel="stylesheet" href="united-codes-v2.css">
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="atom-one-light.css">
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides uc-slides">
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+
+        <h1>CSS Variables: The Secret Sauce of APEX Styling</h1>
+        <div class="uc-title-lower">
+          <div class="uc-title-infos">
+            <p>KScope 2025</p>
+            <p>Philipp Hartenfeller</p>
+            <p>18-JUN-2025 | Grapevine, TX</p>
+          </div>
+          <div>
+            <img loading="lazy" src="uc-logo-white.avif" width="400">
+          </div>
+        </div>
+
+
+      </section>
+
+      <!-- #region intro -->
+      <section>
+
+        <h2>$whoami</h2>
+        <div class="uc-slide-content">
+          <div class="flex space-x-4">
+            <img loading="lazy" src="phartenfeller_quadratkopf.avif" width="250">
+            <div>
+              <h3>Philipp Hartenfeller</h3>
+              <ul>
+                <li>Düsseldorf, Germany</li>
+                <li>Oracle APEX Dev since 2016</li>
+                <li>Product Lead at <a href="https://united-codes.com">United Codes</a></li>
+                <li>Web Dev and Databases</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex space-x-4 mt-4">
+            <div>Blog: <a href="https://hartenfeller.dev/blog">hartenfeller.dev/blog</a></div>
+            <div>Bluesky: <a href="https://bsky.app/profile/hartenfeller.dev">@hartenfeller.dev</a></div>
+            <div>
+              <img loading="lazy" src="ace-logo.avif" width="300">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <img loading="lazy" src="apex-products.avif" class="r-stretch">
+        <div><a href="https://united-codes.com">More on united-codes.com</a></div>
+      </section>
+
+      <!-- #endregion -->
+
+      <!-- #region agenda -->
+      <section id="agenda">
+        <h2>Agenda</h2>
+        <span style="text-align: left; font-size: 1rem;" class="no-print">(Shift + A: jump to Agenda, Shift + O:
+          overview)</span>
+
+        <div class="uc-slide-content">
+          <ul>
+            <li><a href="index.html#/css-basics">CSS Basics Recap</a></li>
+            <li><a href="index.html#/css-vars">What are CSS Vars?</a></li>
+            <li><a href="index.html#/css-vars-in-apex">CSS Vars in APEX</a></li>
+            <li><a href="index.html#/customize-ut">Customizing Universal Theme</a></li>
+            <li><a href="index.html#/custom-components">Custom Components</a></li>
+            <li><a href="index.html#/quick-css-tips">Quick CSS Tips</a></li>
+            <li>Q&A</li>
+          </ul>
+        </div>
+
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region css-basics -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="css-basics">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">CSS Basics Recap<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>Selectors</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <ul>
+            <li>Select HTML DOM (tree) nodes</li>
+            <li><code>body .card-title</code> → all elements with class "card-title" that have a parent of element
+              "body"</li>
+            <li>No prefix: HTML element</li>
+            <li><code>.</code> → class</li>
+            <li><code>#</code> → ID</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>CSS Rules</h2>
+        <div class="uc-slide-content">
+          <pre data-id="code-animation" style="font-size: 2.1rem;">
+          <code data-trim class="hljs css">
+            <script type="text/template">
+              /* selector */
+              .blog-post p {
+                /* styles */
+                /* property: value; */
+                font-size: 1.2rem;
+                color: #333;
+              }
+
+              .blog-post table > tbody > tr > td {
+                padding: 0.5rem;
+              }
+            </script>
+          </code>
+        </pre>
+
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Inheritance</h2>
+        <div class="uc-slide-content">
+          <div class="flex">
+            <div>
+              <pre data-id="code-animation" style="font-size: 2.1rem; height: 30vh;">
+              <code data-trim class="hljs html">
+                <script type="text/template">
+                  <div class="a">
+                    <div class="b">Which color?</div>
+                  </div>
+                </script>
+              </code>
+            </pre>
+              <pre data-id="code-animation" style="font-size: 2.1rem;  height: 30vh;">
+              <code data-trim class="hljs css">
+                <script type="text/template">
+                  .a {
+                    color: orangered;
+                  }
+                </script>
+              </code>
+            </pre>
+            </div>
+            <p>Result:</p>
+            <p style="color: orangered;">Which color?</p>
+          </div>
+
+        </div>
+      </section>
+
+
+
+      <section>
+        <h2>Specificity (1)</h2>
+        <div class="uc-slide-content">
+          <div class="flex">
+            <div>
+              <pre data-id="code-animation" style="font-size: 1.8rem; height: 30%;">
+              <code data-trim class="hljs html">
+                <script type="text/template">
+                  <div class="a">
+                    <div class="b">Which color?</div>
+                  </div>
+                </script>
+              </code>
+            </pre>
+              <pre data-id="code-animation" style="font-size: 1.8rem;  height: 60%;">
+              <code data-trim class="hljs css">
+                <script type="text/template">
+                  .a {
+                    color: orangered;
+                  }
+
+                  .b {
+                    color: blue;
+                  }
+                </script>
+              </code>
+            </pre>
+            </div>
+            <p>Result:</p>
+            <p style="color: blue;">Which color?</p>
+          </div>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Specificity (2)</h2>
+        <div class="uc-slide-content">
+          <div class="flex">
+            <div>
+              <pre data-id="code-animation" style="font-size: 1.8rem; height: 30%;">
+              <code data-trim class="hljs html">
+                <script type="text/template">
+                  <div class="a">
+                    <div class="b c">Which color?</div>
+                  </div>
+                </script>
+              </code>
+            </pre>
+              <pre data-id="code-animation" style="font-size: 1.8rem;  height: 60%;">
+              <code data-trim class="hljs css">
+                <script type="text/template">
+                  .b {
+                    color: blue;
+                  }
+
+                  .b.c {
+                    color: turquoise;
+                  }
+                </script>
+              </code>
+            </pre>
+            </div>
+            <p>Result:</p>
+            <p style="color: turquoise;">Which color?</p>
+          </div>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Specificity (3)</h2>
+        <div class="uc-slide-content">
+          <div class="flex">
+            <div>
+              <pre data-id="code-animation" style="font-size: 1.8rem; height: 30%;">
+              <code data-trim class="hljs html">
+                <script type="text/template">
+                  <div class="a">
+                    <div class="b c" id="d">Which color?</div>
+                  </div>
+                </script>
+              </code>
+            </pre>
+              <pre data-id="code-animation" style="font-size: 1.8rem;  height: 60%;">
+              <code data-trim class="hljs css">
+                <script type="text/template">
+                  .b.c {
+                    color: turquoise;
+                  }
+
+                  #d {
+                    color: green;
+                  }
+                </script>
+              </code>
+            </pre>
+            </div>
+            <p>Result:</p>
+            <p style="color: green;">Which color?</p>
+          </div>
+
+        </div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region css-vars -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="css-vars">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">What are CSS Vars?<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>CSS Custom Properties</h2>
+
+        <div class="uc-slide-content line-height-2xl font-xl">
+          <ul>
+            <li>They are actually called <b>custom properties</b></li>
+            <li>Widely supported since April 2017</li>
+            <li>Define and reuse values (all kinds of: <code>left</code>, <code>#ff3489</code>,
+              <code>3px 6px rgb(20 32 54)</code>)
+            </li>
+            <li>Was possible before with SASS or LESS</li>
+
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>How to use?</h2>
+
+        <div class="uc-slide-content" style="font-size: 2.7rem;">
+          <pre data-id="code-animation" style="font-size: 2.1rem;">
+            <code data-trim class="hljs css">
+              <script type="text/template">
+                /* Declaration */
+                /* :root → top level of the DOM tree */
+                :root { 
+                  --main-bg-color: #f06;
+                }
+
+                /* Usage */
+                body {
+                  background-color: var(--main-bg-color);
+                }
+              </script>
+            </code>
+          </pre>
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>CSS Vars in action</p>
+      </section>
+      <!-- #endregion -->
+
+
+
+      <!-- #region css-vars-in-apex -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="css-vars-in-apex">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">CSS Vars in APEX<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>Universal Theme - powered by CSS Vars</h2>
+
+        <div class="uc-slide-content line-height-2xl" style="font-size: 2.7rem;">
+          <ul>
+            <li>Since APEX 21.2 (grew over time)</li>
+            <li>You mostly see variables getting applied, no direct values</li>
+            <li>Good way to hook in and change styles</li>
+            <li>Safer than overwriting values directly</li>
+            <li>Versatile thanks to cascading nature</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>CSS Vars in Action</h2>
+
+        <div class="uc-slide-content uc-img-content">
+          <img loading="lazy" style="max-height: 90%;" src="apex-ut-css-vars.avif">
+        </div>
+      </section>
+
+      <section>
+        <h2>We can modify these</h2>
+
+        <div class="uc-slide-content line-height-2xl font-3xl">
+          <ul>
+            <li>Specifically target selector or global</li>
+            <li>Just change variables values</li>
+            <li>Better than overwriting rules (e.g.: <code>color: red;</code>)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>What about Theme Roller?</h2>
+
+        <div class="uc-slide-content line-height-2xl font-3xl">
+          <ul>
+            <li>Still the best way to change things</li>
+            <li>But also limited</li>
+
+          </ul>
+        </div>
+      </section>
+
+      <!-- #endregion -->
+
+
+      <!-- #region customize-ut -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="customize-ut">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Customizing Universal Theme<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>Customizing Buttons</p>
+      </section>
+
+      <section>
+        <div class="uc-slide-content">
+          <h2>Added to APEX CSS</h2>
+          <pre data-id="code-animation" style="font-size: 1.2rem;">
+                    <code data-trim class="hljs css" >
+                      <script type="text/template">
+                        /* custom default button */
+                        .t-Button:not(.t-Button--header) { /* ignore header buttons */
+                          --a-button-background-color: #fff;
+                          --a-button-border-color: #898a94;
+                          --a-button-text-color: #000;
+                          --a-button-border-radius: 0;
+                          --a-button-shadow: 2px 2px #898a94;
+                        
+                          --a-button-hover-border-color: #000; /* hover states */
+                          --a-button-hover-shadow: 4px 4px #000;
+                        
+                          --a-button-active-background-color: #ebebed; /* active & focus states */
+                          --a-button-active-shadow: 2px 2px #000;
+                          --a-button-focus-border-color: #000;
+                          --ut-focus-outline-color: #000;
+                        
+                          & .t-Icon { /* change icon color */
+                            /* no var available */
+                            color: #898a94;   
+                          }
+                        
+                          &:active { /* remove focus outline when clicking */
+                            outline: none; /* still present when tabbing */
+                          }
+                        }
+                      </script>
+                    </code>
+                  </pre>
+
+        </div>
+      </section>
+
+      <section>
+        <div class="uc-slide-content">
+          <h2>Added to APEX CSS (hot button)</h2>
+          <pre data-id="code-animation" style="font-size: 1.2rem;">
+                    <code data-trim class="hljs css" >
+                      <script type="text/template">
+                        .t-Button.t-Button--hot {  /* custom hot button */
+                          --a-button-background-color: #000;
+                          --a-button-border-color: #000;
+                          --a-button-text-color: #fff;
+                          --a-button-border-radius: 0;
+                          --a-button-shadow: 2px 2px #898a94;
+                        
+                          --a-button-hover-background-color: #000;
+                          --a-button-hover-border-color: #000;
+                          --a-button-hover-shadow: 4px 4px #898a94;
+                        
+                          --a-button-active-background-color: rgba(0, 0, 0, 0.75);
+                          --a-button-active-shadow: 2px 2px #898a94;
+                          --a-button-focus-border-color: #000;
+                          --ut-focus-outline-color: #000;
+                        
+                          & .t-Icon {
+                            color: #cdcdd2;  /* no var available */
+                          }
+                        
+                          &:active {
+                            outline: none;
+                          }
+                        }
+                      </script>
+                    </code>
+                  </pre>
+
+        </div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region custom-components -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="custom-components">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Custom Components<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>Make things look like UT</h2>
+
+        <div class="uc-slide-content line-height-2xl font-base">
+          <ul>
+            <li>APEX also documents some variables for us to reuse</li>
+            <li><a
+                href="https://apex.oracle.com/pls/apex/r/apex_pm/ut/css-variables">apex.oracle.com/pls/apex/r/apex_pm/ut/css-variables</a>
+            </li>
+            <li>Custom templates, template components, dynamic content regions (copied or AI gen HTML & CSS)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>⚽️ scores</p>
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region quick-css-tips -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="quick-css-tips">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Quick CSS Tips<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <div class="uc-slide-content">
+          <h2>CSS Nesting</h2>
+          <div class="flex">
+            <pre data-id="code-animation" style="font-size: 1.7rem;">
+            <code data-trim class="hljs css">
+              <script type="text/template">
+                label {
+                  font-size: 1.2rem;
+                  color: #333;
+
+                  & .required {
+                    color: red;
+                  }
+
+                  & + input {
+                    margin-top: 0.5rem;
+                  }
+                }
+              </script>
+            </code>
+          </pre>
+            <div>
+              <p>Apply rule to same parent</p>
+              <p>Easier to read</p>
+              <p><code>&</code> → nesting selector</p>
+              <p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting/Using_CSS_nesting">More info</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="uc-slide-content">
+          <h2>Container queries</h2>
+          <div class="flex">
+            <pre data-id="code-animation" style="font-size: 1.7rem;">
+            <code data-trim class="hljs css">
+              <script type="text/template">
+                .post {
+                  container-type: inline-size;
+                }
+                .card h2 {
+                  font-size: 1em;
+                }
+                /* If container larger than 700px */
+                @container (min-width: 700px) {
+                  .card h2 {
+                    font-size: 2em;
+                  }
+                }
+              </script>
+            </code>
+          </pre>
+            <div>
+              <ul style="font-size: 2rem;">
+                <li>Issue: responsiveness on device width</li>
+                <li>Not based on how wide the actual component is displayed</li>
+
+                <li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries">More
+                    info</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Flex and grid</h2>
+        <div class="uc-slide-content line-height-xl">
+
+          <div class="flex">
+            <img style="max-height: 80%; width: 70%;" loading="lazy" src="flex-demo.gif">
+            <div>
+              <ul>
+                <li>Complex layouts super easy</li>
+                <li>More about <a
+                    href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox">Flex</a>
+                  and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_grid_layout">Grid</a></li>
+                <li><a href="https://jst.hashnode.dev/css-flex-explained-in-1-animation">Image source</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region suffix -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <h2 style="color: white;">Thank you!</h2>
+
+
+        <div class="flex line-height-2xl">
+          <div class="flex flex-col space-evenly" style="height: 70vh;">
+            <p class="mt-4">Contact: phartenfeller at united-codes.com</p>
+            <p class="mt-4">Slides at: <a style="color: white; text-decoration: underline;"
+                href="https://hartenfeller.dev">hartenfeller.dev</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- #endregion -->
+
+      <script src="reveal.js"></script>
+      <script src="notes.js"></script>
+      <script src="markdown.js"></script>
+      <script src="sql.js"></script>
+      <script src="xml.js"></script>
+      <script src="highlight.js"></script>
+
+      <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+          hash: true,
+          slideNumber: true,
+          width: 1280,
+          height: 720,
+          margin: 0.1,
+          center: false,
+
+          highlight: {
+            beforeHighlight: (hljs) => {
+              hljs.registerLanguage('sql', window.hljsDefineSql);
+              hljs.registerLanguage('xml', window.hljsDefineXml);
+              hljs.registerLanguage('html', window.hljsDefineXml);
+
+            },
+          },
+
+          // Learn about plugins: https://revealjs.com/plugins/
+          plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+      </script>
+      <script>
+
+        document.addEventListener("keydown", event => {
+          if (event.shiftKey && event.code === "KeyA") {
+            const agendaSlide = document.getElementById("agenda");
+            if (agendaSlide) {
+              // Get the index of the agenda slide
+              const agendaSlideIndex = Reveal.getIndices(agendaSlide).h;
+              Reveal.slide(agendaSlideIndex);
+            } else {
+              console.warn("Slide with ID 'agenda' not found.");
+            }
+          } else if (event.shiftKey && event.code === "KeyO") {
+            Reveal.toggleOverview()
+          }
+        });
+
+
+      </script>
+</body>
+
+</html>

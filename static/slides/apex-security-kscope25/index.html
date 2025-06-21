@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>APEX Security</title>
+
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="reveal.css">
+  <link rel="stylesheet" href="united-codes-v2.css">
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="atom-one-light.css">
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides uc-slides">
+
+      <!-- #region prefix -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+
+        <h1>APEX Security</h1>
+        <div class="uc-title-lower">
+          <div class="uc-title-infos">
+            <p>KScope 2025</p>
+            <p>Philipp Hartenfeller | Kevin Thyssen</p>
+            <p>18-JUN-2025 | Grapevine, TX</p>
+          </div>
+          <div>
+            <img loading="lazy" src="uc-logo-white.avif" width="400">
+          </div>
+        </div>
+
+
+      </section>
+
+      <section>
+
+        <h2>$whoarewe</h2>
+        <div class="uc-slide-content">
+          <div class="flex space-x-4">
+            <img loading="lazy" src="phartenfeller_quadratkopf.avif" width="250">
+            <div>
+              <h3>Philipp Hartenfeller</h3>
+              <ul>
+                <li>Düsseldorf, Germany</li>
+                <li>Oracle APEX Dev since 2016</li>
+                <li>Product Lead at <a href="https://united-codes.com">United Codes</a></li>
+                <li>WebDev and Databases</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex space-x-4 mt-4">
+            <div>Blog: <a href="https://hartenfeller.dev/blog">hartenfeller.dev/blog</a></div>
+            <div>BlueSky: <a href="https://bsky.app/profile/hartenfeller.dev">@hartenfeller.dev</a></div>
+            <div>
+              <img loading="lazy" src="ace-logo.avif" width="300">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>$whoarewe</h2>
+        <div class="uc-slide-content">
+          <div class="flex space-x-4">
+            <img loading="lazy" src="kthyssen.avif" width="250">
+            <div>
+              <h3>Kevin Thyssen</h3>
+              <ul>
+                <li>Kapellen, Belgium</li>
+                <li>15+ years with Oracle APEX</li>
+                <li>Senior APEX Consultant at <a href="https://united-codes.com">United Codes</a></li>
+                <li>Cycling enthousiast</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex space-x-4 mt-4">
+            <div>LinkedIn: <a href="https://www.linkedin.com/in/kevinthyssen/">kevinthyssen</a></div>
+            <div>BlueSky: <a href="https://bsky.app/profile/kthyssen.bsky.social">@kthyssen.bsky.social</a></div>
+            <div>
+              <img loading="lazy" src="ace-logo-associate.avif" width="300">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <img loading="lazy" src="apex-products.avif" class="r-stretch">
+        <div><a href="https://united-codes.com">United Codes</a></div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region agenda -->
+      <section id="agenda">
+        <h2>Agenda</h2>
+        <span style="text-align: left; font-size: 1rem;" class="no-print">(Shift + A: jump to Agenda, Shift + O:
+          overview)</span>
+
+        <div class="uc-slide-content">
+          <ul>
+            <li><a href="index.html#/intro">Introduction</a></li>
+            <li><a href="index.html#/client-server">Client vs. Server</a></li>
+            <li><a href="index.html#/session-state-protection">Session State Protection / Checksums</a></li>
+            <li><a href="index.html#/sql-injections">SQL Injections</a></li>
+            <li><a href="index.html#/xss">Cross Site Scripting (XSS)</a></li>
+            <li><a href="index.html#/tips">Tips</a></li>
+            <li>Q&A</li>
+          </ul>
+          <p>Please ask questions any time</p>
+        </div>
+
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region intro -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="intro">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">Introduction<span class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>CIA Triad</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <img loading="lazy" src="sec-cia-triad.svg" class="r-stretch">
+          <p style="font-size: 1rem;"><a href="https://openclipart.org/detail/339113/cia-triad">Source</a></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>What can go wrong?</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+
+          <div>
+            <ul>
+              <li>System Failure</li>
+              <li>System Misuse/Abuse</li>
+              <li>Sabotage</li>
+              <li>Espionage</li>
+              <li>Fraud</li>
+              <li>Theft</li>
+
+            </ul>
+          </div>
+        </div>
+      </section>
+
+
+
+      <section>
+        <h2>Scope</h2>
+        <div class="uc-slide-content line-height-xl">
+          <p>In these slides: <b>Only APEX</b></p>
+          <p>Other areas:</p>
+          <table>
+            <thead>
+              <tr>
+                <th>Non-technical</th>
+                <th>Technical</th>
+              </tr>
+            </thead>
+            <tbody style="font-size: 1.7rem;">
+              <tr>
+                <td>
+                  <ul>
+                    <li>Physical Access Protection</li>
+                    <li>Social Engineering</li>
+                    <li>Site Selection</li>
+                    <li>Enterprise Architectures / Personnel Roles</li>
+                    <li>...</li>
+
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>Networks</li>
+                    <li>Operating Systems</li>
+                    <li>Encryption</li>
+                    <li>Database Admin + Monitoring</li>
+                    <li>Webserver Settings</li>
+                    <li>...</li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Read on</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div class="flex">
+            <img style="width: 40%;" loading="lazy" src="sec-expert-apex-book.avif">
+            <div>
+              <ul>
+                <li>Expert Oracle Application Express Security</li>
+                <li>Author: Scott Spendolini</li>
+                <li>22nd of April, <b>2013</b></li>
+                <li>ISBN: 978-1430247319</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Know the architecture</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div class="">
+            <img style="" loading="lazy" src="sec-artitecture.avif">
+          </div>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region client-server -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="client-server">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">Client vs. Server<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>What runs where?</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <table>
+            <thead>
+              <tr>
+                <th>Server</th>
+                <th>Client</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <ul>
+                    <li>SQL and PL/SQL</li>
+                    <li>Server-side conditions and authN/authZ-schemes</li>
+                  </ul>
+                </td>
+                <td>
+                  <ul>
+                    <li>JavaScript and jQuery (exception: MLE)</li>
+                    <li>Almost all dynamic actions</li>
+                    <li>Items of type <code>hidden</code></li>
+                  </ul>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+
+        </div>
+      </section>
+
+      <section>
+        <h2>The client is the wild wild west</h2>
+        <div class="uc-slide-content line-height-2xl">
+          <ul>
+            <li>Filter sensitive data on the server</li>
+            <li>(Hackers can use browser dev tools, JS can be disabled)</li>
+            <li>Always check on the server if a user is allowed to do something</li>
+            <li>(Client-side checks can be tampered with)</li>
+            <li>Avoid using the <code>javascript:</code> pseudo-protocol</li>
+            <li>(e.g. javascript:$s('P1_ITEM', 'value');)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>Client-side issues</p>
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region session-state-protection -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="session-state-protection">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">Session State Protection / Checksums<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>What is SSR / a checksum</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <ul>
+            <li><b>Goal</b>: prevent user to change parameters (when they are not supposed to)</li>
+            <li>Works through hashing/checksums</li>
+            <li>Cryptic string consisting of value + server secret</li>
+            <li>Clients don't know the server secret, thus can't guess the checksum for a changed value</li>
+            <li>Example - link: <code>/...?p12_id=3...&cs=1ldsBsao2j...</code></li>
+
+          </ul>
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>Checksums</p>
+      </section>
+
+      <section>
+        <h2>Checksums to protect editing</h2>
+        <div class="uc-slide-content line-height-lg">
+          <p style="font-size: 2rem;">Also apply for read-only items and hidden with protection enabled</p>
+
+          <pre style="height: 10ch;">
+            <code class="language-js">
+              $s("P13_SAL", 1234);
+              apex.page.submit({request: "SAVE"});
+            </code>
+          </pre>
+
+          <img style="width: 70%;" loading="lazy" src="sec-checksum-violation.avif">
+        </div>
+      </section>
+
+      <section>
+        <h2>APEX Dashboard</h2>
+        <div class="uc-slide-content line-height-lg">
+
+          <img style="width: 70%;" loading="lazy" src="sec-apex-ssp-dashboard.avif">
+        </div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region sql-injections -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="sql-injections">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">SQL Injections<span class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>SQL Injections?</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <p>Users are able to input SQL that is executed</p>
+          <img style="width: 80%;" loading="lazy" src="sec-bobby.avif">
+          <p style="font-size: 1rem;"><a href="https://xkcd.com/327/">Source</a></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Correctly bind in APEX</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <p style="font-size: 3rem;">Use <code>:P1_ITEM</code> in SQL sources in APEX</p>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Be careful when using dynamic SQL</h2>
+        <div class="uc-slide-content line-height-2xl">
+          <p>When you see dynamic SQL anywhere your 🧠️ should be ⚠️️</p>
+          <ul>
+            <li>Do you really need dynamic SQL?</li>
+            <li>Manually validate inputs</li>
+            <li>Bind values with <code>:var</code> (e.g. when using <code>execute immediate</code>)</li>
+            <li>Use <code>dbms_assert</code></li>
+            <li>Use <code>apex_exec</code> or <code>dbms_sql</code></li>
+
+          </ul>
+
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>SQL Injections</p>
+      </section>
+
+      <!-- #endregion -->
+
+
+      <!-- #region xss -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="xss">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">Cross Site Scripting (XSS)<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>XSS?</h2>
+        <div class="uc-slide-content line-height-2xl">
+          <ul>
+            <li>Users can input JS that gets executed</li>
+            <li>Basically JS-Injection</li>
+            <li><code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code> in inputs</li>
+
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Where can it occur?</h2>
+        <div class="uc-slide-content line-height-lg">
+          <ul>
+            <li><code>htp.p</code> → use <code>apex_escape</code> pkg</li>
+            <li>Report columns, display items (RTE) → Attribute "Escape special characters"</li>
+          </ul>
+
+          <p style="font-size: 1.5rem;">Also possible</p>
+          <img style="width: 70%; max-height: 30%;" loading="lazy" src="sec-restricted-chars.avif">
+
+
+        </div>
+      </section>
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Demo<span class="uc-block-cursor"></span></h2>
+        </div>
+        <p>XSS</p>
+      </section>
+
+      <!-- #endregion -->
+
+
+      <!-- #region tips -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="tips">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">Additional Tips<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Use DB features</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Multiple schemas</li>
+            <li>Only grant necessary things to other schemas</li>
+            <li>Virtual Private Database</li>
+
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Scanners</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>APEX advisor (integrated)</li>
+            <li>APEX-SERT (recent update)</li>
+            <li><a href="https://www.apexprojecteye.com/">APEX Project Eye</a> (all SERT rules + more)</li>
+            <li><a href="https://dblinter-rules.united-codes.com/">dbLinter</a></li>
+
+
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Set up Single-Sign-On</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Central AuthN</li>
+            <li>Less passwords</li>
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Smart APEX AuthZ</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Rights: (see dashboard, see users, edit user, etc.)</li>
+            <li>Roles: (analyst, admin, guest, etc.)</li>
+            <li>Assign rights to roles</li>
+            <li>Assign roles to users</li>
+            <li>Shared Components -> Application Access Control</li>
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Logging</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Protocoll all operations</li>
+            <li>You actually notice that something seems wrong</li>
+            <li><a href="https://github.com/OraOpenSource/Logger">OraOpenSource/Logger</a></li>
+          </ul>
+
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Infrastructure</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Patch your Server, ORDS, DB, APEX, etc.</li>
+            <li>Use HTTPS</li>
+            <li>Use <a href="https://web.dev/articles/security-headers">security headers</a></li>
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Production</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Don't develop in prod</li>
+            <li>Don't keep copies of apps in prod</li>
+            <li>You can easily scan for apps</li>
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>Code</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li><b>KISS</b> - Keep it simple, stupid</li>
+            <li>Every piece of code you write is a liability</li>
+            <li>Pull-requests with code reviews</li>
+          </ul>
+
+        </div>
+      </section>
+
+
+      <section>
+        <h2>ORDS REST endpoints</h2>
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Double check if all your endpoints require Auth</li>
+            <li>A simple API key check makes the difference</li>
+            <li>Implement rate limiting</li>
+
+          </ul>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>OWASP Top 10</h2>
+        <div class="uc-slide-content line-height-2xl">
+          <img style="width: 90%;" loading="lazy" src="sec-owasp.avif">
+          <p><a href="https://owasp.org/www-project-top-ten/">Source</a></p>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region qa -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="tools-we-build">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 8rem; color: white; display: block;">Q&A<span class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region suffix -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <h2 style="color: white;">Thank you!</h2>
+
+        <p class="mt-4">philipp@united-codes.com</p>
+        <p>kevin.thyssen@united-codes.com</p>
+        <p>Slides at <a style="color: white; text-decoration: underline;"
+            href="https://hartenfeller.dev">hartenfeller.dev</a>
+        </p>
+      </section>
+
+      <!-- #endregion -->
+
+
+
+      <script src="reveal.js"></script>
+      <script src="notes.js"></script>
+      <script src="markdown.js"></script>
+      <script src="sql.js"></script>
+      <script src="highlight.js"></script>
+
+      <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+          hash: true,
+          slideNumber: true,
+          width: 1280,
+          height: 720,
+          margin: 0.1,
+          center: false,
+
+          highlight: {
+            beforeHighlight: (hljs) => {
+              hljs.registerLanguage('sql', window.hljsDefineSql);
+            },
+          },
+
+          // Learn about plugins: https://revealjs.com/plugins/
+          plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+      </script>
+      <script>
+
+        document.addEventListener("keydown", event => {
+          if (event.shiftKey && event.code === "KeyA") {
+            const agendaSlide = document.getElementById("agenda");
+            if (agendaSlide) {
+              // Get the index of the agenda slide
+              const agendaSlideIndex = Reveal.getIndices(agendaSlide).h;
+              Reveal.slide(agendaSlideIndex);
+            } else {
+              console.warn("Slide with ID 'agenda' not found.");
+            }
+          } else if (event.shiftKey && event.code === "KeyO") {
+            Reveal.toggleOverview()
+          }
+        });
+
+
+
+      </script>
+</body>
+
+</html>

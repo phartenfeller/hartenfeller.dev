@@ -7,6 +7,56 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2025,
+    conference: 'Kscope 2025',
+    place: 'Grapevine, TX, USA',
+    title:
+      'APEX Security Basics (Co-prented with Kevin Thyssen, 🏆️ voted best APEX talk)',
+    language: '🇬🇧',
+    slides: '/slides/apex-security-kscope25',
+  },
+  {
+    year: 2025,
+    conference: 'Kscope 2025',
+    place: 'Grapevine, TX, USA',
+    title: 'APEX UX: treat your users as you like to be treated',
+    language: '🇬🇧',
+    slides: '/slides/apex-ux-kscope25',
+  },
+  {
+    year: 2025,
+    conference: 'Kscope 2025',
+    place: 'Grapevine, TX, USA',
+    title: 'CSS Variables: The Secret Sauce of APEX Styling',
+    language: '🇬🇧',
+    slides: '/slides/apex-css-vars-kscope25',
+  },
+  {
+    year: 2025,
+    conference: 'APEX Connect 2025',
+    place: 'Rust, DE',
+    title: 'Non APEX App Development with JSON Duality Views',
+    language: '🇬🇧',
+    slides: '',
+  },
+  {
+    year: 2025,
+    conference: 'APEX Connect 2025',
+    place: 'Rust, DE',
+    title:
+      'Behind the Scenes - The new AI Assistant in apex.world 2.0 (Co-prented with Wolf Beckmann)',
+    language: '🇬🇧',
+    slides: '',
+  },
+  {
+    year: 2025,
+    conference: 'APEX Connect 2025',
+    place: 'Rust, DE',
+    title: 'CSS Variables: The Secret Sauce of APEX Styling',
+    language: '🇬🇧',
+    slides: '',
+  },
+  {
+    year: 2025,
     conference: 'APEX World 2025',
     place: 'Ede, NL',
     title: 'APEX UX: treat your users as you like to be treated',

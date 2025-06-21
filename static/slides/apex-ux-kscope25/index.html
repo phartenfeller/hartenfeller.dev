@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>APEX UX: treat your users as you like to be treated</title>
+
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="reveal.css">
+  <link rel="stylesheet" href="united-codes-v2.css">
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="atom-one-light.css">
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides uc-slides">
+
+
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+
+        <h1>APEX UX: treat your users as you like to be treated</h1>
+        <div class="uc-title-lower">
+          <div class="uc-title-infos">
+            <p>KScope 2025</p>
+            <p>Philipp Hartenfeller</p>
+            <p>18-JUN-2025 | Grapevine, TX</p>
+          </div>
+          <div>
+            <img loading="lazy" src="uc-logo-white.avif" width="400">
+          </div>
+        </div>
+
+
+      </section>
+
+      <!-- #region intro -->
+      <section>
+
+        <h2>$whoami</h2>
+        <div class="uc-slide-content">
+          <div class="flex space-x-4">
+            <img loading="lazy" src="phartenfeller_quadratkopf.avif" width="250">
+            <div>
+              <h3>Philipp Hartenfeller</h3>
+              <ul>
+                <li>Düsseldorf, Germany</li>
+                <li>Oracle APEX Dev since 2016</li>
+                <li>Product Lead at <a href="https://united-codes.com">United Codes</a></li>
+                <li>Web Dev and Databases</li>
+              </ul>
+            </div>
+          </div>
+          <div class="flex space-x-4 mt-4">
+            <div>Blog: <a href="https://hartenfeller.dev/blog">hartenfeller.dev/blog</a></div>
+            <div>Bluesky: <a href="https://bsky.app/profile/hartenfeller.dev">@hartenfeller.dev</a></div>
+            <div>
+              <img loading="lazy" src="ace-logo.avif" width="300">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <img loading="lazy" src="apex-products.avif" class="r-stretch">
+        <div><a href="https://united-codes.com">United Codes</a></div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region agenda -->
+      <section id="agenda">
+        <h2>Agenda</h2>
+        <span style="text-align: left; font-size: 1rem;" class="no-print">(Shift + A: jump to Agenda, Shift + O:
+          overview)</span>
+
+        <div class="uc-slide-content">
+          <ul>
+            <li><a href="index.html#/intro-ux">Introduction to UX</a></li>
+            <li><a href="index.html#/app-structure">App Structure</a></li>
+            <li><a href="index.html#/color">Style and Color</a></li>
+            <li><a href="index.html#/data-display">Data display</a></li>
+            <li><a href="index.html#/uncategorized-tips">Uncategorized Tips</a></li>
+            <li>Q&A</li>
+          </ul>
+        </div>
+
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region intro-ux -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="intro-ux">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Introduction to UX<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>What is bad UX?</h2>
+
+        <div class="uc-slide-content">
+          <div class="flex">
+            <img loading="lazy" src="bad-ux.gif">
+            <div class="center-text" style="font-size: 1.4em;">
+              Anything that gets in the way of the user achieving their goal.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section>
+        <h2>What is bad UX?</h2>
+
+        <div class="uc-slide-content">
+          <div class="flex">
+
+            <img loading="lazy" src="bax-ux-ambigous.avif" style="width: 70%;">
+            <div class="center-text" style="font-size: 1.4em; width: 45%;">
+              Anything that makes the user fearful or uncertain.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section>
+        <h2>Definition</h2>
+
+        <div class="uc-slide-content">
+          <blockquote cite="https://en.wikipedia.org/wiki/User_experience" style="font-size: 1.3em;">
+            &ldquo;User experience (UX) is how a user interacts with and experiences a product, system or service. It
+            includes a person's perceptions of utility, ease of use, and efficiency.&rdquo;
+          </blockquote>
+          <a href="https://en.wikipedia.org/wiki/User_experience">Wikipedia</a>
+        </div>
+
+      </section>
+
+
+      <section>
+        <h2>Easier said than done</h2>
+
+        <div class="uc-slide-content line-height-2xl font-2xl">
+          <ul>
+            <li>Humans are individuals</li>
+            <li>Users have different needs</li>
+            <li>Hard to measure → it's fine or not</li>
+            <li>Constraints: Time, Budget, APEX, Design Skills, etc.</li>
+
+          </ul>
+        </div>
+
+      </section>
+
+
+      <section>
+        <h2>Step1: understand your audience</h2>
+
+        <div class="uc-slide-content">
+          <div style="font-size: 1.5em;">
+            Deep user understanding is the foundation of exceptional experiences.
+          </div>
+        </div>
+
+      </section>
+
+
+      <section>
+        <h2>User demographics</h2>
+
+        <div class="uc-slide-content line-height-2xl font-4xl">
+          <ul>
+            <li>Age range</li>
+            <li>Cultural background</li>
+            <li>Education level</li>
+
+          </ul>
+        </div>
+
+      </section>
+
+
+      <section>
+        <h2>Device and platform</h2>
+
+        <div class="uc-slide-content  line-height-2xl font-xl">
+          <ul>
+            <li>Small vs. large screen</li>
+            <li>Multiple monitors?</li>
+            <li>Touchscreen / Mouse / Keyboard</li>
+            <li>Wired internet connection / mobile</li>
+          </ul>
+        </div>
+
+      </section>
+
+
+
+      <section>
+        <h2>Usage context</h2>
+
+        <div class="uc-slide-content line-height-2xl font-xl">
+          <ul>
+            <li>How much time do users spend with the app?</li>
+            <li>What tasks do they perform?</li>
+            <li>How critical are the tasks?</li>
+          </ul>
+        </div>
+
+      </section>
+
+      <section>
+        <h2>Different purpose and tone</h2>
+
+        <div class="uc-slide-content">
+          <div class="flex">
+            <img loading="lazy" src="example-nyt.avif" style="width: 50%;">
+            <img loading="lazy" src="example-lego.avif" style="width: 50%;">
+          </div>
+          <p>Both good UX, but users visit for completely different things</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Style differences</h2>
+
+        <div class="uc-slide-content">
+          <ul>
+            <table>
+              <thead>
+                <tr>
+                  <th>NYT</th>
+                  <th>Lego</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Black and white</td>
+                  <td>Colorful</td>
+                </tr>
+                <tr>
+                  <td>Serif fonts</td>
+                  <td>Sans-serif fonts</td>
+                </tr>
+                <tr>
+                  <td>Clean and professional</td>
+                  <td>Playful and engaging</td>
+                </tr>
+                <tr>
+                  <td>Text heavy / few images</td>
+                  <td>Huge images / not much text</td>
+                </tr>
+                <tr>
+                  <td>→ "Anything I should read?"</td>
+                  <td>→ "So much to explore!"</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </ul>
+        </div>
+      </section>
+
+
+
+      <section>
+        <h2>There is no golden standard</h2>
+
+        <div class="uc-slide-content line-height-2xl font-xl">
+          <ul>
+            <li>Good UX is affected by all these criteria</li>
+            <li>Understand your audience to know how to fulfil their needs</li>
+            <li><b>This talk</b>: typical data-driven apps for company employees</li>
+            <li>Adapt the tips to your cases</li>
+            <li>Feel free to discuss!</li>
+          </ul>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region app-structure -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="app-structure">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">App Structure<span class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>Why structure is important</h2>
+
+        <div class="uc-slide-content line-height-2xl font-xl">
+          <ul>
+            <li>Users don't like to get lost</li>
+            <li>Users like to easily find things</li>
+            <li>Users don't like to get overwhelmed by too many options</li>
+            <li>Users value predictable navigation patterns</li>
+            <li>Users appreciate logical grouping of related features</li>
+            <li>Users want quick access to frequently used functions</li>
+          </ul>
+        </div>
+      </section>
+
+
+      <section>
+        <h2><span class="u-danger-text">Don't</span>: new page → add to navigation</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div class="flex">
+            <img style="max-height: 60%; width: 20%;" loading="lazy" src="bad-navigation.avif">
+            <div>
+              <ul style="margin-top: 5rem;">
+                <li>This is just overwhelming, users will scroll this a lot during the day</li>
+                <li>New users need to find their way around</li>
+                <li>Existing users want to access things quickly</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2><span class="u-success-text">Do</span>: structured menu</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div class="flex">
+            <img style="max-height: 60%; max-width: 45%;" loading="lazy" src="good-ux-navigation.avif">
+            <div>
+              <ul>
+                <li>Grouped in logical sections</li>
+                <li>Level of details hidden by default</li>
+                <li>(Not every page has to be directly accessible from nav menu)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2><span class="u-success-text">Do</span>: nav pages</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div class="flex">
+            <img style="max-height: 60%; max-width: 50%;" loading="lazy" src="good-ux-nav-page.avif">
+            <div>
+              <ul>
+                <li>Get an overview</li>
+                <li>Additional description</li>
+                <li>What else to do on navigation entry click?</li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2><span class="u-success-text">Do</span>: Breadcrumbs</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div class="flex">
+            <img style="max-height: 60%; max-width: 50%;" loading="lazy" src="good-ux-breadcrumbs.avif">
+            <div>
+              <ul>
+                <li>Know where you are</li>
+                <li>Links to get up some levels</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2><span class="u-success-text">Do</span>: Make page parameters obvious</h2>
+        <div class="uc-slide-content line-height-2xl">
+
+          <div>
+            <img style="width: 60%;" loading="lazy" src="good-ux-page-param-pip.avif">
+            <img style="width: 60%;" loading="lazy" src="good-ux-page-param-aop.avif">
+
+
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>What do these have in common? (Google)</h2>
+
+        <div class="uc-slide-content uc-img-content">
+          <img loading="lazy" src="example-google.avif">
+        </div>
+      </section>
+
+      <section>
+        <h2 style="font-size: 3.5rem;">What do these have in common? (Wikipedia)</h2>
+
+        <div class="uc-slide-content uc-img-content">
+          <img loading="lazy" src="example-wikipedia.avif">
+        </div>
+      </section>
+
+      <section>
+        <h2 style="font-size: 3.5rem;">What do these have in common? (Amazon)</h2>
+
+        <div class="uc-slide-content uc-img-content">
+          <img loading="lazy" src="example-amazon.avif">
+        </div>
+      </section>
+
+      <section>
+        <h2 style="font-size: 3.5rem;">What do these have in common? (YouTube)</h2>
+
+        <div class="uc-slide-content uc-img-content">
+          <img loading="lazy" src="example-youtube.avif">
+        </div>
+      </section>
+
+      <!-- <section>
+        <h2 style="font-size: 3.5rem;">What do these have in common? (New York Times)</h2>
+
+        <div class="uc-slide-content uc-img-content">
+          <img loading="lazy" src="./imgs/example-nyt.avif">
+        </div>
+      </section> -->
+
+
+      <section>
+        <h2><span class="u-success-text">Do</span>: Search</h2>
+        <div class="uc-slide-content line-height-xl" style="font-size: 2.7rem;">
+
+          <div class="flex">
+            <img style="max-height: 60%; max-width: 50%" loading="lazy" src="searchbox-pro.gif">
+            <div>
+              <ul>
+                <li>Search configurations</li>
+                <li>Search Page</li>
+                <li>Better: global search</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- #endregion -->
+
+
+      <!-- #region style-color -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="color">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Style and Color<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Aim for simple, boring</h2>
+        <div class="uc-slide-content  line-height-xl" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 45%;" loading="lazy" src="art-gallery.avif">
+            <div>
+              <ul>
+                <li>Content matters</li>
+                <li>The app is not your canvas</li>
+                <li>This is not about taste</li>
+                <li>Remember the pages I showed before?</li>
+                <li>See how these slides look?</li>
+              </ul>
+            </div>
+          </div>
+
+          <p style="font-size: 1rem;"><a
+              href="https://unsplash.com/photos/assorted-paintings-on-white-painted-wall-3GZlhROZIQg">Photo by Dannie
+              Jing on Unsplash</a></p>
+
+        </div>
+
+      </section>
+
+
+      <section>
+        <h2>It's timeless</h2>
+
+        <div class="uc-slide-content  line-height-xl" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 50%;" loading="lazy" src="nyt-1918.avif">
+            <div>
+              <ul>
+                <li>NYT from 1918</li>
+                <li>Black and white</li>
+                <li>Simple</li>
+                <li>Well structured</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <p style="font-size: 1rem;"><a
+            href="https://en.wikipedia.org/wiki/Newspaper#/media/File:NYTimes-Page1-11-11-1918.jpg">Photo by Charles
+            Ransom Miller on Wikipedia</a></p>
+
+      </section>
+
+      <section>
+        <h2>Example: apex.world</h2>
+
+        <div class="uc-slide-content  line-height-xl" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 50%;" loading="lazy" src="example-apex-world.avif">
+            <div>
+              <ul>
+                <li>Mostly black, white greys</li>
+                <li>Colors reserved for content, links and highlights</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2><span class="u-danger-text">Don't</span>: color buttons</h2>
+
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 45%;" loading="lazy" src="bad-ux-button-colors.avif">
+            <div>
+              <ul>
+                <li>Buttons are perfectly visible without highlighting them</li>
+                <li>If you squint the buttons will take all your attention</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+
+      <section>
+        <h2><span class="u-success-text">Do</span>: highlight <b>primary</b> action</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 45%;" loading="lazy" src="good-ux-primary-btn.avif">
+            <div>
+              <ul>
+                <li>Action people want to use <b>most</b> of the time</li>
+                <li>There can't be 2 primary actions</li>
+                <li>Primary actions are <b>optional</b></li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Colors and semantical meaning</h2>
+
+        <div class="uc-slide-content  line-height-2xl" style="font-size: 2.7rem;">
+          <ul>
+            <li><span class="u-primary-text">u-hot-text</span> for highlighting</li>
+            <li><span class="u-success-text">u-success-text</span> for good/safe/success</li>
+            <li><span class="u-warning-text">u-warning-text</span> for caution/warning</li>
+            <li><span class="u-danger-text">u-danger-text</span> for bad/destructive/danger</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>In action</h2>
+        <div class="uc-slide-content">
+          <img style="max-height: %; max-width: 60%;" loading="lazy" src="colors-in-use.avif">
+
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Hot buttons shouldn't be red or yellow</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 45%;" loading="lazy" src="example-yt-hot-btn.avif">
+            <div>
+              <ul>
+                <li>Even if your company branding has that color</li>
+                <li>Clashes with semantic meaning</li>
+
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+
+      <!-- #region data-display -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="data-display">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Data display<span class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Tables</h2>
+
+        <div class="uc-slide-content  line-height-2xl" style="font-size: 2.7rem;">
+          <ul>
+            <li>Structured and analytical data display</li>
+            <li>Mostly for big screens</li>
+            <li><b>Interactive Report</b>: sort, filter, saved reports, highlights, etc.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2 style="font-size: 3rem;">Adam Wathan & Steve Schoger - Refactoring UI</h2>
+
+        <div class="uc-slide-content">
+          <div class="flex">
+            <blockquote cite="https://en.wikipedia.org/wiki/User_experience" style="font-size: 1em;">
+              &ldquo;Visual hierarchy refers to how important the elements in an interface appear
+              in relation to one another, and it's the most effective tool you have for
+              making something feel <b>designed</b>.<br><br>
+              When everything in an interface is competing for attention, it feels noisy and
+              chaotic, like one big wall of content where it's not clear what actually
+              matters.&rdquo;
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Hierarchy in Tables is hard</h2>
+
+        <div class="uc-slide-content  line-height-2xl font-4xl">
+          <ul>
+            <li>Too structured</li>
+            <li>Row-by-row, left to right</li>
+            <li>So what to use instead?</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Custom views</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 55%;" loading="lazy" src="apex-ideas-template-c.avif">
+            <div>
+              <ul>
+                <li>Easy to scan</li>
+                <li>Responsiveness for mobile</li>
+                <li>Doable with Template Components</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Hierarchy through typography</h2>
+        <div class="flex">
+          <img style="max-height: 70%; max-width: 85%;" loading="lazy" src="good-ux-hierarchy.avif">
+          <p>Example from <a href="https://www.refactoringui.com/">Refactoring UI</a></p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Which types of charts to use?</h2>
+
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <ul>
+            <li>This is complicated</li>
+            <li>Charts are not an end in themselves. What question should a chart answer?</li>
+            <li>Use this From Data to Viz <a href="https://www.data-to-viz.com/#treemap">decision tree</a> to pick a
+              type</li>
+            <li>Also take a look at the listed <a href="https://www.data-to-viz.com/caveats.html">Caveats</a> like <a
+                href="https://www.data-to-viz.com/caveat/pie.html">don't use Pie charts</a></li>
+          </ul>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+      <!-- #region uncategorized-tips -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch" id="uncategorized-tips">
+        <div style="display: flex; align-items: center; height: 100%;">
+          <h2 style="font-size: 12rem; color: white; display: block;">Uncategorized Tips<span
+              class="uc-block-cursor"></span>
+          </h2>
+        </div>
+      </section>
+
+      <section>
+        <h2>Offer keyboard shortcuts</h2>
+        <div class="uc-slide-content" style="font-size: 2.7rem;">
+          <div class="flex">
+            <pre data-id="code-animation" style="font-size: 2.1rem;">
+            <code data-trim class="hljs "  >
+              apex.actions.add({
+                name: "send-email",
+                label: "Send Email",
+                action: (event, focusElement) => {...}
+              });
+
+              apex.actions.addShortcut(
+                "Ctrl+Shift+E",
+                "send-email");
+            </code>
+          </pre>
+            <p>For power users</p>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Offer predictable values</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex" style="gap: 3rem;">
+            <div style="display: flex; flex-direction: column; gap: 3rem;">
+              <img style="max-height: 80%; max-width: 100%;" loading="lazy" src="quick-picks.avif">
+              <img style="max-height: 80%; max-width: 100%;" loading="lazy" src="quick-picks-lov.avif">
+            </div>
+            <ul>
+              <li>When values are predictable don't let users go through long lists of options</li>
+              <li>Offer quick picks (static)</li>
+              <li>From <a href="https://www.youtube.com/watch?v=US1QyQk5_zw">Insum Instant Tips #50</a> with Mike
+                Hichwa:
+                top matching options with icons and sorted in popup lov</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Label style</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 50%; max-width: 55%;" loading="lazy" src="traditional-item-label.avif">
+            <div>
+              <ul>
+                <li>Floating labels are especially designed for mobile users</li>
+                <li>If your app is desktop only, your users might prefer traditional labels</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Only use icons when their meanings is obvious</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <div class="flex">
+            <img style="max-height: 30%; max-width: 30%;" loading="lazy" src="when-to-use-icons.avif">
+            <div>
+              <ul>
+                <li>Omit icons if they don't add value</li>
+                <li>Check: would you get what an action does only with the icon and without the label?</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <section>
+        <h2>Uncertainty causes fear</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <ul>
+            <li>You know the app as you have built it</li>
+            <li>Users don't know what's behind the UI</li>
+            <li>Give consistent and good naming</li>
+            <li>Offer <b>help texts</b> almost everywhere</li>
+            <li>Use language everybody understands</li>
+            <li>Add "are you sure" dialogs for destructive actions</li>
+
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Don't overwhelm users</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <ul>
+            <li>Sub pages if one page gets too big / wizards</li>
+            <li>Different pages for different actions</li>
+            <li>Don't show too many buttons, hide actions behind action menus</li>
+            <li>Rarely used information in collapsed regions / tabs</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Don't frustrate users</h2>
+        <div class="uc-slide-content  line-height-lg" style="font-size: 2.7rem;">
+          <ul>
+            <li>Huge forms? Save drafts and let user copy exiting entries</li>
+            <li>Use appropriate session timeout lengths</li>
+            <li>Validate early</li>
+            <li>Give clear error information</li>
+            <li>Keep pages fast (lazy loading, optimize your DB)</li>
+            <li>Move long running tasks to the background (+ notification when done)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Be in contact with your users</h2>
+        <div class="uc-slide-content  line-height-2xl font-4xl">
+          <ul>
+            <li>Watch how they use the app</li>
+            <li>Let them give you feedback</li>
+            <li>Consider evaluating usage metrics</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>If you take away one thing from this talk</h2>
+        <div class="uc-slide-content  line-height-2xl" style="font-size: 2.7rem;">
+          <p style="font-size: 4rem;">Simple boring UIs that serve the content to not overwhelm the users</p>
+        </div>
+      </section>
+      <!-- #endregion -->
+
+
+
+      <!-- #region suffix -->
+      <section data-background-gradient="linear-gradient(45deg, hsl(213 64% 42%), hsl(235 49% 36%), hsl(239 49% 34%))"
+        class="uc-title-slide r-stretch">
+        <h2 style="color: white;">Thank you!</h2>
+
+
+        <div class="flex line-height-2xl">
+          <div class="flex flex-col space-evenly" style="height: 70vh;">
+            <p class="mt-4">Contact: phartenfeller at united-codes.com</p>
+            <p class="mt-4">Slides at: <a style="color: white; text-decoration: underline;"
+                href="https://hartenfeller.dev">hartenfeller.dev</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- #endregion -->
+
+
+
+
+      <script src="reveal.js"></script>
+      <script src="notes.js"></script>
+      <script src="markdown.js"></script>
+      <script src="sql.js"></script>
+      <script src="highlight.js"></script>
+
+      <script>
+        // More info about initialization & config:
+        // - https://revealjs.com/initialization/
+        // - https://revealjs.com/config/
+        Reveal.initialize({
+          hash: true,
+          slideNumber: true,
+          width: 1280,
+          height: 720,
+          margin: 0.1,
+          center: false,
+
+          highlight: {
+            beforeHighlight: (hljs) => {
+              hljs.registerLanguage('sql', window.hljsDefineSql);
+            },
+          },
+
+          // Learn about plugins: https://revealjs.com/plugins/
+          plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+        });
+      </script>
+      <script>
+
+        document.addEventListener("keydown", event => {
+          if (event.shiftKey && event.code === "KeyA") {
+            const agendaSlide = document.getElementById("agenda");
+            if (agendaSlide) {
+              // Get the index of the agenda slide
+              const agendaSlideIndex = Reveal.getIndices(agendaSlide).h;
+              Reveal.slide(agendaSlideIndex);
+            } else {
+              console.warn("Slide with ID 'agenda' not found.");
+            }
+          } else if (event.shiftKey && event.code === "KeyO") {
+            Reveal.toggleOverview()
+          }
+        });
+      </script>
+</body>
+
+</html>
