@@ -12,7 +12,7 @@ const talks = [
     title:
       'APEX Security Basics (Co-prented with Kevin Thyssen, 🏆️ voted best APEX talk)',
     language: '🇬🇧',
-    slides: '/slides/apex-security-kscope25',
+    slides: '/slides/apex-security-kscope25/',
   },
   {
     year: 2025,
@@ -20,7 +20,7 @@ const talks = [
     place: 'Grapevine, TX, USA',
     title: 'APEX UX: treat your users as you like to be treated',
     language: '🇬🇧',
-    slides: '/slides/apex-ux-kscope25',
+    slides: '/slides/apex-ux-kscope25/',
   },
   {
     year: 2025,
@@ -28,7 +28,7 @@ const talks = [
     place: 'Grapevine, TX, USA',
     title: 'CSS Variables: The Secret Sauce of APEX Styling',
     language: '🇬🇧',
-    slides: '/slides/apex-css-vars-kscope25',
+    slides: '/slides/apex-css-vars-kscope25/',
   },
   {
     year: 2025,
