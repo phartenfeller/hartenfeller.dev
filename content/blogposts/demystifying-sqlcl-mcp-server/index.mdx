@@ -3,7 +3,7 @@ title: >
   Demystifying the SQLcl MCP Server
 date: 2025-07-17
 description: >
-  Exploring the SQLcl MCP Server and its capabilities.
+  A deep dive into Oracle's SQLcl MCP Server: understanding its capabilities, testing its tools, and examining the security implications for database access through AI.
 slug: demystifying-sqlcl-mcp-server
 titleImage: ./patrick-robert-doyle--XiKxvvFGgU-unsplash.jpg
 titleImageAlt: ''
@@ -13,7 +13,7 @@ titleImageSource:
     href: 'https://unsplash.com/photos/a-red-and-white-sign-sitting-on-the-side-of-a-road--XiKxvvFGgU',
   }
 tags: ['SQLcl', 'Oracle', 'AI', 'MCP']
-ghCommentsIssueId: 78
+ghCommentsIssueId: 108
 ---
 
 ## What is MCP?
@@ -41,7 +41,7 @@ In the [introductory webinar, Jeff Smith named the following use cases](https://
 - Database Applications (**Non-developer**): Chat access to application APIs
 - Developers/DBA/Operations: Any task they do in the DB
 
-**I am a bit skeptical about the first two points**; read [the last chapter](#my-take-promising-but-with-concerns) for more information.
+**I am a bit skeptical about the first two points**; read [the last chapter](#i-would-not-give-access-to-this-to-non-developers) for more information.
 
 ## What's happening under the hood?
 
@@ -89,13 +89,86 @@ sqlcl_mcp "tools/list"
 
 These are the tools that the MCP server currently provides. I kept the original descriptions, as it might be interesting how they give important context to the tools.
 
-| Tool Name          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Key Parameters                             |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| `list-connections` | List all available oracle named/saved connections in the connections storage. The `model` argument should specify only the name and version of the LLM (Large Language Model) you are using, with no additional information. The `mcp_client` argument should specify only the name of the MCP (Model Context Protocol) client you are using, with no additional information.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `filter` (optional), `mcp_client`, `model` |
-| `connect`          | Provides an interface to connect to a specified database. If a database connection is already active, prompt the user for confirmation before switching to the new connection. If no connection exists, list the available schemas for selection. The connection name is case sensitive. Note: If the provided connection is invalid or does not match any saved connection, display instructions to the user on how to create a named connection in SQLcl. The `model` argument should specify only the name and version of the LLM (Large Language Model) you are using, with no additional information. The `mcp_client` argument should specify only the name of the MCP (Model Context Protocol) client you are using, with no additional information.                                                                                                                                                                  | `connection_name`, `mcp_client`, `model`   |
-| `disconnect`       | This tool performs a disconnection from the current session in an Oracle database. If a user is connected, it logs out cleanly and returns to the SQL prompt without an active database connection. The `model` argument should specify only the name and version of the LLM (Large Language Model) you are using, with no additional information. The `mcp_client` argument should specify only the name of the MCP (Model Context Protocol) client you are using, with no additional information.                                                                                                                                                                                                                                                                                                                                                                                                                          | `mcp_client`, `model`                      |
-| `run-sqlcl`        | This tool executes SQLcl commands in the SQLcl CLI. If the given command requires a database connection, it prompts the user to connect using the connect tool. You should: Execute the provided SQLcl command. Return the results. Args: sql: The SQLcl command to execute. Returns: Command results. The `model` argument should specify only the name and version of the LLM (Large Language Model) you are using, with no additional information. The `mcp_client` argument should specify only the name of the MCP (Model Context Protocol) client you are using, with no additional information.                                                                                                                                                                                                                                                                                                                       | `sqlcl`, `mcp_client`, `model`             |
-| `run-sql`          | This tool executes SQL queries in an Oracle database. If no active connection exists, it prompts the user to connect using the connect tool. You should: Execute the provided SQL query. Return the results in CSV format. Args: sql: The SQL query to execute. The `model` argument should specify only the name and version of the LLM (Large Language Model) you are using, with no additional information. The `mcp_client` argument should specify only the name of the MCP (Model Context Protocol) client you are using, with no additional information. Returns: CSV-formatted query results. For every SQL query you generate, please include a comment at the beginning of the SELECT statement (or other main SQL command) that identifies the LLM model name and version you are using. Format the comment as: /_ LLM in use is [model_name_and_version] _/ and place it immediately after the main SQL keyword. | `sql`, `mcp_client`, `model`               |
+- **`list-connections`**
+
+  - Key Parameters: `filter` (optional), `mcp_client`, `model`
+
+  <details>
+    <summary>Description</summary>
+    List all available oracle named/saved connections in the connections storage.
+    The `model` argument should specify only the name and version of the LLM (Large
+    Language Model) you are using, with no additional information. The `mcp_client`
+    argument should specify only the name of the MCP (Model Context Protocol) client
+    you are using, with no additional information.
+  </details>
+
+- **`connect`**
+
+  - Key Parameters: `connection_name`, `mcp_client`, `model`
+
+  <details>
+    <summary>Description</summary>
+    Provides an interface to connect to a specified database. If a database connection
+    is already active, prompt the user for confirmation before switching to the new
+    connection. If no connection exists, list the available schemas for selection.
+    The connection name is case sensitive. Note: If the provided connection is invalid
+    or does not match any saved connection, display instructions to the user on how
+    to create a named connection in SQLcl. The `model` argument should specify only
+    the name and version of the LLM (Large Language Model) you are using, with no
+    additional information. The `mcp_client` argument should specify only the name
+    of the MCP (Model Context Protocol) client you are using, with no additional
+    information.
+  </details>{' '}
+
+- **`disconnect`**
+
+  - Key Parameters: `mcp_client`, `model`
+
+  <details>
+    <summary>Description</summary>
+    This tool performs a disconnection from the current session in an Oracle database.
+    If a user is connected, it logs out cleanly and returns to the SQL prompt without
+    an active database connection. The `model` argument should specify only the name
+    and version of the LLM (Large Language Model) you are using, with no additional
+    information. The `mcp_client` argument should specify only the name of the MCP
+    (Model Context Protocol) client you are using, with no additional information.
+  </details>
+
+- **`run-sqlcl`**
+
+  - Key Parameters: `sqlcl`, `mcp_client`, `model`
+
+  <details>
+    <summary>Description</summary>
+    This tool executes SQLcl commands in the SQLcl CLI. If the given command requires
+    a database connection, it prompts the user to connect using the connect tool.
+    You should: Execute the provided SQLcl command. Return the results. Args: sql:
+    The SQLcl command to execute. Returns: Command results. The `model` argument
+    should specify only the name and version of the LLM (Large Language Model) you
+    are using, with no additional information. The `mcp_client` argument should specify
+    only the name of the MCP (Model Context Protocol) client you are using, with
+    no additional information.
+  </details>
+
+- **`run-sql`**
+
+  - Key Parameters: `sql`, `mcp_client`, `model`
+
+  <details>
+    <summary>Description</summary>
+    This tool executes SQL queries in an Oracle database. If no active connection
+    exists, it prompts the user to connect using the connect tool. You should: Execute
+    the provided SQL query. Return the results in CSV format. Args: sql: The SQL
+    query to execute. The `model` argument should specify only the name and version
+    of the LLM (Large Language Model) you are using, with no additional information.
+    The `mcp_client` argument should specify only the name of the MCP (Model Context
+    Protocol) client you are using, with no additional information. Returns: CSV-formatted
+    query results. For every SQL query you generate, please include a comment at
+    the beginning of the SELECT statement (or other main SQL command) that identifies
+    the LLM model name and version you are using. Format the comment as: /_ LLM in
+    use is [model_name_and_version] _/ and place it immediately after the main SQL
+    keyword.
+  </details>
 
 **Key observations:**
 
@@ -194,15 +267,15 @@ The **disconnect** just returns a success message.
 
 [Kris Rice said that SQLcl will go to a faster release cycle](https://youtu.be/hj6WoZVGUBg?si=y3HZkCTP89bbyNFa&t=3337). I will keep an eye on any changes to the tools and capabilities of the MCP server.
 
-## My Take: Promising, But With Concerns
+## I would not give access to this to non-developers
 
-This is a solid tool for developers and DBAs who already have database access. But I have concerns about the broader vision.
+This is a great tool for developers and DBAs who already have database access. But I have concerns about the broader vision.
 
 ### Security Concerns
 
-Currently the MCP server does not give tailored access to specific APIs. Instead, you give a SQL command prompt to an LLM. And it can possibly run anything the connected user is allowed to run.
+Currently the MCP server does not give tailored access to specific database APIs. Instead, you give a SQL command prompt to an LLM. And it can possibly run anything the connected user is allowed to run.
 
-And I don't think you want to give this to non-technical users. [On the documentation page,](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/using-oracle-sqlcl-mcp-server.html) Oracle also warns about this and suggests the following safeguards:
+I don't want to give this to non-technical users. [On the documentation page,](https://docs.oracle.com/en/database/oracle/sql-developer-command-line/25.2/sqcug/using-oracle-sqlcl-mcp-server.html) Oracle also warns about this and suggests the following safeguards:
 
 - Avoid minimum permissions
 - **Avoid production database access**
@@ -212,7 +285,7 @@ Companies like [GitHub recently had a big security issue](https://invariantlabs.
 
 ### You probably want tools
 
-This is now a bit of a jump, but there is another concept that I think is more suitable for non-developers: **tools**.
+This is now a bit of a jump, but there is another concept that I think is more suitable for access to non-developers: **tools**.
 
 Tools were [also introduced by Anthropic](https://www.anthropic.com/news/tool-use-ga) before MCP was a thing. The main differences are
 
@@ -221,7 +294,7 @@ Tools were [also introduced by Anthropic](https://www.anthropic.com/news/tool-us
 
 I have implemented tools in my open-source [UC AI](https://www.united-codes.com/products/uc-ai/docs/) project that aims to bring AIs to Oracle developers (without 23ai).
 
-That way you can define fine-grained tools that only allow specific actions you want the AI/the user to perform. I have recorded a [demo video](https://www.youtube.com/watch?v=0Pzi994RRtM) that shows a time-tracking system where I have defined three tools:
+That way you can define fine-grained tools (PL/SQL function) that only allow specific actions you want the AI/the user to perform. I have recorded a [demo video](https://www.youtube.com/watch?v=0Pzi994RRtM) that shows a time-tracking system where I have defined three tools:
 
 - Get user data
 - Get project data
@@ -229,10 +302,12 @@ That way you can define fine-grained tools that only allow specific actions you 
 
 When you then send a message to an LLM with the user prompt "Clock me in to the marketing project" and some user info in the system prompt it will first call the "Get user data" tool to get the user ID and then call the "Get project data" tool to get the project ID. After that it will call the "Clock in" tool with the user ID and project ID.
 
-And the LLM does not have access to an SQL prompt or similar; it can only call the tools you have defined. Additionally, if you implement that in your APEX app, this will act inside the APEX session. So you can easily check the current logged-in user and their permissions.
+And the LLM does not have access to an SQL prompt or similar; it can only call the tools you have defined. Additionally, if you implement that in your APEX app, this will act inside the users APEX/Database session. So you can easily check the current logged-in user and their permissions.
 
-### I hope we can add our own tools/resources/prompts.
+Note that the next APEX release will also support tools. But with UC AI I aim to be faster and more flexible to Oracle releases. Like UC AI already supports Anthropic and Google as providers next to OpenAI.
 
-If you actually want to use an MCP server to give some remote system/customer access it would be crucial that you could be able to define your own tools and disable the default ones.
+### I hope we can add our own tools/resources/prompts in the future
+
+It is great to see Oracle offering a solution for MCP so fast. And for use-cases where you really want MCP it would be great if you could define your own tools and disable the default ones. With that you could achieve the same as with tools, by also providing fine grained access to specific database APIs.
 
 I might have missed it, but I have not heard anything about this from Oracle yet. I hope they will add this in the future.
