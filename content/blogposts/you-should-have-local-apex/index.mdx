@@ -1,0 +1,69 @@
+---
+title: You should try having a local database with APEX
+date: 2025-07-29
+description: A local Oracle APEX environment eliminates friction through  safe experimentation, administrative access, and instant performance.
+slug: you-should-have-local-apex
+titleImage: ./tim-mossholder-qvWnGmoTbik-unsplash.jpg
+titleImageAlt: ''
+titleImageSource:
+  {
+    text: 'Photo by Tim Mossholder on Unsplash',
+    href: 'https://unsplash.com/photos/shallow-focus-photo-of-thank-you-for-shopping-signage-qvWnGmoTbik',
+  }
+tags: ['Oracle', 'APEX']
+ghCommentsIssueId: 23
+---
+
+**TL;DR**: A local APEX environment can make you a more capable and efficient developer. Check out [uc-local-apex-dev](https://www.united-codes.com/products/uc-local-apex-dev/docs/) to get started.
+
+I am a big fan of having a local Oracle APEX development environment on my machine. I couldn't run one locally because Oracle Database didn't support ARM chipsets from my MacBook. Fortunately, Oracle Database 23ai added ARM support, and having a local database again has dramatically improved my efficiency. The main reason why: it removes so much **friction**.
+
+## Reason 1: Learning in your own testlab
+
+In coporate environments with DBAs, you probably lack `sys` privileges or administrative rights to APEX. In your local development environment, you do get that, and a whole new world of how the database or APEX works will open for you.
+
+Knowing how to create users, keeping an eye on tablespace sizes, backing up your schema and apps, etc. will give you a deeper understanding of how the database works. While I'm no DBA expert, experimenting with Data Pump via SQLcl enabled me to learn how to build my own CI/CD pipelines. I would not have learned this on the company DB without admin rights.
+
+Additionally you can treat this environment as a test lab. Ever wondered if maybe X could be better for solution Y? On your local DB you can just try it out without thinking of breaking the DEV environment of your company (friction). If it does not work, lesson learned, and throw it away instead of having to think about reverting to the previous state.
+
+## Reason 2: Move fast and break things
+
+This term [coined by Mark Zuckerberg,](https://en.wikipedia.org/wiki/Move_fast_and_break_things) is quite controversial and definitely horrible advice around production databases. But for local databases, I would argue it helps (learn how to do backups first or see the last chapter).
+
+It is well known that failure is super valuable for learning. Furthermore, hesitation, from the fear of something going wrong, is a considerable source of friction. This can lead to not doing something or doing something super slowly. When no one can judge your mistakes or they are not costly, you don't have that friction. I have done numerous stupid things to my local DB (I recently ran my clear-all script against the `sys` schema).
+
+But I also have done so many valuable things. For example, recently for our new document management system, I have postponed adding [utPLSQL](https://www.utplsql.org/) tests to the project for quite a while. One reason was that the unit testing framework was not installed on our dev DB, and I have needed to ask somebody to install it, so I never did.
+
+Then I needed to create an install script for a customer and of course tested it on my local database. After it worked, I remembered that I already have utPLSQL installed locally and got the idea to just ask GitHub Copilot to generate some tests. I didn't expect much, but actually the results were quite impressive. I needed to manually fix a few things of course, but ultimately I ended up with 90 valuable tests in just a few hours.
+
+Another thing that helped me with this is the MCP server that is also included in the SQL Developer VS Code extension. I wrote about it in [my last blog post](https://hartenfeller.dev/blog/demystifying-sqlcl-mcp-server) and argued how giving a SQL command shell to the AI provider is not always a good idea. This is powerful, as the GitHub Copilot could use it to compile and run the test packages. But I am not comfortable using this in a DB where things going wrong have consequences.
+
+## Reason 3: Speed
+
+Slow performance creates significant friction. If something takes time to load it not just holds you up by the exact loading time. Instead, your mind wanders off, and it takes effort to concentrate again. The bane of existence for me is having to work over a remote desktop connection as everything feels off and laggy.
+
+The local DB is simply fast. This of course, depends on your hardware, but on my Mac, connecting to the DB, compiling a package, and navigating in APEX is just instant. The developer edition of 23ai actually has resource constraints, but they don't matter if you are the only user. Working with a responsive local database is genuinely **enjoyable**.
+
+## Reason 4: Try out new features today
+
+I like to stay in the loop about new features of the Oracle database or APEX. For daily business it is not a priority to instantly upgrade; actually, it may make sense to wait a bit for the first patches to come out.
+
+New APEX release just dropped? You don't need to wait until your company (or OCI) upgrades; just install it now to your local DB. Try out the new features and plan ahead how you can improve your apps once you upgrade prod.
+
+I also upgrade the 23ai DB frequently as it get's quarterly patches with new features. I am looking forward to [SQL assertions](https://forums.oracle.com/ords/apexds/post/sql-assertions-declarative-multi-row-constraints-7133) which hopefully wille be added soon.
+
+## How can I run a local APEX environment?
+
+Many roads lead to Rome, but the simplest way is containerization with [Docker](https://www.docker.com/) or [Podman](https://podman.io/). Oracle [lists a Docker Compose](https://container-registry.oracle.com/ords/ocr/ba/database/ords#:~:text=Help Center.-,Sample Compose file,-name%3A demo services) file, but I have my project ([uc-local-apex-dev](https://www.united-codes.com/products/uc-local-apex-dev/docs/)) that removes even more friction and has **guided upgrades**. Here is a list of things of how it makes my life easier with the help of some scripts around them:
+
+- [Create user script](https://www.united-codes.com/products/uc-local-apex-dev/docs/getting-started/creating-users/)
+  - Saves connection to SQLcl/SQL Developer
+  - Creates APEX Workspace
+  - Convenient default settings (sessions don't expire, many default grants, etc.)
+- [SSL/HTTPs](https://www.united-codes.com/products/uc-local-apex-dev/docs/getting-started/common-tasks/#ssl-configuration)
+- [Quickly test if an SQL script works](https://www.united-codes.com/products/uc-local-apex-dev/docs/getting-started/install-apps-scripts/)
+- [Back up all schemas and apps](https://www.united-codes.com/products/uc-local-apex-dev/docs/getting-started/backups/)
+
+It is [open source on GitHub](https://github.com/United-Codes/uc-local-apex-dev), so you can go through the bash scripts to learn what they do behind the scenes (and maybe even improve them).
+
+Read the [installation guide](https://www.united-codes.com/products/uc-local-apex-dev/docs/getting-started/) if you want to try it out.
