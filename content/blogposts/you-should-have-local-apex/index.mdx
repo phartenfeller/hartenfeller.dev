@@ -11,7 +11,7 @@ titleImageSource:
     href: 'https://unsplash.com/photos/shallow-focus-photo-of-thank-you-for-shopping-signage-qvWnGmoTbik',
   }
 tags: ['Oracle', 'APEX']
-ghCommentsIssueId: 23
+ghCommentsIssueId: 109
 ---
 
 **TL;DR**: A local APEX environment can make you a more capable and efficient developer. Check out [uc-local-apex-dev](https://www.united-codes.com/products/uc-local-apex-dev/docs/) to get started.
@@ -54,7 +54,7 @@ I also upgrade the 23ai DB frequently as it get's quarterly patches with new fea
 
 ## How can I run a local APEX environment?
 
-Many roads lead to Rome, but the simplest way is containerization with [Docker](https://www.docker.com/) or [Podman](https://podman.io/). Oracle [lists a Docker Compose](https://container-registry.oracle.com/ords/ocr/ba/database/ords#:~:text=Help Center.-,Sample Compose file,-name%3A demo services) file, but I have my project ([uc-local-apex-dev](https://www.united-codes.com/products/uc-local-apex-dev/docs/)) that removes even more friction and has **guided upgrades**. Here is a list of things of how it makes my life easier with the help of some scripts around them:
+Many roads lead to Rome, but the simplest way is containerization with [Docker](https://www.docker.com/) or [Podman](https://podman.io/). Oracle [lists a Docker Compose](https://container-registry.oracle.com/ords/ocr/ba/database/ords#:~:text=Help%20Center.-,Sample%20Compose%20file,-name%3A%20demo%0Aservices) file, but I have my project ([uc-local-apex-dev](https://www.united-codes.com/products/uc-local-apex-dev/docs/)) that removes even more friction and has **guided upgrades**. Here is a list of things of how it makes my life easier with the help of some scripts around them:
 
 - [Create user script](https://www.united-codes.com/products/uc-local-apex-dev/docs/getting-started/creating-users/)
   - Saves connection to SQLcl/SQL Developer
