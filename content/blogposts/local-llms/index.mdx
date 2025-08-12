@@ -1,0 +1,165 @@
+---
+title: How to Run Open GPT Models Locally and Integrate Them with Oracle APEX
+date: 2025-08-12
+description: How to integrate OpenAI's new open GPT models locally with Ollama and UC AI into an Oracle APEX app.
+slug: open-and-local-AI-models-in-oracle
+titleImage: ./dao-hi-u-mAwuy34pakc-unsplash.jpg
+titleImageAlt: ''
+titleImageSource:
+  {
+    text: 'Photo by Đào Hiếu on Unsplash',
+    href: 'https://unsplash.com/photos/shallow-focus-photo-of-thank-you-for-shopping-signage-qvWnGmoTbik',
+  }
+tags: ['Oracle', 'APEX', 'AI', 'PL/SQL']
+ghCommentsIssueId: 110
+---
+
+**TL;DR**: There are new open GPT models that you can self-host. In combination with UC AI and Ollama, you can easily use AI in your database or Oracle APEX without any data leaving your network.
+
+## Two new open GPT models you can self-host
+
+OpenAI faced criticism due to the apparent contradiction in their name. There was nothing _open_ about OpenAI. This changed when they released two `gpt-oss` models last week that you can download and run on your own hardware.
+
+The models come in different sizes:
+
+- **20 billion parameters**: small model, requires 16 GB of (GPU or unified) memory, and runs on my M3 MacBook
+- **120 billion parameters**: medium and more capable model, requires 60 GB of memory
+
+In terms of benchmarking, the 20B model is rated by [Artificial Analysis](https://artificialanalysis.ai/models/open-source/small) as the second-best small open model after Qwen3 by Alibaba. However, it offers a substantially larger context window with 131k tokens and is by far the **fastest open model** in that category.
+
+The 120b model is the most intelligent one in the [medium open model category](https://artificialanalysis.ai/models/open-source/medium) and also substantially the fastest model.
+
+## Own your data
+
+These models can't compete with the state-of-the-art models like GPT-5, but the ability to host them locally and run them offline is a game-changer. If your data is sensitive, or just your business and by that immensely valuable, sending it to any third party is always a risk.
+
+Your usage of AI services is leaving data trails. OpenAI is currently [required to store API inputs and outputs](https://openai.com/index/response-to-nyt-data-demands/). Additionally, the [CLOUD Act requires US vendors to give authorities access to data](https://wire.com/en/blog/cloud-act-eu-data-sovereignty) even if it is stored on a foreign continent. Data sovereignty is a big topic currently in the EU, and as there are no competitive high-end models from the EU, open models are one way to achieve sovereignty.
+
+There are more advantages to using open models:
+
+- **Cost control**: when you own the hardware you are not charged per tokens anymore
+- **Customization**: you can fine-tune models to your needs (very advanced)
+
+## How to use self-hosted GPT models from an Oracle database?
+
+First, **you do not need Oracle 23ai** for this integration. Oracle wants you to move to it, and it can run AI models inside the DB itself. But I think having this separated makes more sense, and then AI is just calling APIs (storing vectors for RAG still requires 23ai or another vector DB).
+
+So you can have your model running next to your database and just communicate via REST. For testing purposes, I have both the [database running locally](https://hartenfeller.dev/blog/you-should-have-local-apex) on my MacBook and the GPT model next to it. But in a corporate environment it makes more sense to just have dedicated AI servers with optimized hardware (most likely NVIDIA GPUs).
+
+### Ollama - a runtime for LLMs
+
+Ollama is the most famous software for running AI models locally. Think of it like Docker for AI models. You can easily pull, run, and manage different models with simple clicks/CLI commands.
+
+You can install Ollama as a desktop application (macOS and Windows) or as a command-line tool. [Check out the website](https://ollama.com/download) for more info on how to get started. On my Mac I installed it with the package manager Homebrew.
+
+If you have Ollama running you can download the smaller model with [ollama pull gpt-oss:20b](https://ollama.com/library/gpt-oss:20b).
+
+### UC AI - The PL/SQL API for AI
+
+Thanks to UC AI, using the GPT model is as easy as this PL/SQL block:
+
+```
+ declare
+     l_final_message clob;
+ begin
+     uc_ai.g_base_url := 'host.containers.internal:11434/api';
+
+     l_result := uc_ai.GENERATE_TEXT(
+       p_user_prompt => 'How many R''s are in strawberry?',
+       p_provider => uc_ai.c_provider_ollama,
+       p_model => 'gpt-oss:20b'
+     );
+ end;
+```
+
+I am building [UC AI](https://www.united-codes.com/products/uc-ai/docs/) as the PL/SQL SDK to make it easy to use AI providers inside Oracle. In essence, it's just calling APIs, but as every API provider has a different interface, it can get quite tricky. Advanced features like tools [allow the AI to call (PL/SQL) functions](https://youtu.be/0Pzi994RRtM) which is also completely handled by UC AI.
+
+I believe that you don't want to lock yourself in with one specific AI provider. In terms of UC AI, Ollama is just one of the supported providers (OpenAI GPT, Google Gemini, Anthropic Claude, and soon OCI with Cohere, Llama, and xAI). And if you want to use a different provider tomorrow, you just have to change the `p_provider` and `p_model` parameters.
+
+### Implementing it inside an APEX app
+
+You can of course, easily use UC AI in your APEX apps. In this example I add an AI summary button to the Customer Sample App. It is a small CRM app with a feature to track communication with your customers.
+
+<BlogImg filename="open-local-ai-activities.png" alt="" />
+
+I added a small button to the list of activities that opens a modal page. On load, it should let the AI summarize the last tasks, provide some insight into the standing with the customer, and propose the next steps.
+
+To do the summary, I load the activity data into a page item **as JSON,** as I get one return value, and AIs deal great with JSON. I then use this information inside a prompt that asks the AI to generate the desired output:
+
+```sql
+ declare
+     l_prompt clob;
+     l_json clob;
+ begin
+     SELECT
+       JSON_ARRAYAGG(
+         JSON_OBJECT(
+           'activity' VALUE a.name,
+           'activity_date' VALUE NVL(a.activity_date, rf.activity_date),
+           'owner' VALUE NVL(a.owner, rf.owner),
+           'location' VALUE NVL(a.location, rf.location),
+           'notes' VALUE rf.notes
+         )
+         ORDER BY
+           a.name
+       )
+       INTO l_json
+     FROM
+       eba_cust_activities a
+       JOIN eba_cust_activity_ref rf ON rf.activity_id = a.id
+     WHERE
+       rf.customer_id = :P992_CUSTOMER_ID;
+
+     l_prompt := 'Please summarize the latest activities with our customer "' || :P992_CUSTOMER_NAME || '" in two sentences.
+
+     Give a short review if we are in good standing, and propose the next steps in two sentences.
+     ' || l_json;
+
+     :P992_PROMPT := l_prompt;
+ end;
+```
+
+Then I just call UC AI with the prompt and store the result in a page item. I do this separately in a dynamic action after page load so that it does not delay the initial rendering of the page:
+
+```sql
+ declare
+     c_model_gpt  varchar2(255 char) := 'gpt-oss:20b';
+
+     l_result json_object_t;
+     l_final_message clob;
+ begin
+     uc_ai.g_base_url := 'host.containers.internal:11434/api';
+     uc_ai.g_enable_reasoning := true;
+
+     l_result := uc_ai.GENERATE_TEXT(
+       p_user_prompt => :P992_PROMPT,
+       p_provider => uc_ai.c_provider_ollama,
+       p_model => c_model_gpt
+     );
+     l_final_message := l_result.get_clob('final_message');
+     :P992_RESULT := l_final_message;
+ end;
+```
+
+The result looks the following:
+
+<BlogImg
+  filename="open-local-ai-result.png"
+  alt="Modal dialog showing the prompt and the result. The AI did a good job summarizing the activities and proposing next steps."
+/>
+
+## Stay flexible
+
+While OpenAI is the most renowned AI company and their open models are currently in the limelight, I think it is best to experiment with more models. Different models have different strengths, and using another model is just one `ollama pull` command and changing one parameter.
+
+The [Qwen3 models](https://ollama.com/library/qwen3) are also impressive and come in a wider range of sizes. [Gemma3](https://ollama.com/library/gemma3) supports vision so you can analyze pictures with it.
+
+And for more complex tasks or agentic workflows online providers with a state-of-the-art model offer better results, while they can be overkill for small summarization tasks. So always think carefully about your use cases.
+
+## Appendix: Tools and reasoning
+
+I also tested the smaller GPT model with tool use cases. With tools, you tell the model that it can request to call functions that either retrieve some data or write it with defined parameters. With UC AI, [you just tell it which PL/SQL function to call,](https://www.united-codes.com/products/uc-ai/docs/guides/tools/) and the framework automatically does everything.
+
+As this is way more complex than plain conversations, small open models usually don't perform well. Reasoning can improve performance of complex tasks like these. It makes the AI talk to itself by planning out steps instead of responding immediately. So you trade latency and compute time with accuracy.
+
+The 20B GPT model succeeded in my advanced test that requires 3 function calls. It is really great to see open models performing well on these complex tasks. I predict that many also smaller companies will soon start installing AI hardware as tools are the key to automation but also to your critical systems.
