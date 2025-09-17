@@ -1,29 +1,29 @@
 ---
-title: Build AI-Powered Oracle Apps with the UC AI PL/SQL SDK
+title: Build Real AI Solutions with Oracle PL/SQL (No 23ai Required)
 date: 2025-09-17
-description: How to integrate OpenAI's new open GPT models locally with Ollama and UC AI into an Oracle APEX app.
-slug: open-and-local-AI-models-in-oracle
-titleImage: ./Frontier-Language-Model-Intelligence-14-Sep-25.png
+description: Learn how data engineers can leverage AI for Oracle automation using PL/SQL. Discover structured output, file analysis, reasoning, and tool calling with the open-source UC AI SDK.
+slug: real-ai-solutions-oracle-plsql
+titleImage: ./hyundai-motor-group-h2rWePLKxvs-unsplash.jpg
 titleImageAlt: ''
 titleImageSource:
   {
-    text: 'Photo by Đào Hiếu on Unsplash',
-    href: 'https://unsplash.com/photos/shallow-focus-photo-of-thank-you-for-shopping-signage-qvWnGmoTbik',
+    text: 'Photo by Hyundai Motor Group on Unsplash',
+    href: 'https://unsplash.com/photos/a-factory-filled-with-lots-of-machines-and-boxes-h2rWePLKxvs',
   }
 tags: ['Oracle', 'AI', 'PL/SQL']
-ghCommentsIssueId: 110
+ghCommentsIssueId: 111
 ---
 
 **TL;DR**
 
-- If AI projects succeed, they are often back-office automation projects
-- This is a big opportunity for data engineers
-- If you already know PL/SQL or SQL, AI is just a small layer on top (no Python or other languages needed)
-- Learn techniques in this post that help you step-by-step utilize AI for data processing
+- 95% of AI pilots fail, but back-office automation succeeds - a huge opportunity for data engineers
+- No new languages required - if you know PL/SQL/SQL, AI is just a thin layer on top
+- Learn practical techniques: structured output, file analysis, reasoning, and tool calling
+- Open-source UC AI SDK provides unified access to multiple AI providers (OpenAI, Claude, Gemini, etc.)
 
 **Watch the Livestream**
 
-This post is mostly a write-up of my webinar talk I did last week: [United Codes, Live! - Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM). In the webinar, I discuss the concepts more thoroughly. If you, while reading this post, notice that you want additional information, consider checking out the part in the reply.
+This post is mostly a write-up of my webinar talk I did last week: [United Codes, Live! - Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM). In the webinar, I discuss the concepts more thoroughly. If you want additional context while reading, check out the corresponding chapter in the video.
 
 **Table of Contents**
 
@@ -31,13 +31,13 @@ Please use the table of contents on the right side in the header to navigate thr
 
 ## AI and Oracle
 
-The AI hype train is in full charge. Of course, stakeholders all have thought about its place in the Oracle space.
+The AI hype train is at full speed. Naturally, stakeholders have all considered its place in the Oracle space.
 
 ### Why care about AI in Oracle
 
-Everybody is building chat nowadays. With a hammer, everything looks like a nail... If you have an established and working UI, please ask your users if they would actually benefit from it. I really like that the website of my bank still is the same old one where I immediately see my balance and still can do a transaction without having to chat with a bot.
+Everybody is building chat nowadays. If you have an established and working UI, consider asking your users if they would actually benefit from it. I really like that the website of my bank still is the same old one where I immediately see my balance and still can do a transaction without having to chat with a bot.
 
-Instead, if you are a data engineer, you should look at it from a different angle. Don't add LLMs to the UI; think about your data being processed in the DB. AI excels in three key areas:
+Instead, if you are a data engineer, you should look at it from a different angle. Don't just add LLMs to the UI; think about your data being processed in the DB. AI excels in three key areas:
 
 1. **Data Analysis**: Summarize, classify, categorize, cluster, and detect anomalies (faster than humans, sometimes with hallucinations!)
 1. **Unstructured to Structured Data**: Transform blobs of text or documents into relational data
@@ -45,11 +45,11 @@ Instead, if you are a data engineer, you should look at it from a different angl
 
 ### The Problem with Existing Solutions
 
-Unfortunately I think the solutions Oracle offers are not sufficient to compete with other programming environments.
+In my view, Oracle's current solutions fall short in key areas and are not sufficient to compete with other programming environments.
 
 **Oracle 23ai SELECT AI**
 
-- **23ai only**: Only available in Oracle 23ai, which is not generally available (Oracle claims it is, but where is the on-prem download?). So not interesting for most customers.
+- **23ai only**: Only available in Oracle 23ai, which is not on-premises yet. So not interesting for most customers.
 - **Lack of features**: The focus is on converting natural language to SQL statements. I would argue these are niche use cases. Most other techniques I describe in this post are not supported.
 
 **Oracle APEX AI Package**
@@ -59,18 +59,18 @@ Unfortunately I think the solutions Oracle offers are not sufficient to compete 
 
 Of course these solutions will improve over time. The AI world is moving fast, so they will probably be in an outdated state again. Currently the APEX World is waiting for version 25.1 after almost three-quarters of the year passed. And there is no way to enhance the solutions on your own.
 
-So I build my own soltion.
+Frustrated, I decided to built my own solution.
 
 ## Introducing UC AI: A Game-Changing PL/SQL SDK
 
-As I wanted to try out advanced AI features from the database myself, I wrote PL/SQL packages to call their APIs. This led to the idea of just open-sourcing it, maintaining it under the promise that this will be good marketing for United Codes. Here are the facts:
+As I wanted to try out advanced AI features from the database myself, I wrote PL/SQL packages to call their APIs. This led to the idea of just open-sourcing it.
 
 ### Key Features
 
-- **Free and Open Source**: Available on GitHub
+- **Free and Open Source**: Available on [GitHub](https://github.com/United-Codes/uc_ai)
 - **Broad Compatibility**: Works with old Oracle versions (probably 12.2, tested with 18c)
 - **Unified Interface**: One API for multiple AI providers
-- **Provider Independence**: Easy switching between models and providers. Currently supports 5 providers: OpenAI GPT, Anthropic Claude, Google Gemini, Ollama (offline models), and OCI (Llama, Cohere, xAI Grok, Google Gemini)
+- **Provider Independence**: Easy switching between models and providers. Currently supports 5 providers: OpenAI GPT, Anthropic Claude, Google Gemini, Ollama (offline models), and Oracle Cloud Infrastructure (OCI) (Llama, Cohere, xAI Grok, Google Gemini)
 - **Advanced features**: tools, reasoning, files, structured output
 - **Documentation**: can always be improved, but I really care for good documentation (please open issues or PRs if you find room for improvement)
 
@@ -87,16 +87,6 @@ Different AI providers often have varying APIs. UC AI abstracts these difference
 
 The AI provider landscape is pretty versatile and **moving fast**.
 
-### Supported Providers
-
-For more details, please look at the [documentation for each provider](https://www.united-codes.com/products/uc-ai/docs/providers/anthropic/).
-
-1. **OpenAI** (GPT models)
-1. **Anthropic** (Claude models)
-1. **Google** (Gemini models)
-1. **Ollama** (local/offline models: Meta Llama, Google Gemma, Alibaba Qwen, DeepSeek, GPT-OSS)
-1. **Oracle Cloud Infrastructure** (Cohere, Meta Llama, xAI Grok, Google Gemini)
-
 ### Why Model and Provider Choice Matters
 
 Different models excel in different areas:
@@ -107,18 +97,28 @@ Different models excel in different areas:
 
 Unfortunately, it is not as easy as picking _the best_ model. Intelligent models are rather slow and pricey. Picking a model is also about understanding what the task involves. It does not need expensive and intelligent models to summarize medium-sized text.
 
-Even though OpenAI made the initial bang and ChatGPT is the most used platform, it is a mistake to just look at them. Different models have different personas and also excel at different things. Claude, for example, is by far the best for coding PL/SQL and for tool calling, in my experience. But recently only Gemini was able to answer a specific question I had correctly. My tip is to get your fingers dirty and just try out the same task with different models and compare the results. For this reason I use [t3.chat](https://t3.chat) instead of ChatGPT or Claude, as you can run a prompt with different providers (I am not affiliated).
+Even though OpenAI made the initial bang and ChatGPT is the most used platform, it is a mistake to just look at them. Different models have different personas and also excel at different things. Claude, for example, is by far the best for coding PL/SQL and for tool calling, in my experience. But recently only Gemini was able to answer a specific question I had correctly. My tip: get your fingers dirty and just try out the same task with different models and compare the results. For this reason I use [t3.chat](https://t3.chat) instead of ChatGPT or Claude, as you can run a prompt with different providers (I am not affiliated).
 
 <BlogImg
   filename="Frontier-Language-Model-Intelligence-14-Sep-25.png"
   alt="Chart showing the intelligence of the AI provider frontier model over time. While OpenAI started as the sole leader since middle of 2024 the cometitors like xAI, Antrhopic, and Alibaba are comparible."
 />
 
-Also, platforms like [Artificial Analysis](https://artificialanalysis.ai) (where the image is also from) provide great benchmarks to compare models. [OpenRouter](https://openrouter.ai/rankings) shares rankings on which models are mostly used and also in which industry.
+Also, platforms like [Artificial Analysis](https://artificialanalysis.ai) provide great benchmarks to compare models. This picture shows one of their benchmarks over time, making it a good chart to show AI progress and competition over time. [OpenRouter](https://openrouter.ai/rankings) shares rankings on which models are mostly used and also in which industry.
+
+### Supported Providers
+
+For more details, please look at the [documentation for each provider](https://www.united-codes.com/products/uc-ai/docs/providers/anthropic/).
+
+1. **OpenAI** (GPT models)
+1. **Anthropic** (Claude models)
+1. **Google** (Gemini models)
+1. **Ollama** (local/offline models: Meta Llama, Google Gemma, Alibaba Qwen, DeepSeek, GPT-OSS)
+1. **Oracle Cloud Infrastructure** (Cohere, Meta Llama, xAI Grok, Google Gemini)
 
 ### Offline Models: Privacy and Control
 
-Also, don't underestimate offline models. While the frontier models are not offline, they still offer tremendous performance, with the Chinese companies pushing the boundaries every month. Read my [last blog post](https://hartenfeller.dev/blog/open-and-local-AI-models-in-oracle) for more information, but the obvious advantages are
+Don't underestimate offline models either. While the frontier models are not offline, they still offer tremendous performance, with the Chinese companies pushing the boundaries every month. Read my [last blog post](https://hartenfeller.dev/blog/open-and-local-AI-models-in-oracle) for more information, but the obvious advantages are
 
 - **Complete Privacy**: No data leaves your network
 - **Cost Efficiency**: After initial hardware investment
@@ -134,7 +134,7 @@ declare
   l_result json_object_t;
 begin
   l_result := uc_ai.generate_text(
-    p_user_prompt => 'Explain the philosophy of fight club',
+    p_user_prompt => 'What is the most common insurance claim type?',
     p_provider    => uc_ai.c_provider_openai,
     p_model       => uc_ai_openai.c_model_gpt_5
   );
@@ -198,7 +198,7 @@ Instead of manually writing settlement letters, we can use `uc_ai.generate_text`
 - **System**: Generate an insurance settlement letter for the following case. This is for demo purposes, so feel free to make up details to make it more realistic.
   The name of the insurance is: APEX Insurance in Redwood Shores. The person sending the letter is L. Ellison.
   Return just the letter, nothing else. Use markdown formatting, but don't wrap the response in a markdown code block.
-- **User**: #CLAIM_JSON#
+- **User**: #CLAIM_JSON# (will get replaced with actual JSON data)
 
 The user prompt holds just a placeholder that we will swap out with the result of this query:
 
@@ -706,7 +706,7 @@ I spotted a couple of internal inconsistencies in the data—specifically, the n
 In both cases the text describes the event happening on a different date than what’s recorded in the incident_date field (and, in the second, the police-report ID suggests August 28th, not the 30th mentioned). You may want to correct those date mismatches.
 ```
 
-Of course my prompt was immensely vague; if I asked the models explicitly to search for inconsistencies, they also `GPT-4o` would find them. But it shows that enabling reasoning makes the models themselves more independent and thoughtful.
+While my prompt was intentionally vague, this shows how reasoning models naturally become more analytical and thorough. If I asked the models explicitly to search for inconsistencies, also `GPT-4o` would find them.
 
 ### Reasoning API
 
@@ -739,12 +739,14 @@ Instead of just generating text, AI can interact with the database thanks to too
 
 ### How It Works
 
-From the perspective of the AI:
+A simple example for tools is giving it access to a weather API. As models don't have real-time data, this tool can be used to let the LLM use current weather information.
+
+This is how it looks from the perspective of the AI:
 
 1. The user registers tools with defined parameters and descriptions (e.g., getWeather returns current weather info for a given city)
 2. Based on the user prompt, the AI decides if it makes sense to request tool execution ("Tell me a joke" → no, "Do I need a raincoat in Rome?" → yes)
 3. Instead of returning an answer, it returns a tool invocation request. It expects us to run the tool and return its output. ("The weather in Rome is sunny, 26°C.")
-4. AI evaluates the result, can call another tool, or decides to answer ("No, you don't need a raincoat as it is warm and sunny currently").
+4. The AI evaluates the result, can call another tool, or decides to answer ("No, you don't need a raincoat as it is warm and sunny currently").
 
 The important part here is that the AI does not execute the function itself. It requests its execution. The UC AI PL/SQL packages will then automatically run the tool and return the outcome.
 
@@ -752,7 +754,7 @@ UC AI knows what to do, as you have to register a tool with UC AI with the PL/SQ
 
 ### Safety and Control
 
-[Unlike Oracle's MCP server approach (which allows arbitrary SQL execution)](https://hartenfeller.dev/blog/demystifying-sqlcl-mcp-server#security-concerns), UC AI tools:
+[Unlike Oracle's SQLcl MCP server approach (which allows arbitrary SQL execution)](https://hartenfeller.dev/blog/demystifying-sqlcl-mcp-server#security-concerns), UC AI tools:
 
 - Only execute predefined PL/SQL functions
 - Require explicit function registration
@@ -1334,7 +1336,7 @@ But also keep an eye out for what is coming next.
 
 Planned enhancements include:
 
-- **Agentic AI**
+- **Agentic AI** for autonomous multi-step workflows
 - **Speech-to-text and text-to-speech** capabilities
 - **Image generation** integration
 - **Vector embeddings** support (requires 23ai)
@@ -1352,3 +1354,18 @@ Remember it is [free and open-source software](https://github.com/United-Codes/u
 UC AI is possible because I have time to build it at [United Codes](https://www.united-codes.com/). If you want to support this project in other ways, please consider using our products like AOP or doing consulting with us. We can also help you with your AI strategy.
 
 ## Conclusion
+
+The AI hype isn't just about chatbots and customer-facing interfaces. It's about transforming how we process and manage data. As data engineers working with Oracle, you're uniquely positioned to capitalize on this opportunity.
+
+Throughout this post, we've explored how you can leverage AI from your existing PL/SQL skills. From generating structured output and analyzing files to implementing reasoning and tool calling, these techniques represent practical automation that delivers immediate business value.
+
+The key insights to remember:
+
+- Focus on back-office automation where AI excels and faces less resistance
+- Build on your existing skills - if you know SQL and PL/SQL, you're already 90% there
+- Start with clear use cases - solve real problems, not impressive demos
+- Iterate and improve - AI is a tool that gets better with thoughtful implementation
+
+The UC AI SDK gives you the foundation to start experimenting today. Whether you're automating document processing, enabling intelligent data analysis, or building sophisticated workflows, the tools are available and the opportunity is now.
+
+**Start small, think big, and never stop learning.**
