@@ -16,28 +16,28 @@ ghCommentsIssueId: 110
 
 **TL;DR**
 
-- If AI projects succeed they are often back-office automation projects
+- If AI projects succeed, they are often back-office automation projects
 - This is a big opportunity for data engineers
-- If you already know PL/SQL or SQL AI is just a small layer on top (no Python or other languages neeeded)
+- If you already know PL/SQL or SQL, AI is just a small layer on top (no Python or other languages needed)
 - Learn techniques in this post that help you step-by-step utilize AI for data processing
 
 **Watch the Livestream**
 
-This post is mostly a write-up of my webinar talk I did last week: [United Codes, Live! - Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM). In the webinare I discuss the concepts more thoroughly. If you during reading this post notice that you want more information, consider checking out the part in the replay.
+This post is mostly a write-up of my webinar talk I did last week: [United Codes, Live! - Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM). In the webinar, I discuss the concepts more thoroughly. If you, while reading this post, notice that you want additional information, consider checking out the part in the reply.
 
 **Table of Contents**
 
-Please use the table of content on the right side in the header to navigate through the post.
+Please use the table of contents on the right side in the header to navigate through the post.
 
 ## AI and Oracle
 
-The AI hypetrain is in full charge. Of course stakeholders all have thought about it's place in the Oracle space.
+The AI hype train is in full charge. Of course, stakeholders all have thought about its place in the Oracle space.
 
 ### Why care about AI in Oracle
 
-Everybody is building chat nowadays. With a hammer everything looks like a nail... If you have an established and working UI please ask your users if they would actually benefit from it. I really like that the website of my bank still is the same old where I immediately see my balance and still can do a transaction without having to chat with a bot.
+Everybody is building chat nowadays. With a hammer, everything looks like a nail... If you have an established and working UI, please ask your users if they would actually benefit from it. I really like that the website of my bank still is the same old one where I immediately see my balance and still can do a transaction without having to chat with a bot.
 
-Instead, if you are an data engineer you should look at it from a different angle. Don't add LLMs to the UI, think about your data being processed in the DB. AI excels in three key areas:
+Instead, if you are a data engineer, you should look at it from a different angle. Don't add LLMs to the UI; think about your data being processed in the DB. AI excels in three key areas:
 
 1. **Data Analysis**: Summarize, classify, categorize, cluster, and detect anomalies (faster than humans, sometimes with hallucinations!)
 1. **Unstructured to Structured Data**: Transform blobs of text or documents into relational data
@@ -49,28 +49,28 @@ Unfortunately I think the solutions Oracle offers are not sufficient to compete 
 
 **Oracle 23ai SELECT AI**
 
-- **23ai only**: Only available in Oracle 23ai, which is not general available (Oracle claims it is but where is the on-prem download?). So not intersting for most customers.
-- **Lack of features**: The focus is on converting natuaral language to SQL statements. I would argue this is a niche use-cases. Most other techniques I describe in this post are not supported.
+- **23ai only**: Only available in Oracle 23ai, which is not generally available (Oracle claims it is, but where is the on-prem download?). So not interesting for most customers.
+- **Lack of features**: The focus is on converting natural language to SQL statements. I would argue these are niche use cases. Most other techniques I describe in this post are not supported.
 
 **Oracle APEX AI Package**
 
-- **Limited providers**: The selection of supported AI providers is currently limited to Cohere, OpenAI, and some outdated OCI service. Big players like Google, Anthropic, xAI, and open models are not natively supported.
-- **Lack of features**: Same as with SELECT AI, only basic text_generation is supported and it lacks the more in-depth techniques.
+- **Limited providers**: The selection of supported AI providers is currently limited to Cohere, OpenAI, and some outdated OCI services. Big players like Google, Anthropic, xAI, and open models are not natively supported.
+- **Lack of features**: Same as with SELECT AI, only basic text generation is supported, and it lacks the more in-depth techniques.
 
-Of course these soltutions will improve over time. The AI world is moving fast so they will probably be in an outdated state again. Currently the APEX World is waiting for version 25.1 after almost three quarters of the year passed. And there is no way to enhance the solutions on your own.
+Of course these solutions will improve over time. The AI world is moving fast, so they will probably be in an outdated state again. Currently the APEX World is waiting for version 25.1 after almost three-quarters of the year passed. And there is no way to enhance the solutions on your own.
 
 So I build my own soltion.
 
 ## Introducing UC AI: A Game-Changing PL/SQL SDK
 
-As I wanted to try out advanced AI features from the database myself I wrote PL/SQL packages to call their APIs. This lead to the idea of jus open sourcing it maintaining it under the promise that this will be good marketing for United Codes. Here are the facts:
+As I wanted to try out advanced AI features from the database myself, I wrote PL/SQL packages to call their APIs. This led to the idea of just open-sourcing it, maintaining it under the promise that this will be good marketing for United Codes. Here are the facts:
 
 ### Key Features
 
 - **Free and Open Source**: Available on GitHub
 - **Broad Compatibility**: Works with old Oracle versions (probably 12.2, tested with 18c)
 - **Unified Interface**: One API for multiple AI providers
-- **Provider Independence**: Easy switching between models and providers. Currently supports 5 providers: OpenAI GPT, Anthropic Glaude, Google Gemini, Ollama (offline models), OCI (Llama, Cohere, xAI Grok, Google Gemini)
+- **Provider Independence**: Easy switching between models and providers. Currently supports 5 providers: OpenAI GPT, Anthropic Claude, Google Gemini, Ollama (offline models), and OCI (Llama, Cohere, xAI Grok, Google Gemini)
 - **Advanced features**: tools, reasoning, files, structured output
 - **Documentation**: can always be improved, but I really care for good documentation (please open issues or PRs if you find room for improvement)
 
@@ -89,12 +89,12 @@ The AI provider landscape is pretty versatile and **moving fast**.
 
 ### Supported Providers
 
-For more details please take a look at the [documentation for each provider](https://www.united-codes.com/products/uc-ai/docs/providers/anthropic/).
+For more details, please look at the [documentation for each provider](https://www.united-codes.com/products/uc-ai/docs/providers/anthropic/).
 
 1. **OpenAI** (GPT models)
 1. **Anthropic** (Claude models)
 1. **Google** (Gemini models)
-1. **Ollama** (Local/offline models: Meta Llama, Google Gemma, Alibaba Qwen, DeepSeek, GPT-OSS)
+1. **Ollama** (local/offline models: Meta Llama, Google Gemma, Alibaba Qwen, DeepSeek, GPT-OSS)
 1. **Oracle Cloud Infrastructure** (Cohere, Meta Llama, xAI Grok, Google Gemini)
 
 ### Why Model and Provider Choice Matters
@@ -105,25 +105,25 @@ Different models excel in different areas:
 - **Speed**
 - **Cost**
 
-Unfortunately it is not as easy as picking _the best_ model. Intelligent models are rather slow and pricey. Picking a model is also understanding what task is. It does not need expensive and intelligent models to summarize medium size text.
+Unfortunately, it is not as easy as picking _the best_ model. Intelligent models are rather slow and pricey. Picking a model is also about understanding what the task involves. It does not need expensive and intelligent models to summarize medium-sized text.
 
-Even though OpenAI made the initial bang and ChatGPT is the most used platform, it is a mistake to just look at them. Different models have different personas and also excel at different things. Claude for example is the by far best for coding PL/SQL and for tool calling in my experience. But recently only Gemini was able to answer a sepcific question I had correctly. My tip is to get your fingers diryt and just try out the same task with different model and compare the results. For this reason I use [t3.chat](https://t3.chat) instead of ChatGPT or Claude as you can run a prompt with different providers (I am not affiliated).
+Even though OpenAI made the initial bang and ChatGPT is the most used platform, it is a mistake to just look at them. Different models have different personas and also excel at different things. Claude, for example, is by far the best for coding PL/SQL and for tool calling, in my experience. But recently only Gemini was able to answer a specific question I had correctly. My tip is to get your fingers dirty and just try out the same task with different models and compare the results. For this reason I use [t3.chat](https://t3.chat) instead of ChatGPT or Claude, as you can run a prompt with different providers (I am not affiliated).
 
 <BlogImg
   filename="Frontier-Language-Model-Intelligence-14-Sep-25.png"
   alt="Chart showing the intelligence of the AI provider frontier model over time. While OpenAI started as the sole leader since middle of 2024 the cometitors like xAI, Antrhopic, and Alibaba are comparible."
 />
 
-Also platforms like [Artificial Analysis](https://artificialanalysis.ai) (where the image is also from) provide great benchmarks to compare models. [Openrouter](https://openrouter.ai/rankings) shares rankings on which models are mostly used and also in which industry.
+Also, platforms like [Artificial Analysis](https://artificialanalysis.ai) (where the image is also from) provide great benchmarks to compare models. [OpenRouter](https://openrouter.ai/rankings) shares rankings on which models are mostly used and also in which industry.
 
 ### Offline Models: Privacy and Control
 
-Also don't understimate offline models. While the frontier models are not offline they still offer tremendous performance with the chinese companies pushing the boundaries every month. Read my [last blog post](https://hartenfeller.dev/blog/open-and-local-AI-models-in-oracle) for more information but the obvious advatages are:
+Also, don't underestimate offline models. While the frontier models are not offline, they still offer tremendous performance, with the Chinese companies pushing the boundaries every month. Read my [last blog post](https://hartenfeller.dev/blog/open-and-local-AI-models-in-oracle) for more information, but the obvious advantages are
 
 - **Complete Privacy**: No data leaves your network
 - **Cost Efficiency**: After initial hardware investment
 
-UC AI supports offline models via Ollama. You can browse the available models [on their site](https://ollama.com/search). At United Codes we have and recently upgraded a local AI server dedicated to offline AI usage.
+UC AI supports offline models via Ollama. You can browse the available models [on their site](https://ollama.com/search). At United Codes, we have recently upgraded a local AI server dedicated to offline AI usage.
 
 ## Generate Text: Your First Steps with AI
 
@@ -150,9 +150,9 @@ UC AI supports both user and system prompts:
 - **User Prompt**: The actual question or request
 - **System Prompt**: Instructions that constrain the model's behavior and persona
 
-ChatGPT (the app, not the model itself) for example uses an unrestrictive system prompt as you can use it for many things. Inside business apps on the other hand "only answer questions for X" is a useful part to make the assisant on car dealerships refuse to debate the philosophy of fight club with customers.
+ChatGPT (the app, not the model itself), for example, uses an unrestrictive system prompt, as you can use it for many things. Inside business apps, on the other hand, "only answer questions for X" is a useful part to make the assistant at car dealerships refuse to debate the philosophy of Fight Club with customers.
 
-You can just add the `p_system_prompt` parameter parameter to the call:
+You can just add the `p_system_prompt` parameter to the call:
 
 ```sql
 declare
@@ -171,7 +171,7 @@ begin
 end;
 ```
 
-### Switching model and provider
+### Switching Model and Provider
 
 Just change the `p_model` and `p_provider` parameters:
 
@@ -191,13 +191,13 @@ end;
 
 ### Practical Example: Insurance Settlement Letters
 
-As a theme for the demos I have chosen an insurance company settings. We manage claims of users about damages on their property like vehicles.
+As a theme for the demos, I have chosen an insurance company setting. We manage claims of users about damages on their property, like vehicles.
 
 Instead of manually writing settlement letters, we can use `uc_ai.generate_text` to generate them. We are using these prompts:
 
-- **System**: Generate an insurance settlement letter for the following case. This is for demo purposes so feel free to make up details to make it more realistic.
-  The name of the insurance is: APEX Insurance in Redwood Shores. The person sending the letter is: L. Ellison.
-  Return just the letter, nothing else. Use markdown formatting but don't wrap the response in a markdown code block.
+- **System**: Generate an insurance settlement letter for the following case. This is for demo purposes, so feel free to make up details to make it more realistic.
+  The name of the insurance is: APEX Insurance in Redwood Shores. The person sending the letter is L. Ellison.
+  Return just the letter, nothing else. Use markdown formatting, but don't wrap the response in a markdown code block.
 - **User**: #CLAIM_JSON#
 
 The user prompt holds just a placeholder that we will swap out with the result of this query:
@@ -261,11 +261,11 @@ Email: <a href="xinsurance.com">claims@apexinsurance.com</a></p>
 </details>
 ```
 
-I used Gemini Flash 2.5 and it was even smart enough to point out that we haven't passed an address for the claimant.
+I used Gemini Flash 2.5, and it was even smart enough to point out that we haven't passed an address for the claimant.
 
 ## Structured Output: From Text to JSON
 
-LLMs are extremely good in fastly processing and outputting text. In our database we store data in a structured way, tables with typed columns. AIs can help extracting the important details from unstructured text like an email and returning it in a defined structure.
+LLMs are superb at quickly processing and outputting text. In our database we store data in a structured way, tables with typed columns. AIs can help extract the important details from unstructured text like an email and return it in a defined structure.
 
 ### JSON Schemas
 
@@ -300,15 +300,15 @@ JSON Schema is a standard to describe JSON structures inside JSON. You can defin
 
 ### Real-World Example: Email Processing
 
-To help customers to conveniently open claims we allow for them to send the details just per email. We want to create a record in our claim table with the info. Instead of letting our employees type it in there manually we can ask AI to extract the details.
+To help customers to conveniently open claims, we allow for them to send the details just per email. We want to create a record in our claim table with the info. Instead of letting our employees type it in there manually, we can ask AI to extract the details.
 
-This time we will use a bigger JSON schema with nested objects and many details including a claim number, a date of loss, and personal information. We also ask the AI to extract an array of damage types from the text, making it some kind of automated tagging system.
+This time we will use a bigger JSON schema with nested objects and many details, including a claim number, a date of loss, and personal information. We also ask the AI to extract an array of damage types from the text, making it some kind of automated tagging system.
 
 ```html-embed
 <details>
   <summary>JSON Schema</summary>
   <section>
-  	<pre>{
+    <pre>{
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
@@ -420,13 +420,13 @@ This time we will use a bigger JSON schema with nested objects and many details 
 </details>
 ```
 
-As an example mail we use a natural text that has all the required information.
+As an example email, we use a natural text that has all the required information.
 
 ```html-embed
 <details>
   <summary>Property Damage sample text</summary>
   <section>
-  	<pre>
+    <pre>
 Subject: Urgent: Claim #20240902-A1B2C3 - Property Damage - 123 Maple Street
 
 Dear APEX Insurance,
@@ -468,7 +468,7 @@ begin
 end;
 ```
 
-In response we get back the extracted data in the JSON format we defined.
+In response, we get back the extracted data in the JSON format we defined.
 
 ```json
 {
@@ -502,33 +502,33 @@ In response we get back the extracted data in the JSON format we defined.
 }
 ```
 
-If there are missing information or uncertainties you could then let an employee look over the email or let AI respond to the customer with questions.
+If there is missing information or uncertainty, you could then let an employee look over the email or let AI respond to the customer with questions.
 
 ### Building JSON Schemas
 
-Constructing large JSON Schemas can be tedous. To help you can ask AI to draft one from your table structure or/and use the [JSON Schema Builder from the UC AI documentation](https://www.united-codes.com/products/uc-ai/docs/other/json-schema/). It gives a more visual experience, and lets you create new or modify existing schemas.
+Constructing large JSON schemas can be tedious. To help, you can ask AI to draft one from your table structure and use the [JSON Schema Builder from the UC AI documentation](https://www.united-codes.com/products/uc-ai/docs/other/json-schema/). There is a more visual experience that lets you create new or modify existing schemas.
 
 <BlogImg filename="uc-ai-json-schema-builder.png" alt="" />
 
 ## File Analysis: Beyond Text Processing
 
-Modern AI models are actually multi-modal. That means they can not only process text but also files. This means you don't have to run seperate OCR services, you can just send files with UC AI.
+Modern AI models are actually multi-modal. That means they can process text and files. This means you don't have to run separate OCR services; you can just send files with UC AI.
 
-For our insurance examples we could help AI analyse scans of letters or pictures of accidents.
+For our insurance examples, we could help AI analyze scans of letters or pictures of accidents.
 
 - **PDF Processing**: Extract text from scanned documents
 - **Image Recognition**: Analyze photos and diagrams
 
-### Analysing Car Accident Photos
+### Analyzing Car Accident Photos
 
-Let's take this photo of a car accident as an example. We are interested about what kind of car is in the picture, which parts are damaged, and what the estimated repair costs are (image source: [Thue on Wikimedia](https://commons.wikimedia.org/wiki/File:Car_crash_1.jpg)).
+Let's take this photo of a car accident as an example. We are interested in what kind of car is in the picture, which parts are damaged, and what the estimated repair costs are (image source: [Thue on Wikimedia](https://commons.wikimedia.org/wiki/File:Car_crash_1.jpg)).
 
 <BlogImg
   filename="car_crash.jpg"
   alt="Photo of car accident with a black car crashed into a tree. The car is heavily damaged."
 />
 
-As we learned from last chapter it makes sense to get the information back in a structured way. So let's again send a JSON schema with our request.
+As we learned from the last chapter, it makes sense to get the information back in a structured way. So let's again send a JSON schema with our request.
 
 ```html-embed
 <details>
@@ -585,7 +585,7 @@ As we learned from last chapter it makes sense to get the information back in a 
 </details>
 ```
 
-The UC AI call looks a bit more complicated than before. The reason is that we both send a text message and the image. In this case we need to wrap both in a conent array by using helper functions from the `uc_ai_message_api` package.
+The UC AI call looks a bit more complicated than before. The reason is that we both send a text message and the image. In this case we need to wrap both in a content array by using helper functions from the `uc_ai_message_api` package.
 
 ```sql
 declare
@@ -596,13 +596,13 @@ declare
 
   l_file_record pame_files%rowtype;
 begin
-	-- load image file row
+  -- load image file row
   select *
     into l_file_record
     from pame_files
    where file_name = :P20_FILE;
 
-	-- create file content metadata
+  -- create file content metadata
   l_content.append(uc_ai_message_api.create_file_content(
     p_media_type => l_file_record.mime_type,
     p_data_blob => l_file_record.file_content,
@@ -614,10 +614,10 @@ begin
     'Please extract the info for the car crash. Just do your best estimations.'
   ));
 
-	-- combine image and message into a user mesage
+  -- combine image and message into a user mesage
   l_messages.append(uc_ai_message_api.create_user_message(l_content));
 
-	-- define structured output schema
+  -- define structured output schema
   l_schema := json_object_t('{ "$schema": ...');
 
   l_result := uc_ai.generate_text(
@@ -635,7 +635,7 @@ end;
 
 ### Response
 
-Gemini Flash 2.5 tells us the car is a Renault Megane Scenic. I am not car expert but it is definetely a Renault and whats left of it looks similar to a Megane. Interestingly it manages to list many broken parts correctly. The car is in a state where it is probably easier to list the parts that are not harmed but other models do much worse job.
+Gemini Flash 2.5 tells us the car is a Renault Megane Scenic. I am not a car expert, but it is definitely a Renault, and what's left of it looks similar to a Megane. Interestingly, it manages to list many broken parts correctly. The car is in a state where it is probably easier to list the parts that are not harmed, but other models do a much worse job.
 
 ```json
 {
@@ -674,7 +674,7 @@ Smarter AI sounds great. In benchmarks the reasoning models have a clear advanta
 - Higher accuracy on complex tasks
 - Better performance on analytical problems
 - More thorough consideration of edge cases
-- Insights how LLM came to conclusions (but some providers don't share thinking steps)
+- Insights into how LLM came to conclusions (but some providers don't share thinking steps)
 
 **Costs**:
 
@@ -682,15 +682,15 @@ Smarter AI sounds great. In benchmarks the reasoning models have a clear advanta
 - Longer response times
 - Higher computational requirements
 
-So it makes sense to only use reasoning when it is really needed. Just test if a non reasoning model can do the task with similar results.
+So it makes sense to only use reasoning when it is really needed. Just test if a non-reasoning model can do the task with similar results.
 
 ### Practical Example: Data Anomaly Detection
 
-To put this feature to the test we will let the LLMs ananlyze a batch of ten claims. We will just give the prompt "Notice anything?" and see what the response is.
+To put this feature to the test, we will let the LLMs analyze a batch of ten claims. We will just give the prompt "Notice anything?" and see what the response is.
 
-If we use small models like Qwen3 with 1.7 billion parameters the difference is quite obvious. Without reasoning enabled it will just do a summarization of the text but from top to bottom. It feels like it reads a bit, then summarizes that part, then reads the next part etc. But with reasoning enabled it feels like it actually has the whole input in context and does output statistics like the most claims are about vehicle damage and Texas seems to have most cases.
+If we use small models like Qwen3 with 1.7 billion parameters, the difference is quite obvious. Without reasoning enabled, it will just do a summarization of the text but from top to bottom. It feels like it reads a bit, then summarizes that part, then reads the next part, etc. But with reasoning enabled, it feels like it actually has the whole input in context and does output statistics like the most claims are about vehicle damage and Texas seems to have the most cases.
 
-With a much smarter model `GPT-4o` it already does a better job of actually summarizing the whole document without reasoning enabled. But most interestingly if we enable it with OpenAIs `o4-mini` model it **detect anomalies in the data**:
+With a much smarter model `GPT-4o` it already does a better job of actually summarizing the whole document without reasoning enabled. But most interestingly, if we enable it with OpenAI's `o4-mini` model, it **detects anomalies in the data**:
 
 ```
 I spotted a couple of internal inconsistencies in the data—specifically, the narrative dates don’t line up with the “incident_date” fields in two of the claims:
@@ -706,11 +706,11 @@ I spotted a couple of internal inconsistencies in the data—specifically, the n
 In both cases the text describes the event happening on a different date than what’s recorded in the incident_date field (and, in the second, the police-report ID suggests August 28th, not the 30th mentioned). You may want to correct those date mismatches.
 ```
 
-Of course my prompt was immensely vague, if I asked the models explicitly to search for inconsistencies, also `GPT-4o` would find them. But it shows that enabling reasoning makes the models itself more independent and thoughtful.
+Of course my prompt was immensely vague; if I asked the models explicitly to search for inconsistencies, they also `GPT-4o` would find them. But it shows that enabling reasoning makes the models themselves more independent and thoughtful.
 
 ### Reasoning API
 
-Be careful when enabling reasoning as not all (mostly older) models support it. Additionally this is one case where UC AI can not unify everything as providers have different types of settings. For ollama you can only enable or disable reasoning. With Anthropic and Google you can fin-tune how many tokens will be used for reasoning while OpenAI has settings of `low`, `medium`, and `high`. Please read the [reasoning documentation](https://www.united-codes.com/products/uc-ai/docs/guides/reasoning/) for more details and best practices.
+Be careful when enabling reasoning, as not all (mostly older) models support it. Additionally, this is one case where UC AI cannot unify everything, as providers have different types of settings. For Ollama, you can only enable or disable reasoning. With Anthropic and Google, you can fine-tune how many tokens will be used for reasoning, while OpenAI has settings of `low`, `medium`, and `high`. Please read the [reasoning documentation](https://www.united-codes.com/products/uc-ai/docs/guides/reasoning/) for more details and best practices.
 
 ```sql
 uc_ai.g_enable_reasoning := true;
@@ -732,23 +732,23 @@ Tools (also called "function calling") represents the most powerful feature of U
 
 ### The Concept: Giving AI Capabilities
 
-Instead of just generating text, AI can interact with the database thankt to tools. This is useful for two types of capabilities:
+Instead of just generating text, AI can interact with the database thanks to tools. This is useful for two types of capabilities:
 
-- **Conditional context** (SQL): don't add to much data to the system prompt, let AI run queries on the fly when needed based on the user prompt
+- **Conditional context** (SQL): Don't add too much data to the system prompt; let AI run queries on the fly when needed based on the user prompt.
 - **Actions** (insert, update, delete, invoke APIs, jobs, etc.): Let the AI execute business logic from a prompt
 
 ### How It Works
 
-From the point of view of the AI:
+From the perspective of the AI:
 
-1. User registers tools with defined parameters and descriptions (e.g. getWeather returns current wheather info for a given city)
-2. Based on the user prompt the AI decides if it makese sense to request tool execution ("Tell me a joke" → no, "Do I need a raincoat in Rome" → yes)
-3. Instead of returning an answer it returns a tool invocation request. It expects us to run the tool and return it's output. ("Wheather in Rome is sunny, 26 °C")
-4. AI evaluates the result, can call another tool or decides to answer ("No you don't need a raincoat as it is warm and sunny currently")
+1. The user registers tools with defined parameters and descriptions (e.g., getWeather returns current weather info for a given city)
+2. Based on the user prompt, the AI decides if it makes sense to request tool execution ("Tell me a joke" → no, "Do I need a raincoat in Rome?" → yes)
+3. Instead of returning an answer, it returns a tool invocation request. It expects us to run the tool and return its output. ("The weather in Rome is sunny, 26°C.")
+4. AI evaluates the result, can call another tool, or decides to answer ("No, you don't need a raincoat as it is warm and sunny currently").
 
-The important part here is the the AI does not execute the function itself. It requests it's execution. The UC AI PL/SQL packages will then automatically run the tool and return the outcome.
+The important part here is that the AI does not execute the function itself. It requests its execution. The UC AI PL/SQL packages will then automatically run the tool and return the outcome.
 
-UC AI knows what to do as you have to register a tool with UC AI with PL/SQL function name that you created.
+UC AI knows what to do, as you have to register a tool with UC AI with the PL/SQL function name that you created.
 
 ### Safety and Control
 
@@ -761,11 +761,11 @@ UC AI knows what to do as you have to register a tool with UC AI with PL/SQL fun
 
 ### Real-World Example: Insurance Claim Processing
 
-So now we can actually automate our insurance claim entry further. When a new mail arrives we ask AI to create a new record about it in our database.
+So now we can actually automate our insurance claim entry further. When a new mail arrives, we ask AI to create a record about it in our database.
 
 ### Tool Registration
 
-To register a tool we have to create a JSON schema for the parameters if there are any. The we call `uc_ai_tools_api.create_tool_from_schema` with a tool code, description, PL/SQL function call, the schema and tags. Notice how we use `:parameters` in the tool call? UC AI will replace that with the JSON arguments given from the LLM. It makes sense to carefully describe the parameters and the tool itself as this is valuable context for the AI.
+To register a tool, we have to create a JSON schema for the parameters if there are any. Then we call `uc_ai_tools_api.create_tool_from_schema` with a tool code, description, PL/SQL function call, the schema, and tags. Notice how we use `:parameters` in the tool call? UC AI will replace that with the JSON arguments given from the LLM. It makes sense to carefully describe the parameters and the tool itself, as this is valuable context for the AI.
 
 ```sql
 declare
@@ -809,13 +809,13 @@ end;
 /
 ```
 
-This is the underlying function `pame_pkg.create_new_settlement`. We take on parameter and return one, both in `CLOB`. Then we have to check if the JSON is in the structure we expect it in. Instead of just raising exceptions we actually give error information back. That gives the AI context to fix the input in the next try. If the insert succeeds we will return a success message.
+This is the underlying function `pame_pkg.create_new_settlement`. We take one parameter and return one, both in `CLOB`. Then we have to check if the JSON is in the structure we expect it to be in. Instead of just raising exceptions, we actually provide error information back. That gives the AI context to fix the input in the next try. If the insert succeeds, we will return a success message.
 
 ```html-embed
 <details>
   <summary>Get user info function</summary>
   <section>
-  	<pre>
+    <pre>
 function create_new_settlement(p_settlement_data in clob) return clob
 as
   l_settlement_data json_object_t;
@@ -952,7 +952,7 @@ end create_new_settlement;
 </details>
 ```
 
-Our insert does require to have information about the first and last name. As customers might forget to write that in the email, we add another tool that is able to give user info for a provided email:
+Our insert does require having information about the first and last name. As customers might forget to write that in the email, we add another tool that can give user info for a provided email:
 
 ```sql
 declare
@@ -990,13 +990,13 @@ end;
 
 ```
 
-The underlying function is a bit simpler, we have less inputs to check and just construct a JSON of customer data to return.
+The underlying function is a bit simpler; we have fewer inputs to check and just construct a JSON of customer data to return.
 
 ```html-embed
 <details>
   <summary>Create new settlement function</summary>
   <section>
-  	<pre>
+    <pre>
 function get_user_info(p_email_data in clob) return clob
 as
   l_email_data   json_object_t;
@@ -1067,7 +1067,7 @@ end get_user_info;
 </details>
 ```
 
-So now to test it we will take this email that deliberately misses any customer name.
+So now, to test it, we will take this email that deliberately misses any customer name.
 
 ```
 Subject: Car accident
@@ -1082,15 +1082,15 @@ I’d like to proceed with the settlement process. The estimated repair costs ca
 Thank you for your assistance.
 ```
 
-When I call it with `GPT-4o` with just the system prompt "Please create a settlement from the provided user input" it is interesting to see what is happening. The following JSON shows the conversation messages, which are also provided in the `generate_text` method in the `messages` key.
+When I call it with `GPT-4o` with just the system prompt "Please create a settlement from the provided user input," it is interesting to see what is happening. The following JSON shows the conversation messages, which are also provided in the `generate_text` method in the `messages` key.
 
-The first thing that happens is that the tool immediately tries to call both tools without any input. For some reason OpenAI sometimes ignores that we defined the arguments as required. For both it gets back error messages about the missing parameters. Then it again tries to call the tools now correctly passing the email for the customer info tool. With that information it correctly calls the create incident tool and thus creates a record in the database.
+The first thing that happens is that the tool immediately tries to call both tools without any input. For some reason OpenAI sometimes ignores that we defined the arguments as required. For both, it gets back error messages about the missing parameters. Then it again tries to call the tools, now correctly passing the email for the customer info tool. With that information, it correctly calls the create incident tool and thus creates a record in the database.
 
 ```html-embed
 <details>
   <summary>GPT-4o message chain with tool calls</summary>
   <section>
-  	<pre>
+    <pre>
 [
   {
     "role": "system",
@@ -1214,15 +1214,15 @@ The first thing that happens is that the tool immediately tries to call both too
 </details>
 ```
 
-But notice that it actually just fills the required fields. Even though the input had more details it does not fill them in the parameters. We could fine tune it by provider a better prompt to tell it to plan steps more carefully and to make sure to give as all possible information. Also using a reasoning model would helpt the performance.
+But notice that it actually just fills the required fields. Even though the input had more details, it does not fill them in the parameters. We could fine-tune it by providing a better prompt to tell it to plan steps more carefully and to make sure to give as much possible information. Also, using a reasoning model would help the performance.
 
-More modern models like `GPT-5` do a better job out of the box without improvements but interestingly Anthropic's smallest and last generation model, `Haiku 3.5` even beats GPT-5 with always using the most straightforward plan of first getting the user info and then doing the insert.
+More modern models like `GPT-5` do a better job out of the box without improvements, but interestingly, Anthropic's smallest and last-generation model, `Haiku 3.5` even beats GPT-5 with always using the most straightforward plan of first getting the user info and then doing the insert.
 
 ```html-embed
 <details>
   <summary>Haiku 3.5 message chain with tool calls</summary>
   <section>
-  	<pre>
+    <pre>
 [
   {
     "role": "system",
@@ -1309,21 +1309,21 @@ More modern models like `GPT-5` do a better job out of the box without improveme
 
 ## Successful AI in Oracle
 
-Just using AI is not the key of success.
+Just using AI is not the key to success.
 
 ### Current State and Challenges
 
 Despite the AI hype, [MIT research shows that 95% of generative AI pilots at companies are failing](https://www.forbes.com/sites/jasonsnyder/2025/08/26/mit-finds-95-of-genai-pilots-fail-because-companies-avoid-friction/). The primary reasons:
 
-1. Lack of Clear Use Cases: Don't build flashy demos (like I do here), solve real issues
+1. Lack of Clear Use Cases: Don't build flashy demos (like I do here); solve real issues
 2. Poor Integration: Focusing on customer-facing features instead of back-office automation
 3. Lack of transformation: Projects face resistance and don't do required workflow re-designs
 
-**Crucially, the insight that back-office automation offers the biggest impact for us data engineers. It is now in our hands to build the automations that drives your business into age of AI**. And I think with the principles laid out here you are in a great spot to get started with building on your already existing SQL and PL/SQL skills and now only sprinkling a layer of LLM knowledge on top.
+**Crucially, the insight that back-office automation offers the biggest impact for us data engineers. It is now in our hands to build the automations that drive your business into the age of AI**. And I think with the principles laid out here, you are in a great spot to get started with building on your already existing SQL and PL/SQL skills and now only sprinkling a layer of LLM knowledge on top.
 
 ### Automations
 
-So use the showed principles to build workflows that autonomously help managing your data. For that you can use
+So use the shown principles to build workflows that autonomously help manage your data. For that you can use
 
 1. DBMS_SCHEDULER for automated jobs
 2. Flows for APEX or APEX Workflows for visual AI process design
@@ -1341,13 +1341,13 @@ Planned enhancements include:
 - **Streaming responses** for real-time applications
 - **APEX plugins** for drag-and-drop AI integration for your apps
 
-I think the next step in this chain of learning data engineering with AI is agentic AI. I am currently deep into researching how I will implement it in UC AI. Agents allow to do much more complicated kinds of tasks (like coding agents or deep research) but also require much better prompting and fine-tuning skills.
+I think the next step in this chain of learning data engineering with AI is agentic AI. I am currently deep into researching how I will implement it in UC AI. Agents allow you to do much more complicated kinds of tasks (like coding agents or deep research) but also require much better prompting and fine-tuning skills.
 
 ## Getting Started with UC AI
 
 If you also want to start using UC AI, follow the [installation guide](https://www.united-codes.com/products/uc-ai/docs/guides/installation/).
 
-Remember it is [free and open-source software](https://github.com/United-Codes/uc_ai). This project is driven heavily by my motivation. If you use it successfully, please consider sharing your stories with me or at least giving us a star on [GitHub](https://github.com/United-Codes/uc_ai). I am also super happy if anybody is willing to contribute to the project. Even improving the documentation, reporting bugs or new ideas help keeping momentum in the project.
+Remember it is [free and open-source software](https://github.com/United-Codes/uc_ai). This project is driven heavily by my motivation. If you use it successfully, please consider sharing your stories with me or at least giving us a star on [GitHub](https://github.com/United-Codes/uc_ai). I am also super happy if anybody is willing to contribute to the project. Even improving the documentation, reporting bugs, or new ideas helps keep momentum in the project.
 
 UC AI is possible because I have time to build it at [United Codes](https://www.united-codes.com/). If you want to support this project in other ways, please consider using our products like AOP or doing consulting with us. We can also help you with your AI strategy.
 
