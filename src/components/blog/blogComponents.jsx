@@ -13,6 +13,7 @@ import YouTubeEmbed from './YouTubeEmbed';
 import classNames from '../../util/classNames';
 import SeriesTeaser from './SeriesTeaser';
 import LinkedH4 from './LinkedH4';
+import Details from './Details';
 
 const getComponents = (images) => ({
   code: CodeHandler,
@@ -52,6 +53,7 @@ const getComponents = (images) => ({
   WarningBox,
   Link,
   SeriesTeaser,
+  details: Details,
 });
 
 export default getComponents;

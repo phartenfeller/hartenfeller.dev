@@ -25,7 +25,7 @@ const LinkedH2 = ({ children }) => {
   return (
     <a
       href={`#${id}`}
-      className="custom-link md:text-2x group mt-16 mb-4 flex font-merriweather text-xl font-semibold lg:text-3xl"
+      className="custom-link group mb-4 mt-16 flex font-merriweather text-2xl font-semibold md:text-2xl lg:mt-24 lg:text-3xl"
     >
       <h2
         id={id}

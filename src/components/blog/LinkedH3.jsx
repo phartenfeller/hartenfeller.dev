@@ -25,11 +25,11 @@ const LinkedH3 = ({ children }) => {
   return (
     <a
       href={`#${id}`}
-      className="custom-link group mt-5 mb-3 flex items-center font-merriweather"
+      className="custom-link group mb-3 mt-5 flex items-center font-merriweather"
     >
       <h3
         id={id}
-        className="scroll-mt-20 text-2xl text-title-brown group-hover:underline group-hover:decoration-red-100 "
+        className="mt-2 scroll-mt-20 text-xl text-title-brown group-hover:underline  group-hover:decoration-red-100 lg:mt-4 lg:text-2xl"
       >
         {titleText}
       </h3>
