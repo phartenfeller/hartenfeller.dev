@@ -1,0 +1,154 @@
+---
+title: >
+  Oracle APEX Reactive Markdown Plug-in #JoelKallmanDay
+date: 2025-10-05
+description: Display rich Markdown in Oracle APEX that reacts to changes of referenced page items.
+slug: apex-reactive-markdown-plugin
+titleImage: ./apex-md-side-by-side.png
+titleImageAlt: null
+titleImageSource: { text: null, href: null }
+tags: ['APEX', 'User-Interfaces']
+ghCommentsIssueId: 112
+---
+
+**TL;DR**: I created a plug-in that renders Markdown in APEX and reacts to changes of referenced page items.
+
+## My pain with displaying rich text in APEX
+
+Most of our applications probably lack context of what the app does. To solve this we can create a static content region, change the template and put some HTML in there. Easy but as I am used to Markdown writing a lot `<p>`, `<li>`, or `<b>` tags is a bit tedious.
+
+For my [Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM) webinar I wanted to display the JSON response of the AI nicely formatted in a region. Additionally the JSON gets generated from an dynamic action without any submits so it needs to update automatically.
+
+At that point I thought "probably possible with native APEX but too difficult". So I decided to put my pain to rest and build a plug-in that solves this.
+
+## How does it work?
+
+It is a region plug-in with three attributes.
+
+### Template
+
+In the template attribute you can define what Markdown template should actually be rendered.
+
+So you can directly write Markdown into the attribute or reference a page item that contains some value. During rendering the plug-in will evaluate all values of the referenced page items.
+
+```
+Hello! My name is `:P3050_NAME`. I am **:P3050_AGE** years old. I live in :P3050_CITY.
+```
+
+You could also put everything into a text item and just reference it. You can easily build a side-by-side editor with a textarea and the preview.
+
+```
+:P3050_TEXT_INPUT
+```
+
+<BlogImg
+  filename="apex-md-side-by-side.png"
+  alt="Side by side view. Left a normal APEX textarea with some markdown as source. On the right side, the Markdown gets previewed."
+/>
+
+### Reactivity Mode
+
+APEX client-side features work on an event-based system. This means you have to manually add dynamic actions that run on change of item X to update item or region Y. This can be tedious if you have a lot of items that should trigger an update like a manual page filter.
+
+Modern frontend frameworks are reactive (giving the React framework its name). That means you mark a variable and the framework automatically updates everything that depends on it. This is way more convenient.
+
+The plug-in offers three reactivity modes:
+
+- change: the plug-in will update when a referenced page item changes (leave input)
+- input: the plug-in will update on every input (while typing)
+- off: no reactivity, only initial rendering
+
+This is how it behaves in the input mode:
+
+<BlogGif
+  filename="apex-md-reactivity.gif"
+  alt="When typing in the input field, the markdown preview updates in real-time to reflect the changes."
+/>
+
+### Theme
+
+The plug-in uses the GitHub Markdown CSS styles per default. There is a light and dark theme variant. Additionally I built a Universal Theme variant that uses your APEX theme colors. Under the hood it uses the [APEX CSS variables](https://youtu.be/TT6uIz_8Qlk).
+
+## Noteworthy Markdown Features
+
+Next to the standard Markdown features, the plug-in supports:
+
+- Tables (not yet supported by the `APEX_MARKDOWN` package)
+- Code blocks with syntax highlighting for various languages
+- Math formulas
+- Alerts
+
+<BlogImg filename="special-md-tags.png" alt="" />
+
+This is the underlying markdown for the above screenshot:
+
+```markdown
+#### Code Block Example H4
+
+(remove # before ``` - my blog does not support nested code blocks...)
+#```sql
+SELECT
+    employee_id,
+    first_name,
+    last_name,
+    salary
+FROM
+    employees
+WHERE
+    salary > 50000;
+#```
+
+
+##### Table Example H5
+
+| Header 1         |   Header 2   |     Header 3 |
+| :--------------- | :----------: | -----------: |
+| Data Row 1A Long |   Data 1B    |      Data 1C |
+| Data Row 2A      | Data 2B Long | Long Data 2C |
+| Data Row 3A      |   Data 3B    |      Data 3C |
+
+###### Mathematics Example H6
+
+$$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
+
+###### Alerts
+
+> [!NOTE]
+> This is a note. It's often used for general information,
+> something to remember, or a side point.
+>
+> You can also include multiple paragraphs within a note
+> as long as each line starts with `>`.
+
+> [!TIP]
+> This is a tip! Remember to commit your changes frequently
+> to avoid losing your work.
+>
+> **Pro-tip:** Use `git status` often to stay aware of your
+> repository's state.
+
+> [!IMPORTANT]
+> This is an important piece of information.
+>
+> Please ensure you have backed up your database before
+> proceeding with any major schema changes.
+
+> [!WARNING]
+> This is a warning!
+>
+> Deleting this file will permanently remove user
+> configuration settings. Proceed with caution.
+
+> [!CAUTION]
+> This is a caution!
+>
+> Running this script without administrator privileges could
+> lead to system instability and data corruption.
+
+```
+
+## Demo and Download
+
+You can try out the plug-in in our United Codes [Community Plug-Ins Sample App](https://www.united-codes.com/ords/r/pip/pluginspro_free/reactive-markdown).
+
+You can download the plug-in for free from [apex.world](https://www.united-codes.com/ords/r/pip/pluginspro_free/reactive-markdown).
