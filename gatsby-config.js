@@ -130,8 +130,8 @@ module.exports = {
                 title: edge.node.frontmatter.title,
                 description: edge.node.frontmatter.description,
                 date: edge.node.frontmatter.date,
-                url: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
-                guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
+                url: `${site.siteMetadata.siteUrl}/blog/${edge.node.frontmatter.slug}`,
+                guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.frontmatter.slug}`,
                 enclosure: {
                   url:
                     site.siteMetadata.siteUrl +
@@ -159,8 +159,8 @@ module.exports = {
                             gatsbyImageData(layout: FIXED)
                           }
                         }
+                        slug
                       }
-                      slug
                     }
                   }
                 }
@@ -199,8 +199,8 @@ module.exports = {
                   `${site.siteMetadata.siteUrl}/blog/`
                 )}`,
                 date: edge.node.frontmatter.date,
-                url: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
-                guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.slug}`,
+                url: `${site.siteMetadata.siteUrl}/blog/${edge.node.frontmatter.slug}`,
+                guid: `${site.siteMetadata.siteUrl}/blog/${edge.node.frontmatter.slug}`,
                 enclosure: {
                   url:
                     site.siteMetadata.siteUrl +
@@ -228,8 +228,8 @@ module.exports = {
                             gatsbyImageData(layout: FIXED)
                           }
                         }
+                        slug
                       }
-                      slug
                     }
                   }
                 }
