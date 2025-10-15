@@ -1,7 +1,7 @@
 ---
 title: >
   Oracle APEX Reactive Markdown Plug-in #JoelKallmanDay
-date: 2025-10-05
+date: 2025-10-15
 description: Display rich Markdown in Oracle APEX that reacts to changes of referenced page items.
 slug: apex-reactive-markdown-plugin
 titleImage: ./apex-md-side-by-side.png
@@ -11,13 +11,13 @@ tags: ['APEX', 'User-Interfaces']
 ghCommentsIssueId: 112
 ---
 
-**TL;DR**: I created a plug-in that renders Markdown in APEX and reacts to changes of referenced page items.
+**TL;DR**: I created a plug-in that renders Markdown in APEX and reacts to changes of referenced page items. [Click here](#demo-and-download) for demo and download links.
 
 ## My pain with displaying rich text in APEX
 
-Most of our applications probably lack context of what the app does. To solve this we can create a static content region, change the template and put some HTML in there. Easy but as I am used to Markdown writing a lot `<p>`, `<li>`, or `<b>` tags is a bit tedious.
+Most of our applications probably don't provide clear context or help text explaining their functionality. To solve this we can create a static content region, change the template and put some HTML in there. Easy, but as I am used to Markdown, writing a lot `<p>`, `<li>`, or `<b>` tags is a bit tedious.
 
-For my [Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM) webinar I wanted to display the JSON response of the AI nicely formatted in a region. Additionally the JSON gets generated from an dynamic action without any submits so it needs to update automatically.
+For my [Practical AI in PL/SQL Made Easy](https://youtube.com/live/k4Vt7AKXCnM) webinar I wanted to display the JSON response of the AI nicely formatted in a region. Additionally the JSON gets generated from a dynamic action without any submits so it needs to update automatically.
 
 At that point I thought "probably possible with native APEX but too difficult". So I decided to put my pain to rest and build a plug-in that solves this.
 
@@ -25,11 +25,16 @@ At that point I thought "probably possible with native APEX but too difficult". 
 
 It is a region plug-in with three attributes.
 
+<BlogImg
+  filename="apex-md-attributes.png"
+  alt="Screenshot of the attributes section of an instance of the plug-in. There are three attributes: Template, Reactivity Mode, and Theme."
+/>
+
 ### Template
 
-In the template attribute you can define what Markdown template should actually be rendered.
+In the template attribute you can define what Markdown template should be rendered.
 
-So you can directly write Markdown into the attribute or reference a page item that contains some value. During rendering the plug-in will evaluate all values of the referenced page items.
+You can directly write Markdown into the attribute or reference a page item that contains some value. During rendering the plug-in will evaluate all values of the referenced page items.
 
 ```
 Hello! My name is `:P3050_NAME`. I am **:P3050_AGE** years old. I live in :P3050_CITY.
@@ -67,11 +72,11 @@ This is how it behaves in the input mode:
 
 ### Theme
 
-The plug-in uses the GitHub Markdown CSS styles per default. There is a light and dark theme variant. Additionally I built a Universal Theme variant that uses your APEX theme colors. Under the hood it uses the [APEX CSS variables](https://youtu.be/TT6uIz_8Qlk).
+The plug-in uses the GitHub Markdown CSS styles by default. There are light and dark theme variants. Additionally I built a Universal Theme variant that uses your APEX theme colors. Under the hood it uses the [APEX CSS variables](https://youtu.be/TT6uIz_8Qlk).
 
 ## Noteworthy Markdown Features
 
-Next to the standard Markdown features, the plug-in supports:
+In addition to the standard Markdown features, the plug-in supports:
 
 - Tables (not yet supported by the `APEX_MARKDOWN` package)
 - Code blocks with syntax highlighting for various languages
@@ -149,6 +154,8 @@ $$ x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a} $$
 
 ## Demo and Download
 
-You can try out the plug-in in our United Codes [Community Plug-Ins Sample App](https://www.united-codes.com/ords/r/pip/pluginspro_free/reactive-markdown).
+You can try out the plug-in in our United Codes [Community Plug-Ins Sample App](https://www.united-codes.com/ords/r/pip/pluginspro_free/reactive-markdown). We have 31 other free community plug-ins there as well.
 
-You can download the plug-in for free from [apex.world](https://www.united-codes.com/ords/r/pip/pluginspro_free/reactive-markdown).
+You can download the plug-in for free from [apex.world](https://apex.world/ords/r/apex_world/apex-world/my-plug-in-details?p730_plg_int_name=UNITEDCODES_REACTIVE_MARKDOWN) or [from our Plug-Ins-Pro website](https://www.united-codes.com/products/plug-ins-pro/?plugin=reactive-markdown).
+
+The plug-in works with any version of APEX 19.2 and higher.
