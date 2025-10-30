@@ -19,7 +19,7 @@ const talks = [
     place: 'Rovinj, Croatia',
     title: 'APEX UX: treat your users as you like to be treated',
     language: '🇬🇧',
-    slides: '/slides/apex-security-kscope25/',
+    slides: '/slides/apex-ux-kscope25/',
   },
   {
     year: 2025,
