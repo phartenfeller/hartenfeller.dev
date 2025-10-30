@@ -7,6 +7,22 @@ import SEO from '../components/seo';
 const talks = [
   {
     year: 2025,
+    conference: 'HROUG 2025',
+    place: 'Rovinj, Croatia',
+    title: 'APEX Security Basics (Co-prented with Kevin Thyssen)',
+    language: '🇬🇧',
+    slides: '/slides/apex-security-kscope25/',
+  },
+  {
+    year: 2025,
+    conference: 'HROUG 2025',
+    place: 'Rovinj, Croatia',
+    title: 'APEX UX: treat your users as you like to be treated',
+    language: '🇬🇧',
+    slides: '/slides/apex-security-kscope25/',
+  },
+  {
+    year: 2025,
     conference: 'Kscope 2025',
     place: 'Grapevine, TX, USA',
     title:
