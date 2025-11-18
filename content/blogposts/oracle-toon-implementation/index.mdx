@@ -224,6 +224,8 @@ When we look at the tokenization, we see that it uses 116 tokens (~23% savings t
 
 For the small example, 34 fewer tokens does not mean the world, but if you feed huge amounts of data to LLMs frequently, an efficiency improvement of around 30% is actually not bad. Again, tokens are costs, speed, and accuracy, so that's also a great metric to optimize for.
 
+But be careful! Toon really excells if you have repeated structures, especially arrays of objects with the same keys. For just a single object with deep nesting, Toon could actually use more tokens than a minified JSON. So make sure to evaluate your specific use case.
+
 ## How to Use Toon in Oracle
 
 The question is, how easily can you get the efficiency gains? I think the best place for this would be the database, where you should be able to query the data in Toon already. This is now possible with [UC AI](https://www.united-codes.com/products/uc-ai/docs/) (my PL/SQL SDK for building AI workflows/agents in the Oracle Database):
@@ -293,34 +295,37 @@ Here are some more examples of how Toon represents different JSON structures:
 
 ```html-embed
 <details>
-  <summary>Nested Object (Glossary)</summary>
+  <summary>Nested Object (minified JSON less tokens than Toon)</summary>
   <section>
     <pre>
-== JSON ==
+== JSON (formatted 159 tokens, minified 100 tokens) ==
 {
-    "glossary": {
-        "title": "example glossary",
+  "glossary": {
+    "title": "example glossary",
     "GlossDiv": {
-            "title": "S",
+      "title": "S",
       "GlossList": {
-                "GlossEntry": {
-                    "ID": "SGML",
+        "GlossEntry": {
+          "ID": "SGML",
           "SortAs": "SGML",
           "GlossTerm": "Standard Generalized Markup Language",
           "Acronym": "SGML",
           "Abbrev": "ISO 8879:1986",
           "GlossDef": {
-                        "para": "A meta-markup language, used to create markup languages such as DocBook.",
-            "GlossSeeAlso": ["GML", "XML"]
-                    },
+            "para": "A meta-markup language, used to create markup languages such as DocBook.",
+            "GlossSeeAlso": [
+              "GML",
+              "XML"
+            ]
+          },
           "GlossSee": "markup"
-                }
-            }
         }
+      }
     }
+  }
 }
 
-== Toon ==
+== Toon (112 tokens) ==
 glossary:
   title: example glossary
   GlossDiv:
