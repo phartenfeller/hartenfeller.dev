@@ -1,28 +1,28 @@
 ---
 title: >
-  What is Toon and how to use it in Oracle
+  Toon for Oracle: A Token-Efficient Data Format for LLMs
 date: 2025-11-18
 description: Toon is a data representation format that is optimized for usage for LLMs. With UC AI's PL/SQL package, you can convert any JSON data to the Toon format.
 slug: oracle-toon-implementation
-titleImage: ./sarandy-westfall-qqd8APhaOg4-unsplash.jpeg
-titleImageAlt: multiple polaroid photos
+titleImage: ./kadyn-pierce-BNh1Bqhsoj0-unsplash.jpg
+titleImageAlt:
 titleImageSource:
   {
-    text: 'Photo by sarandy westfall',
-    href: 'https://unsplash.com/photos/qqd8APhaOg4',
+    text: 'Photo by Kadyn Pierce on Unsplash',
+    href: 'https://unsplash.com/photos/people-standing-near-brown-and-white-concrete-building-during-daytime-BNh1Bqhsoj0',
   }
 tags: ['Oracle', 'AI', 'PL/SQL']
-ghCommentsIssueId: 21
+ghCommentsIssueId: 113
 ---
 
-**TL;DR:** Toon is a data representation format that is optimized for usage for LLMs. With UC AIs PL/SQL package, you can convert any JSON data to the Toon format.
+**TL;DR:** Toon is a data representation format that is optimized for usage for LLMs. With [UC AI](https://www.united-codes.com/products/uc-ai/docs/)'s PL/SQL package, you can convert any JSON data to the Toon format.
 
 ## AI needs good context
 
-Shortly after LLMs exploded, people noticed that for good-performing assistants, a crucial factor is the right context. So if you want to build an AI assistant or agent on your data, you will not come around one of these techniques to feed the LLM with the necessary information to answer the question:
+Shortly after LLMs exploded, people noticed that for good-performing assistants, a crucial factor is the right context. So if you [want to build an AI assistant or agent on your data](https://hartenfeller.dev/blog/real-ai-solutions-oracle-plsql), you won't get around one of these techniques to feed the LLM with the necessary information to answer the question:
 
 - Hardcoded context in system/user prompt:
-  - Run an SQL and concatenate the results into the prompt.
+  - Run an SQL query and concatenate the results into the prompt.
   - Run Retrieval Augmented Generation (RAG) and then feed the best matches to the LLM with the question.
 - Tools that let the AI access more information ad hoc (only when needed):
   - Dedicated functions (with parameters that run a query)
@@ -33,11 +33,11 @@ Shortly after LLMs exploded, people noticed that for good-performing assistants,
 
 One core metric around LLMs is tokens. They define how much data an LLM can process, how much you have to pay for it, how fast the responses get, and how well the AI performs.
 
-Models have a max tokens window limiting how much text they can process both in input and output. Because processing more of that takes more time and thus requires more energy, tokens used is the metric of how AI providers price their model use. And most crucially for this post, **the more tokens you feed to an LLM, the worse it will perform, or the more likely you are to get hallucinations**.
+Models have a max tokens window limiting how much text they can process both in input and output. Because processing more of that takes more time and thus requires more energy, tokens used is the metric of how AI providers price their model use. And most crucially for this post, **additional irrelevant tokens reduce response quality and increase hallucination risk**.
 
 That's why we use RAG to split huge documents/books into chunks and try to find only the relevant parts for answering the question instead of giving the LLM the whole text. Kind of makes sense; good communication is efficient in only giving the necessary information (not too much, not too little).
 
-You can use tools (like [this from OpenAI](https://platform.openai.com/tokenizer)) to visualize how text gets tokenized. A token is not a strict mathematical unit; it can include a single character, whole words with a variety of lengths, or just part of a long word.
+You can use tools (like [this from OpenAI](https://platform.openai.com/tokenizer)) to visualize how text gets tokenized. A token is not a strict mathematical unit; it can include a single character, whole words of various lengths, or just part of a long word.
 
 <BlogImg
   filename="tokens-usage.png"
@@ -88,7 +88,7 @@ I have a query fetching the top 5 products and customers of my database.
 
 The result as JSON uses up a total of 150 tokens, whereas an XML representation uses 258. Note that I minified the documents, removing newlines and whitespace, as studies strongly suggest that modern LLMs don't perform better on formatted JSON/XML [[1]](https://arxiv.org/html/2508.13666v1#abstract)[[2]](https://dev.to/shibayu36/how-data-formatting-line-breaks-and-indentation-affects-llm-response-accuracy-in-rag-47pe).
 
-```≈You can see that XML wastes a lot of tokens for its closing tags and the <> symbols. The JSON is way better but you will still find many tokens unrelated to the content but the JSON syntax like {}[]".
+```html-embed
 <details>
   <summary>JSON and XML previews</summary>
   <section>
@@ -141,46 +141,48 @@ The result as JSON uses up a total of 150 tokens, whereas an XML representation 
 }
 
 XML (formatted for readability):
-<top_products>
-  <name>Liquid Designer</name>
-  <total_sales>90000</total_sales>
-</top_products>
-<top_products>
-  <name>Symmetric 1000</name>
-  <total_sales>82200</total_sales>
-</top_products>
-<top_products>
-  <name>Osprey Enterprise Edition</name>
-  <total_sales>65010</total_sales>
-</top_products>
-<top_products>
-  <name>Symmetric 2100</name>
-  <total_sales>47300</total_sales>
-</top_products>
-<top_products>
-  <name>Peregrine Enterprise Edition</name>
-  <total_sales>35000</total_sales>
-</top_products>
-<top_customers>
-  <name>Asymmetrical Antibiotics Inc</name>
-  <total_sales>246285</total_sales>
-</top_customers>
-<top_customers>
-  <name>Madison Materials</name>
-  <total_sales>198474</total_sales>
-</top_customers>
-<top_customers>
-  <name>Turbo Charged Migration Systems</name>
-  <total_sales>38500</total_sales>
-</top_customers>
-<top_customers>
-  <name>Acme Department of Transportation</name>
-  <total_sales>25500</total_sales>
-</top_customers>
-<top_customers>
-  <name>Acme Department of Taxation</name>
-  <total_sales>14580</total_sales>
-</top_customers>
+<x>
+  <top_products>
+    <name>Liquid Designer</name>
+    <total_sales>90000</total_sales>
+  </top_products>
+  <top_products>
+    <name>Symmetric 1000</name>
+    <total_sales>82200</total_sales>
+  </top_products>
+  <top_products>
+    <name>Osprey Enterprise Edition</name>
+    <total_sales>65010</total_sales>
+  </top_products>
+  <top_products>
+    <name>Symmetric 2100</name>
+    <total_sales>47300</total_sales>
+  </top_products>
+  <top_products>
+    <name>Peregrine Enterprise Edition</name>
+    <total_sales>35000</total_sales>
+  </top_products>
+  <top_customers>
+    <name>Asymmetrical Antibiotics Inc</name>
+    <total_sales>246285</total_sales>
+  </top_customers>
+  <top_customers>
+    <name>Madison Materials</name>
+    <total_sales>198474</total_sales>
+  </top_customers>
+  <top_customers>
+    <name>Turbo Charged Migration Systems</name>
+    <total_sales>38500</total_sales>
+  </top_customers>
+  <top_customers>
+    <name>Acme Department of Transportation</name>
+    <total_sales>25500</total_sales>
+  </top_customers>
+  <top_customers>
+    <name>Acme Department of Taxation</name>
+    <total_sales>14580</total_sales>
+  </top_customers>
+<x>
     </pre>
   </section>
 </details>
@@ -195,7 +197,7 @@ You can see that XML wastes plenty of tokens for its closing tags and the `<>` s
 
 ## Toon: Less syntax please
 
-Token-Oriented Object Notation (in short, Toon) by [Johann Schopplich](https://github.com/johannschopplich) tries to optimize the token usage further by using a mix of CSV and YAML syntax. It gets converted from a source JSON, so it supports any structures that JSON represents (unlike CSV, for example).
+Token-Oriented Object Notation (in short, Toon), created by [Johann Schopplich](https://github.com/johannschopplich), tries to optimize the token usage further by using a mix of CSV and YAML syntax. It gets converted from a source JSON, so it supports any structures that JSON represents (unlike CSV, for example).
 
 So this is how the same data looks in Toon:
 
@@ -214,17 +216,17 @@ top_customers[5]{name,total_sales}:
   Acme Department of Taxation,14580
 ```
 
-Toon uses strict indentations and newlines. For arrays, it also gives the count of rows, as LLMs are terrible at counting themselves. There is column headers in curly brackets and then just displays the rows like CSV.
+Toon uses strict indentations and newlines. For arrays, it also gives the count of rows, as LLMs are terrible at counting themselves. There are column headers in curly braces, and then it just displays the rows like CSV.
 
-When we look at the tokenization, we see that it uses 116 tokens (29% less than JSON, 122% less than XML). For the data rows, most tokens are just used for actual content.
+When we look at the tokenization, we see that it uses 116 tokens (~23% savings to JSON, ~55% savings to XML). For the data rows, most tokens are devoted to actual content.
 
 <BlogImg filename="token-usage-toon.png" alt="" />
 
-For the small example, 34 fewer tokens does not mean the world, but if you feed huge amounts of data to LLMs all day long, an efficiency improvement of around 30% is actually not bad. Again, tokens are costs, speed, and accuracy, so that's also a great metric to optimize for.
+For the small example, 34 fewer tokens does not mean the world, but if you feed huge amounts of data to LLMs frequently, an efficiency improvement of around 30% is actually not bad. Again, tokens are costs, speed, and accuracy, so that's also a great metric to optimize for.
 
-## But how can I use it
+## How to Use Toon in Oracle
 
-The question is, how easily can you get the efficiency gains? I think the best place for this would be the database, where you should be able to query the data in Toon already. This is now possible with UC AI:
+The question is, how easily can you get the efficiency gains? I think the best place for this would be the database, where you should be able to query the data in Toon already. This is now possible with [UC AI](https://www.united-codes.com/products/uc-ai/docs/) (my PL/SQL SDK for building AI workflows/agents in the Oracle Database):
 
 ```sql
 SELECT uc_ai_toon.to_toon(JSON_OBJECT(
@@ -257,9 +259,9 @@ SELECT uc_ai_toon.to_toon(JSON_OBJECT(
 )) AS analytics;
 ```
 
-As Toon is designed to take a JSON input, you have to first query your data as JSON. Afterward you can pass it to the `uc_ai_toon.to_toon` function, which will return a CLOB. You can pass either a `JSON_OBJECT_T`, `JSON_ARRAY_T`, or `CLOB` that contains JSON.
+As Toon is designed to take a JSON input, you have to first query your data as JSON. Afterward you can pass it to the `uc_ai_toon.to_toon` function, which will return a CLOB. You can pass either Oracle's `JSON_OBJECT_T`, `JSON_ARRAY_T`, or `CLOB` types.
 
-If you like to use it with PL/SQL, that is possible too:
+If you want to convert JSON to Toon from PL/SQL, that is possible aswell:
 
 ```sql
 declare
@@ -275,18 +277,19 @@ begin
   }';
   l_toon := uc_ai_toon.to_toon(l_json);
   sys.dbms_output.put_line(l_toon);
-  /*
+/*
 employees[3]{name,age,department}:
   Alice,30,HR
   Bob,25,Engineering
-  Charlie,28,Marketing
-  */
+  Charlie,28,Marketing */
 end;
 ```
 
-If you want to try it out yourself, you can just go to the [packages folder](https://github.com/United-Codes/uc_ai/tree/development/src/packages) on GitHub and download `uc_ai_toon.pks` and `.pkb`. I haven't created a new release yet, so if you do a scratch install from the GitHub release, you also need to manually compile it.
+If you want to try it out yourself, you can just go to the [packages folder](https://github.com/United-Codes/uc_ai/tree/development/src/packages) on GitHub and download `uc_ai_toon.pks` and `.pkb`. I haven't created a new release yet, so the package is not yet included in the download from the release page.
 
 ## Some more examples of Toon
+
+Here are some more examples of how Toon represents different JSON structures:
 
 ```html-embed
 <details>
@@ -332,7 +335,7 @@ glossary:
         GlossDef:
           para: "A meta-markup language, used to create markup languages such as DocBook."
           GlossSeeAlso[2]: GML,XML
-        GlossSee: markup!</pre>
+        GlossSee: markup</pre>
   </section>
 </details>
 ```
@@ -375,12 +378,12 @@ arr[2]: 1,two
 
 ## Is Toon taking over the world?
 
-It probably sounds like we are back at CSV vs. XML vs. JSON debates. But Toon has a very specific use case in mind, where it undoubtedly shines: feeding data to LLMs in a token-efficient way.
+It might evoke the old CSV vs. JSON debates. But Toon has a very specific use case in mind, where it undoubtedly shines: feeding data to LLMs in a token-efficient way.
 
 Where other formats are optimized for easy machine parsing or human readability, Toon focuses on being token efficient. So **I don't see it replacing any of the existing formats for general use**. If you talk to an LLM, use Toon; if not, stick to JSON or XML.
 
-It is also pretty early days for Toon. The first commit to the spec was done on the 2nd of November, 2025. There are probably things that will change over time. I actually have a niche case in one of my tests where I deliberately deviate from the spec in adding an indentation level, as it makes more sense in my opinion.
+It is also pretty early days for Toon. The first commit to the [spec](https://github.com/toon-format/spec/blob/main/SPEC.md) was done on the 2nd of November, 2025. There are probably things that will change over time. I actually have a niche case in one of my tests where I deliberately deviate from the spec in adding an indentation level, as it makes more sense in my opinion.
 
-I will try to keep the implementation in UC AI up to date with the spec and add new features as they come. If you have ideas or find issues, please open them on the [UC AI GitHub repo](https://github.com/United-Codes/uc_ai).
+I will try to keep the implementation in [UC AI](https://www.united-codes.com/products/uc-ai/docs/) up to date with the spec and add new features as they come. If you have ideas or find issues, please open them on the [UC AI GitHub repo](https://github.com/United-Codes/uc_ai).
 
 Additionally, if you have a very irregular JSON structure, it could be that it does not translate well to Toon. In that case, sticking to JSON is probably the better choice.
